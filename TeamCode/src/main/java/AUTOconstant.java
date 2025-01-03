@@ -15,7 +15,7 @@
  */
 
 
-public class AUTOconstant {
+public class    AUTOconstant {
 //    public static String startingAllianceLocation;
 //    // static Pose2d currentPose = new Pose2d();
 //    public static double autoEndX;

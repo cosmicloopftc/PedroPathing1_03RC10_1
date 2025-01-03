@@ -43,11 +43,6 @@ import com.pedropathing.util.Constants;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
-
-
-
-
-
 /**
  * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
  * Pedro Pathing is capable of.Anyi Lin, Aaron Yang, Harrison Womack - 10158 Scott's Bots, @version 1.0, 3/21/2024
@@ -73,7 +68,9 @@ import pedroPathing.constants.LConstants;
  Activate PedroPathing teleop by: 1) use follower.startTeleopDrive() in start() loop and comment out drive comments in loop()
  Use regular driving with the opposite of above.
  12/27/2024: add Color sensor for color, hue, distance based on FIRST external example
- 1/1/2024:   Update Diagnostic
+ 1/1/2025:   Update Diagnostic
+ 1/3/2025:   Update new PedroPath 1.0.3 teleOp movement
+                TODO: add AUTOconstant of data transfer from end of AUTO
  */
 
 
@@ -143,7 +140,10 @@ public class TeleOpV1 extends OpMode {
     public void init() {
         poseUpdater = new PoseUpdater(hardwareMap);
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
+        Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
+
 
         robot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
         robot.imu.resetYaw();      //reset the IMU/Gyro angle with each match.
@@ -428,18 +428,17 @@ public class TeleOpV1 extends OpMode {
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
         y = -gamepad1.left_stick_y;           // Remember,joystick value is reversed!
-        rx = -gamepad1.left_stick_x;             // this is strafing  V1=positive
-        x = -gamepad1.right_stick_x;                // this is strafing  V1=positive
-
+        rx = gamepad1.left_stick_x;             // this is strafing  V1=positive
+        x = gamepad1.right_stick_x;                // this is strafing  V1=positive
 
         //Cancel angle movement of gamepad left stick, make move move either up/down or right/left
-//        if (Math.abs(y) >= Math.abs(x)) {
-//            y = y;
-//            x = 0;
-//        } else {
-//            y = 0;
-//            x = x;
-//        }
+        //if (Math.abs(y) >= Math.abs(x)) {
+        //  y = y;
+        //  x = 0;
+        //  } else {
+        //      y = 0;
+        //      x = x;
+        //  }
         //DRIVETRAIN
         //baseline speed =  reduce motor speed to 60% max
         double motorPowerDefault = 0.6;
@@ -459,11 +458,6 @@ public class TeleOpV1 extends OpMode {
 /**12/18/2024--THIS IS COMMENTED OUT WHEN USING PEDROPATHING TO DRIVE ROBOT
  drivetrain.drive(y, x, rx, powerShift, botHeading, drivingOrientation);
  */
-
-
-
-
-
 /** Comment out if using regular drivetrain to drive robot, otherwise use below.
  * Update Pedro to move the robot based on:
  - Forward/Backward Movement: -gamepad1.left_stick_y
@@ -472,11 +466,12 @@ public class TeleOpV1 extends OpMode {
  - Robot-Centric Mode: true
  --original:  follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
  */
-        follower.setTeleOpMovementVectors(-y*powerShift, -x*powerShift, -rx*powerShift, true);
-        //follower.setTeleOpMovementVectors(
-        //        Range.clip(-y,-powerShift, +powerShift),
-        //        Range.clip(-x,-powerShift, +powerShift),
-        //        -rx*powerShift, true);
+        //follower.setTeleOpMovementVectors(-y*powerShift, -x*powerShift, -rx*powerShift, true);
+        //Below set the max power as set above
+        follower.setTeleOpMovementVectors(
+                Range.clip(y,-powerShift, +powerShift),
+                Range.clip(x,-powerShift, +powerShift),
+                Range.clip(rx,-powerShift, +powerShift), true);
         follower.update();
 
 

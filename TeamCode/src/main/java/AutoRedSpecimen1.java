@@ -10,6 +10,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;
+import com.pedropathing.util.Drawing;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -376,6 +377,9 @@ public class AutoRedSpecimen1 extends OpMode {
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
+        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+        Drawing.sendPacket();
+
         autoDebug(500, "Auto:init", "DONE");
 
     }
@@ -398,9 +402,12 @@ public class AutoRedSpecimen1 extends OpMode {
     //**********************************************************************************
     @Override
     public void loop() {
+        poseUpdater.update();
+        dashboardPoseTracker.update();
+
         follower.update();
         autonomousPathUpdate();
-        // telemetryA.addLine("going forward");
+
         follower.telemetryDebug(telemetryA);
         telemetryA.addLine("");
         telemetryA.addLine("");
@@ -411,9 +418,11 @@ public class AutoRedSpecimen1 extends OpMode {
         //telemetry.update();
 
 
-        //poseUpdater.update();
-        //dashboardPoseTracker.update();
         telemetryA.update();
+
+        Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
+        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
+        Drawing.sendPacket();
     }
 
 
