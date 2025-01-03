@@ -35,8 +35,6 @@ import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
 import com.pedropathing.util.Constants;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
@@ -366,6 +364,8 @@ public class AutoRedSpecimen1 extends OpMode {
 
         poseUpdater = new PoseUpdater(hardwareMap);
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
+
+        Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
@@ -389,6 +389,7 @@ public class AutoRedSpecimen1 extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
+
         autoRobot.Outtake.closeClaw();
 //       autoRobot.Outtake.highChamberSet();
         autoDebug(500, "Auto:Start", "DONE");
