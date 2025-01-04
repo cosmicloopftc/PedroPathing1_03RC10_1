@@ -13,12 +13,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class HardwareIntake {
 
     public DcMotorEx intakeSlides = null;
+    public DcMotorEx intakeSpinnerMotor = null;
 
 
-    public CRServo leftIntakeWheel = null;
-    public CRServo rightIntakeWheel = null;
-    public Servo leftIntakeServo = null;
-    public Servo rightIntakeServo = null;
+    public Servo intakeServo = null;
+    public Servo intakeLatch = null;
+    public CRServo intakeSpinnerServo = null;
     //Servo Test
 //    public Servo Servo_Test = null;
 
@@ -42,11 +42,16 @@ public class HardwareIntake {
         intakeSlides.setDirection(DcMotorEx.Direction.REVERSE);
         intakeSlides.setPower(0);
 
-        //map and setup mode of Intake Continuous Servos
-        leftIntakeWheel = hardwareMap.get(CRServo.class, "leftIntakeWheel");
-        rightIntakeWheel = hardwareMap.get(CRServo.class, "rightIntakeWheel");
-        leftIntakeServo = hardwareMap.get(Servo.class, "leftIntakeServo");
-        rightIntakeServo = hardwareMap.get(Servo.class, "rightIntakeServo");
+        intakeSpinnerMotor = hardwareMap.get(DcMotorEx.class, "intakeSpinnerMotor");
+        //intake spin motor behaviors
+        intakeSpinnerMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        //intakeSpinnerMotor.setDirection(DcMotorEx.Direction.REVERSE); //TODO: Reverse or not?
+        intakeSlides.setPower(0);
+
+        //map and setup mode of Intake Servos
+        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
+        intakeLatch = hardwareMap.get(Servo.class, "intakeLatch");
+        intakeSpinnerServo = hardwareMap.get(CRServo.class,"intakeSpinnerServo");
 
 
 
@@ -78,25 +83,24 @@ public class HardwareIntake {
 
     //public method (function) for intaking in sample
     public void intakeIN() {
-//        leftIntakeServo.setPosition(0); //TODO: tilt intake down servo positions
-//        rightIntakeServo.setPosition(1);
-        leftIntakeWheel.setPower(1);
-        rightIntakeWheel.setPower(-1);
+        intakeSpinnerMotor.setPower(0.5);
+        //intakeServo.setPosition(0); //TODO: Position where intake is down
+        //intakeLatch.setPosition(0); // TODO: figure out position
     }
 
 
     //public method (function) for spitting out sample
     public void intakeOUT() {
-        leftIntakeWheel.setPower(-1);
-        rightIntakeWheel.setPower(1);
+        intakeSpinnerMotor.setPower(-0.5);
+        //intakeServo.setPosition(0); //TODO: Position where intake is partially down
+        //intakeLatch.setPosition(0); // TODO: figure out position
     }
 
     //public method (function) for stopping the intake
     public void intakeSTOP() {
-//        leftIntakeServo.setPosition(0); //TODO: tilt intake up servo positions
-//        rightIntakeServo.setPosition(1);
-        leftIntakeWheel.setPower(0);
-        rightIntakeWheel.setPower(0);
+        intakeSpinnerMotor.setPower(0);
+        //intakeServo.setPosition(0); //TODO: Position where intake is partially down
+        //intakeLatch.setPosition(0); // TODO: figure out position
     }
 
     //method for the retracted position of the intake slides
@@ -106,25 +110,19 @@ public class HardwareIntake {
 
     //method for the extended position of the intake slides
     public void intakeSlideOUT() {
-        intakeSlideSetPositionPower(500,0.4); //TODO: set position and power - old: 1700
+        intakeSlideSetPositionPower(500,0.4); //TODO: find position and power
     }
     public void intakeSlideMID() {
-        intakeSlideSetPositionPower(250,0.4); //TODO: set position and power - old: 850
+        intakeSlideSetPositionPower(250,0.4); //TODO: find position and power
     }
 
     public void intakeDOWN(){
-        leftIntakeServo.setPosition(0.81); //TODO: find correct position
-        //rightIntakeServo.setPosition(0.81); //This is the actual left servo on the robot
+        //intakeServo.setPosition(0); //TODO: find correct position
     }
     public void intakeUP(){
-        leftIntakeServo.setPosition(1); //TODO: find correct position (should be the extreme servo position - 0 or 1)
-        //rightIntakeServo.setPosition(1); //This is the actual left servo on the robot
+        //intakeServo.setPosition(0); //TODO: find correct position
     }
-    public void transferIntake(){ //TODO: finish
-        intakeSTOP();
-        intakeSlideIN();
-        if (intakeSlides.getCurrentPosition() < 10){
-            intakeOUT();
-        }
+    public void transferIntake(){ //TODO: figure out how this is gonna work
+        //intakeLatch.setPosition(0); // TODO: figure out position
     }
 }
