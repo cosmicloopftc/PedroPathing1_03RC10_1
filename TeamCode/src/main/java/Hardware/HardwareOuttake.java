@@ -75,29 +75,35 @@ public class HardwareOuttake {
 
 
     public void openClaw(){
-        claw.setPosition(0.17); // TODO: find new position
+        claw.setPosition(0.70); // all set for new bot
     }
     public void closeClaw(){
-        claw.setPosition(0.32); // TODO: find new position
+        claw.setPosition(1); // all set for new bot
+    }
+    public void extendIN(){
+        outtakeExtension.setPosition(1);
+    }
+    public void extendOUT(){
+        outtakeExtension.setPosition(0.75);
     }
     public void groundPositionOpen(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
         //outtakeArmAxon.setPosition(0); //TODO: Find position for transfering (stays the same throughout process)
-        //outtakeExtension.setPosition(0); //TODO: Find the no extension position
+        extendIN();
         openClaw();
     }
     public void groundPositionClose(){
         leftSlideSetPositionPower(0,0);
         rightSlideSetPositionPower(0,0);
         //outtakeArmAxon.setPosition(0); //Figure out position for transfering (stays the same throughout process)
-        //outtakeExtension.setPosition(0); //Find the no extension position
+        extendIN();
         closeClaw();
     }
 
     public void readyPosition(){
         //outtakeArmAxon.setPosition(0); //Should be same as ground position
-        //outtakeExtension.setPosition(0); //Should be same as ground position
+        extendIN();
         leftSlideSetPositionPower(500,1);
         rightSlideSetPositionPower(500,1);
     }
@@ -110,7 +116,7 @@ public class HardwareOuttake {
     }
     public void highBasket(){
         //outtakeArmAxon.setPosition(0); //TODO: Find position
-        //outtakeExtension.setPosition(0); //No extension TODO: Find position
+        extendIN();
         leftSlideSetPositionPower(3400,1);
         rightSlideSetPositionPower(3400,1);
     }
@@ -125,33 +131,33 @@ public class HardwareOuttake {
         leftSlideSetPositionPower(700,0.6); //Find position
         rightSlideSetPositionPower(700,0.6); //Find position
         //outtakeArmAxon.setPosition(0); //Find position
-        //outtakeExtension.setPosition(0); //All extended
+        extendOUT();
     }
     public void highChamberFinishFront(){
         leftSlideSetPositionPower(700,1); //Find position (Go up from high chamber set position)
         rightSlideSetPositionPower(700,1);
         //outtakeArmAxon.setPosition(0); //Find position -- same as high chamber set position
-        //outtakeExtension.setPosition(0); //All extended
+        extendOUT();
         openClaw();
     }
     public void highChamberSetBack(){
         leftSlideSetPositionPower(700,0.6); //Find position
         rightSlideSetPositionPower(700,0.6); //Find position
         //outtakeArmAxon.setPosition(0); //Should be same as wall intake
-        //outtakeExtension.setPosition(0); //All extended
+        extendIN();
     }
     public void highChamberFinishBack(){
         leftSlideSetPositionPower(700,1); //Find position (Go down from high chamber set position)
         rightSlideSetPositionPower(700,1);
         //outtakeArmAxon.setPosition(0); //Should be same as wall intake
-        //outtakeExtension.setPosition(0); //No extension
+        extendIN();
         openClaw();
     }
     public void wallIntake(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
         //outtakeArmAxon.setPosition(0); //TODO: Find position
-        //outtakeExtension.setPosition(0); //TODO: Find position
+        extendIN();
     }
 
     public double getOuttakeSliderRightCurrent(){
