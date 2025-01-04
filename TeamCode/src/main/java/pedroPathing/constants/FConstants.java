@@ -28,11 +28,11 @@ public class FConstants {
 
         FollowerConstants.mass = 12.2;      // default 13;
 
-        FollowerConstants.xMovement = 61;   // default 57.8741;     //v1=60; section 4.1 ForwardVelocityTuner 12/15/2024, battery V=13.6
-        FollowerConstants.yMovement = 45;   // default 52.295;      //V1=46; section 4.2 Strafe VelocityTuner 12/15/2024, battery V=13.6
+        FollowerConstants.xMovement = 60.2411;   // default 57.8741;     //v1=60; section 4.1 ForwardVelocityTuner 12/15/2024, battery V=13.6
+        FollowerConstants.yMovement = 43.7032;   // default 52.295;      //V1=46; section 4.2 Strafe VelocityTuner 12/15/2024, battery V=13.6
 
-        FollowerConstants.forwardZeroPowerAcceleration = -36;   // default  -41.278;   //V1=-37; section 5.1 forwardZeroPowerAccelerationTuner 12/15/2024, battery V=13.5
-        FollowerConstants.lateralZeroPowerAcceleration = -78;   // default-59.7819;  //V1=-65 (variable -63 to -68)  section 5.2 lateralZeroPowerAccelerationTuner 12/15/2024, battery V=13.5
+        FollowerConstants.forwardZeroPowerAcceleration = -34.8325;   //-140 default  -41.278;   //V1=-37; section 5.1 forwardZeroPowerAccelerationTuner 12/15/2024, battery V=13.5
+        FollowerConstants.lateralZeroPowerAcceleration = -74.4311;   // default-59.7819;  //V1=-65 (variable -63 to -68)  section 5.2 lateralZeroPowerAccelerationTuner 12/15/2024, battery V=13.5
 
         FollowerConstants.translationalPIDFCoefficients = new CustomPIDFCoefficients(0.1,0,0.01,0); //TODO //V1=0.41,0,0.050,0;
         FollowerConstants.useSecondaryTranslationalPID = false;
@@ -46,7 +46,7 @@ public class FConstants {
         FollowerConstants.useSecondaryDrivePID = false;
         FollowerConstants.secondaryDrivePIDFCoefficients = new CustomFilteredPIDFCoefficients(0.1,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID  //TODO //V1=0.009,0.000005,0.6,0
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 6;      //default 4;      //TODO //V1=4     //section 9. Drive PID
+        FollowerConstants.zeroPowerAccelerationMultiplier = 6;      //3   default 4;      //TODO //V1=4     //section 9. Drive PID
         FollowerConstants.centripetalScaling = 0.0005;              //TODO //V1=0.000020
 
         FollowerConstants.pathEndTimeoutConstraint = 500;           //V1=500
