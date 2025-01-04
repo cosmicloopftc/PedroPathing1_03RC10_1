@@ -1,9 +1,9 @@
 
-//import static org.firstinspires.ftc.teamcode.AUTOconstant.AUTOfrontIntakePickupLength;
-//import static org.firstinspires.ftc.teamcode.AUTOconstant.AUTOredSample1X;
-//import static org.firstinspires.ftc.teamcode.AUTOconstant.AUTOredSample1Y;
-//import static org.firstinspires.ftc.teamcode.AUTOconstant.AUTOredSample2X;
-//import static org.firstinspires.ftc.teamcode.AUTOconstant.AUTOredSample2Y;
+//import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOfrontIntakePickupLength;
+//import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample1X;
+//import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample1Y;
+//import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample2X;
+//import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample2Y;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
