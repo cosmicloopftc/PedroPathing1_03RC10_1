@@ -57,6 +57,7 @@ public class StraightBackAndForth extends OpMode {
         backwards = new Path(new BezierLine(new Point(DISTANCE,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)));
         backwards.setConstantHeadingInterpolation(0);
 
+        follower.setMaxPower(0.4);
         follower.followPath(forwards);
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -76,9 +77,11 @@ public class StraightBackAndForth extends OpMode {
         if (!follower.isBusy()) {
             if (forward) {
                 forward = false;
+                follower.setMaxPower(0.4);
                 follower.followPath(backwards);
             } else {
                 forward = true;
+                follower.setMaxPower(0.4);
                 follower.followPath(forwards);
             }
         }

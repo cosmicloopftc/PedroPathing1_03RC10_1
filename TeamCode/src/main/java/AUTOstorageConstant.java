@@ -15,7 +15,7 @@
  */
 
 
-public class    AUTOconstant {
+public class AUTOstorageConstant {
 //    public static String startingAllianceLocation;
 //    // static Pose2d currentPose = new Pose2d();
 //    public static double autoEndX;
@@ -33,6 +33,11 @@ public class    AUTOconstant {
 //    public static double autoEnd_Intake_ServoLeftPosition;
 //    public static double autoEnd_Intake_ServoRightPosition;
 //    public static double autoEndheadingIMU_yawDEG;
+
+/*Values transfer PedroPathing Auto, etc.
+  1/5/2025: created
+
+ */
 
     public static double AUTOrobotWidth = 14;    //TODO: might be 16 in       //effective inches
     public static double AUTOrobotLength = 13;         //effective inches
@@ -79,7 +84,27 @@ public class    AUTOconstant {
     public static double AUTOblueSample4X =-47.5 + 72;
     public static double AUTOblueSample4Y =23.625 + 72;
 
+    //Intake servo and motor position position:
 
+    //Outtake servo and motor position:
+
+    //Drivetrain: Pose and heading
+
+
+
+//-----------------------------------------------------------------------------
+/*Values transfer RoadRunner Auto, etc.
+  1/5/2025: created
+
+ */
+
+
+
+    //Intake servo and motor position position:
+
+    //Outtake servo and motor position:
+
+    //Drivetrain: Pose and heading
 
 
 
