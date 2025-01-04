@@ -75,10 +75,10 @@ public class HardwareOuttake {
 
 
     public void openClaw(){
-        claw.setPosition(0.17); // TODO: find new position
+        claw.setPosition(0.70); // all set for new bot
     }
     public void closeClaw(){
-        claw.setPosition(0.32); // TODO: find new position
+        claw.setPosition(1); // all set for new bot
     }
     public void groundPositionOpen(){
         leftSlideSetPositionPower(0,1);

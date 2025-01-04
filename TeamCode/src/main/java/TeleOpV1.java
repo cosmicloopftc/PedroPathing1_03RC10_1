@@ -236,44 +236,51 @@ public class TeleOpV1 extends OpMode {
 
         switch (state) {
             case START:
-                if(gamepad2.a || outtakeOption.equals("start")) {
-                    robot.Outtake.groundPositionOpen();
-                    outtakeOption = "";
+                telemetryA.addLine("Start");
+                if(gamepad1.a){
+                    robot.Outtake.claw.setPosition(0.70);
                 }
-                if(gamepad2.dpad_down){
-                    outtakeOption = "wallIntake";
-                    state = State.OUTTAKE_READY;
+                else if(gamepad1.b){
+                    robot.Outtake.claw.setPosition(1); //closed claw
                 }
-                if(gamepad1.dpad_up){
-                    robot.Intake.intakeSlideOUT();
-                    robot.Intake.intakeDOWN();
-                    //robot.Intake.intakeIN();
-                }
-                else if(gamepad1.dpad_left){
-                    robot.Intake.intakeSlideMID();
-                    robot.Intake.intakeDOWN();
-                    //robot.Intake.intakeIN();
-                }
-                else if(gamepad1.dpad_right){
-                    robot.Intake.intakeSlideIN();
-                    robot.Intake.intakeDOWN();
-                    //robot.Intake.intakeIN();
-                }
-                else if(gamepad1.dpad_down){
-                    robot.Intake.intakeSTOP();
-                    robot.Intake.intakeUP();
-                    robot.Intake.intakeSlideIN();
-                }
-                if (gamepad1.left_trigger > 0.2){
-                    robot.Intake.intakeIN();
-                }
-                else if (gamepad1.left_bumper){
-                    robot.Intake.intakeOUT();
-                }
-                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.leftIntakeServo.getPosition() == 1 && gamepad1.right_trigger > 0.2) {
-                    robot.Intake.intakeOUT();
-                    state = State.TRANSFER;
-                }
+//                if(gamepad2.a || outtakeOption.equals("start")) {
+//                    robot.Outtake.groundPositionOpen();
+//                    outtakeOption = "";
+//                }
+//                if(gamepad2.dpad_down){
+//                    outtakeOption = "wallIntake";
+//                    state = State.OUTTAKE_READY;
+//                }
+//                if(gamepad1.dpad_up){
+//                    robot.Intake.intakeSlideOUT();
+//                    robot.Intake.intakeDOWN();
+//                    //robot.Intake.intakeIN();
+//                }
+//                else if(gamepad1.dpad_left){
+//                    robot.Intake.intakeSlideMID();
+//                    robot.Intake.intakeDOWN();
+//                    //robot.Intake.intakeIN();
+//                }
+//                else if(gamepad1.dpad_right){
+//                    robot.Intake.intakeSlideIN();
+//                    robot.Intake.intakeDOWN();
+//                    //robot.Intake.intakeIN();
+//                }
+//                else if(gamepad1.dpad_down){
+//                    robot.Intake.intakeSTOP();
+//                    robot.Intake.intakeUP();
+//                    robot.Intake.intakeSlideIN();
+//                }
+//                if (gamepad1.left_trigger > 0.2){
+//                    robot.Intake.intakeIN();
+//                }
+//                else if (gamepad1.left_bumper){
+//                    robot.Intake.intakeOUT();
+//                }
+//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.leftIntakeServo.getPosition() == 1 && gamepad1.right_trigger > 0.2) {
+//                    robot.Intake.intakeOUT();
+//                    state = State.TRANSFER;
+//                }
                 break;
             case INTAKE:
                 break;
