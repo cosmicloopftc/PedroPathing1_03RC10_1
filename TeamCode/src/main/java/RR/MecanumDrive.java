@@ -237,8 +237,10 @@ public final class MecanumDrive {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);    //done 1/4/2025
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);    //done 1/4/2025
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);    //done 1/4/2025
+        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);   //remove/update 1/6/2025 for back wheel with chain //done 1/4/2025
+        leftBack.setDirection(DcMotorEx.Direction.REVERSE);         //update 1/6/2025 for back wheel with chain
+
 
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)

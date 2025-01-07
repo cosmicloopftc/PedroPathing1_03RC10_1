@@ -237,12 +237,6 @@ public class TeleOpV1 extends OpMode {
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
-                if(gamepad2.a){
-                    //robot.Outtake.outtakeArmAxon.setPosition(0); //TODO: Axon servo programmer and test
-                }
-                else if(gamepad2.b){
-                    //robot.Outtake.outtakeArmAxon.setPosition(1); //TODO: Axon servo programmer and test
-                }
 //                if(gamepad2.a || outtakeOption.equals("start")) {
 //                    robot.Outtake.groundPositionOpen();
 //                    outtakeOption = "";

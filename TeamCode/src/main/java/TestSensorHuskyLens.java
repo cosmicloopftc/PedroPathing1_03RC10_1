@@ -64,7 +64,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-@TeleOp(group = "test", name = "Test HuskyLens")
+@TeleOp(group = "test1", name = "Test HuskyLens 1.0")
 //@Disabled
 @Config
 public class TestSensorHuskyLens extends LinearOpMode {
