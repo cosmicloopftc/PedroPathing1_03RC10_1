@@ -83,7 +83,7 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 8.0;          //7.0;
+        public double axialGain = 6.0;          //8.0, 7.0;
         public double lateralGain = 3.0;        //3.0;
         public double headingGain = 4.0;        //4.0; // shared with turn
 
@@ -237,8 +237,10 @@ public final class MecanumDrive {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);    //done 1/4/2025
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);    //done 1/4/2025
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);    //done 1/4/2025
+        //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);   //remove/update 1/6/2025 for back wheel with chain //done 1/4/2025
+        leftBack.setDirection(DcMotorEx.Direction.REVERSE);         //update 1/6/2025 for back wheel with chain
+
 
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)

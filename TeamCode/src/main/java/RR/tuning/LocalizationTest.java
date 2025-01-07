@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import RR.Drawing;
 import RR.MecanumDrive;
 import RR.TankDrive;
+import RR.ThreeDeadWheelLocalizer;
 
 public class LocalizationTest extends LinearOpMode {
     @Override
@@ -64,6 +65,7 @@ public class LocalizationTest extends LinearOpMode {
                 telemetry.addData("x", pose.position.x);
                 telemetry.addData("y", pose.position.y);
                 telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+                //telemetry.addData("strafe encoder", ThreeDeadWheelLoca")
                 telemetry.update();
 
                 TelemetryPacket packet = new TelemetryPacket();
