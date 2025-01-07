@@ -19,59 +19,42 @@ import Hardware.HardwareNoDriveTrainRobot;
 
 public class RRAutoCore extends LinearOpMode {
     int debugLevel = 499;
+    Telemetry telemetryA;
+    Timer pathTimer, actionTimer, opmodeTimer;
+    //HuskyLens huskyLens;
 
-    private Telemetry telemetryA;
-    private HuskyLens huskyLens;
-    private Timer pathTimer, actionTimer, opmodeTimer;
+    Pose2d pose;
+
+    //TODO: setup initial position for all subsystems
+    //    public static double autoEnd_SliderMotorPosition,
+    //            autoEnd_Slider_ServoArmPosition;
 
 
-//TODO: setup initial position for all subsystems
-//    public static double autoEnd_SliderMotorPosition,
-//            autoEnd_Slider_ServoArmPosition;
+    public void RRAutoCoreInitLoop(){
+        //TODO: place in telemetry data and alliance zone info to make sure you select the right program to run
+        // Share the CPU.
+        sleep(20);
+    }
 
-
+//-------------------------------------------------------------------------------------------------
     @Override
     public void runOpMode() throws InterruptedException {
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
 
-        HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();    //TODO: will this interfere with follower(hardwareMap)? in .init
-
-
-        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetryA.update();
-
-        Pose2d beginPose = new Pose2d(0, 0, 0);
-
-        autoDebug(500, "Auto:Init", "DONE");
-
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-
-        waitForStart();
-
-            Actions.runBlocking(
-                    drive.actionBuilder(beginPose)
-                            .splineTo(new Vector2d(30, 30), Math.PI / 2)
-                            .splineTo(new Vector2d(0, 60), Math.PI)
-                            .build());
+    }
 
 
 
 
-            drive.updatePoseEstimate();
 
-    Pose2d pose = drive.localizer.getPose();
-                telemetry.addData("x", pose.position.x);
-                telemetry.addData("y", pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-                telemetry.update();
-
-    TelemetryPacket packet = new TelemetryPacket();
-                packet.fieldOverlay().setStroke("#3F51B5");
-                Drawing.drawRobot(packet.fieldOverlay(), pose);
-                FtcDashboard.getInstance().sendTelemetryPacket(packet);
+    void RRAutoCoreTelemetryDuringteleOp(){
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.fieldOverlay().setStroke("#3F51B5");
+        Drawing.drawRobot(packet.fieldOverlay(), pose);
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        //TODO:  methods to constantly write into into our AUTOstorage class to transfer to Teleop
 
 
+    }
 
 
 
@@ -98,3 +81,81 @@ public class RRAutoCore extends LinearOpMode {
         RobotLog.i("LOG == " + myName + ": " + myMessage);
     }
 }
+
+
+
+
+
+
+
+
+
+/**EXAMPLE OF STATE MACHINE IN AUTO for LinearOP mode
+        while (opModeIsActive() && !isStopRequested()) {
+            // Our state machine logic. You can have multiple switch statements running together for multiple state machines
+            // in parallel. This is the basic idea for subsystems and commands. We essentially define the flow of the state machine through this switch statement
+            switch (currentState) {
+                case TRAJECTORY_1:
+                    // Check if the drive class isn't busy.  `isBusy() == true` while it's following the trajectory
+                    // Once `isBusy() == false`, the trajectory follower signals that it is finished and We move on to the next state
+                    // Make sure we use the async follow function
+
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJECTORY_2;
+                        drive.followTrajectoryAsync(trajectory2);
+                    }
+                    break;
+                case TRAJECTORY_2:
+                    // Check if the drive class is busy following the trajectory. Move on to the next state, TURN_1, once finished
+                    if (!drive.isBusy()) {
+                        currentState = State.TURN_1;
+                        drive.turnAsync(turnAngle1);
+                    }
+                    break;
+                case TRAJECTORY_3:
+                    // Check if the drive class is busy following the trajectory.  If not, move onto the next state, WAIT_1
+                    if (!drive.isBusy()) {
+                        currentState = State.WAIT_1;
+                        // Start the wait timer once we switch to the next state.  This is so we can track how long we've been in the WAIT_1 state
+                        waitTimer1.reset();
+                    }
+                    break;
+                case WAIT_1:
+                    // Check if the timer has exceeded the specified wait time
+                    // If so, move on to the TURN_2 state
+                    if (waitTimer1.seconds() >= waitTime1) {
+                        currentState = State.TURN_2;
+                        drive.turnAsync(turnAngle2);
+                    }
+                    break;
+                case TURN_2:
+                    // Check if the drive class is busy turning.  If not, move onto the next state, IDLE.  We are done with the program
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case IDLE:
+                    // Do nothing in IDLE.  currentState does not change once in IDLE
+                    // This concludes the autonomous program
+                    break;
+            }
+
+            // Anything outside of the switch statement will run independent of the currentState
+
+            // We update drive continuously in the background, regardless of state
+            drive.update();
+            // We update our lift PID continuously in the background, regardless of state
+            lift.update();
+            // Read pose
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            // Continually write pose to `PoseStorage`
+            PoseStorage.currentPose = poseEstimate;
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
+        }
+    }
+
+**/
