@@ -13,12 +13,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class HardwareIntake {
 
     public DcMotorEx intakeSlides = null;
-    public DcMotorEx intakeSpinnerMotor = null;
 
-
-    public Servo intakeServo = null;
-    public Servo intakeLatch = null;
-    public CRServo intakeSpinnerServo = null;
+    public CRServo intakeLeftWheel = null;
+    public CRServo intakeRightWheel = null;
+    public Servo intakeServoAxon = null;
     //Servo Test
 //    public Servo Servo_Test = null;
 
@@ -42,16 +40,10 @@ public class HardwareIntake {
         intakeSlides.setDirection(DcMotorEx.Direction.REVERSE);
         intakeSlides.setPower(0);
 
-        intakeSpinnerMotor = hardwareMap.get(DcMotorEx.class, "intakeSpinnerMotor");
-        //intake spin motor behaviors
-        intakeSpinnerMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        //intakeSpinnerMotor.setDirection(DcMotorEx.Direction.REVERSE); //TODO: Reverse or not?
-        intakeSlides.setPower(0);
-
         //map and setup mode of Intake Servos
-        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
-        intakeLatch = hardwareMap.get(Servo.class, "intakeLatch");
-        //intakeSpinnerServo = hardwareMap.get(CRServo.class,"intakeSpinnerServo");
+        intakeLeftWheel = hardwareMap.get(CRServo.class, "intakeLeftWheel");
+        intakeRightWheel = hardwareMap.get(CRServo.class, "intakeRightWheel");
+        intakeServoAxon = hardwareMap.get(Servo.class,"intakeServoAxon");
 
 
 
@@ -83,24 +75,21 @@ public class HardwareIntake {
 
     //public method (function) for intaking in sample
     public void intakeIN() {
-        intakeSpinnerMotor.setPower(0.5);
-        //intakeServo.setPosition(0); //TODO: Position where intake is down
-        //intakeLatch.setPosition(0); // TODO: figure out position
+        intakeLeftWheel.setPower(-1); //TODO: figure out directions
+        intakeRightWheel.setPower(1); // TODO: figure out directions
     }
 
 
     //public method (function) for spitting out sample
     public void intakeOUT() {
-        intakeSpinnerMotor.setPower(-0.5);
-        //intakeServo.setPosition(0); //TODO: Position where intake is partially down
-        //intakeLatch.setPosition(0); // TODO: figure out position
+        intakeLeftWheel.setPower(1); //TODO: figure out directions
+        intakeRightWheel.setPower(-1); // TODO: figure out directions
     }
 
     //public method (function) for stopping the intake
     public void intakeSTOP() {
-        intakeSpinnerMotor.setPower(0);
-        //intakeServo.setPosition(0); //TODO: Position where intake is partially down
-        //intakeLatch.setPosition(0); // TODO: figure out position
+        intakeLeftWheel.setPower(0);
+        intakeRightWheel.setPower(0);
     }
 
     //method for the retracted position of the intake slides
@@ -122,7 +111,10 @@ public class HardwareIntake {
     public void intakeUP(){
         //intakeServo.setPosition(0); //TODO: find correct position
     }
-    public void transferIntake(){ //TODO: figure out how this is gonna work
-        //intakeLatch.setPosition(0); // TODO: figure out position
+    public void intakeINSIDEBOT(){
+        //intakeServo.setPosition(0); //TODO: find correct position
+    }
+    public void intakeTRANSFER(){ //TODO: figure out how this is gonna work
+        intakeServoAxon.setPosition(0.6); // TODO: figure out position
     }
 }

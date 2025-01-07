@@ -22,9 +22,9 @@ public class FConstants {
         FollowerConstants.rightRearMotorName = "rightRear";
 
         FollowerConstants.leftFrontMotorDirection = DcMotorEx.Direction.REVERSE;    // default  REVERSE;
-        FollowerConstants.leftRearMotorDirection = DcMotorEx.Direction.FORWARD;     //TODO
+        FollowerConstants.leftRearMotorDirection = DcMotorEx.Direction.REVERSE;     //update for chain rear wheel 1/6/2025 //FORWARD;     //TODO
         FollowerConstants.rightFrontMotorDirection = DcMotorEx.Direction.FORWARD;   //TODO
-        FollowerConstants.rightRearMotorDirection = DcMotorEx.Direction.REVERSE;    //default  FORWARD;
+        FollowerConstants.rightRearMotorDirection = DcMotorEx.Direction.FORWARD;    //update for chain rear wheel 1/6/2025 REVERSE;    //default  FORWARD;
 
         FollowerConstants.mass = 12.2;      // default 13;
 
