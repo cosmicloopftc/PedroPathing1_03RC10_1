@@ -237,12 +237,6 @@ public class TeleOpV1 extends OpMode {
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
-                if(gamepad2.a){
-                    //robot.Outtake.outtakeArmAxon.setPosition(0); //TODO: Axon servo programmer and test
-                }
-                else if(gamepad2.b){
-                    //robot.Outtake.outtakeArmAxon.setPosition(1); //TODO: Axon servo programmer and test
-                }
 //                if(gamepad2.a || outtakeOption.equals("start")) {
 //                    robot.Outtake.groundPositionOpen();
 //                    outtakeOption = "";
@@ -435,8 +429,8 @@ public class TeleOpV1 extends OpMode {
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
         y = -gamepad1.left_stick_y;           // Remember,joystick value is reversed!
-        rx = gamepad1.left_stick_x;             // this is strafing  V1=positive
-        x = gamepad1.right_stick_x;                // this is strafing  V1=positive
+        x = -gamepad1.left_stick_x;             // this is strafing  V1=positive
+        rx = -gamepad1.right_stick_x;                // this is strafing  V1=positive
 
         //Cancel angle movement of gamepad left stick, make move move either up/down or right/left
         //if (Math.abs(y) >= Math.abs(x)) {
