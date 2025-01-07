@@ -1,16 +1,21 @@
 package RR;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,59 +24,122 @@ import Hardware.HardwareNoDriveTrainRobot;
 
 public class RRAutoCore extends LinearOpMode {
     int debugLevel = 499;
+    Telemetry telemetryA;
+    Timer pathTimer, actionTimer, opmodeTimer;
+    //HuskyLens huskyLens;
 
-    private Telemetry telemetryA;
-    private HuskyLens huskyLens;
-    private Timer pathTimer, actionTimer, opmodeTimer;
+    Pose2d pose;
+
+    //TODO: setup initial position for all subsystems
+    //    public static double autoEnd_SliderMotorPosition,
+    //            autoEnd_Slider_ServoArmPosition;
 
 
-//TODO: setup initial position for all subsystems
-//    public static double autoEnd_SliderMotorPosition,
-//            autoEnd_Slider_ServoArmPosition;
+    public void RRAutoCoreInitLoop(){
+        //TODO: place in telemetry data and alliance zone info to make sure you select the right program to run
+        // Share the CPU.
+        sleep(20);
+    }
 
 
+
+
+
+
+    //-------------------------------------------------------------------------------------------------
     @Override
     public void runOpMode() throws InterruptedException {
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
 
-        HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();    //TODO: will this interfere with follower(hardwareMap)? in .init
+        HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();
 
+        Actions.runBlocking(AutoOuttakeSlider.AutoOuttakeSliderHighBasket());
 
-        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetryA.update();
-
-        Pose2d beginPose = new Pose2d(0, 0, 0);
-
-        autoDebug(500, "Auto:Init", "DONE");
-
-        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-
-        waitForStart();
-
-            Actions.runBlocking(
-                    drive.actionBuilder(beginPose)
-                            .splineTo(new Vector2d(30, 30), Math.PI / 2)
-                            .splineTo(new Vector2d(0, 60), Math.PI)
-                            .build());
+    }
 
 
+    /**to implementing this:
+     *         Actions.runBlocking(
+     *                 new SequentialAction(
+     *                         trajectoryActionChosen,
+     *                         AutoOuttakeSliderHighBasket(),
+     *                         trajectory....
+     *                         .waitSeconds(3)
+     *                         AutoOuttakeSliderHighBasket(),
+     *                         trajectoryActionCloseOut
+     *                 )
+     *         );
+     *
+     */
+
+    public class AutoOuttakeSlider  {
+        HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();
+
+        public class AutoOuttakeSliderHighBasket implements Action {
+            private boolean initialized = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    autoRobot.Outtake.leftSlideSetPositionPower(3400,0.5);
+                    autoRobot.Outtake.rightSlideSetPositionPower(3400,0.5);
+                    initialized = true;
+                }
+                double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
+                packet.put("Outtake slider-left position", positionOuttakeLeftSlide);
+                if (positionOuttakeLeftSlide < 3400.0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        public Action AutoOuttakeSliderHighBasket() {
+            return new AutoOuttakeSliderHighBasket();
+        }
 
 
-            drive.updatePoseEstimate();
+        public class AutoOuttakeSliderReadyPosition implements Action {
+            private boolean initialized = false;
 
-    Pose2d pose = drive.localizer.getPose();
-                telemetry.addData("x", pose.position.x);
-                telemetry.addData("y", pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-                telemetry.update();
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    autoRobot.Outtake.leftSlideSetPositionPower(500,0.5);
+                    autoRobot.Outtake.rightSlideSetPositionPower(500,0.5);
+                    initialized = true;
+                }
+                double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
+                packet.put("Outtake slider-left position", positionOuttakeLeftSlide);
 
-    TelemetryPacket packet = new TelemetryPacket();
-                packet.fieldOverlay().setStroke("#3F51B5");
-                Drawing.drawRobot(packet.fieldOverlay(), pose);
-                FtcDashboard.getInstance().sendTelemetryPacket(packet);
+                if (positionOuttakeLeftSlide > 500.0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        public Action AutoOuttakeSliderReadyPosition(){
+            return new AutoOuttakeSliderReadyPosition();
+        }
+    }
 
 
+
+
+
+
+
+
+
+
+
+
+    void RRAutoCoreTelemetryDuringteleOp(){
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.fieldOverlay().setStroke("#3F51B5");
+        Drawing.drawRobot(packet.fieldOverlay(), pose);
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
+        //TODO:  methods to constantly write into into our AUTOstorage class to transfer to Teleop
+    }
 
 
 
@@ -97,4 +165,88 @@ public class RRAutoCore extends LinearOpMode {
         telemetryA.update();
         RobotLog.i("LOG == " + myName + ": " + myMessage);
     }
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+/**EXAMPLE OF STATE MACHINE IN AUTO for LinearOP mode
+        while (opModeIsActive() && !isStopRequested()) {
+            // Our state machine logic. You can have multiple switch statements running together for multiple state machines
+            // in parallel. This is the basic idea for subsystems and commands. We essentially define the flow of the state machine through this switch statement
+            switch (currentState) {
+                case TRAJECTORY_1:
+                    // Check if the drive class isn't busy.  `isBusy() == true` while it's following the trajectory
+                    // Once `isBusy() == false`, the trajectory follower signals that it is finished and We move on to the next state
+                    // Make sure we use the async follow function
+
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJECTORY_2;
+                        drive.followTrajectoryAsync(trajectory2);
+                    }
+                    break;
+                case TRAJECTORY_2:
+                    // Check if the drive class is busy following the trajectory. Move on to the next state, TURN_1, once finished
+                    if (!drive.isBusy()) {
+                        currentState = State.TURN_1;
+                        drive.turnAsync(turnAngle1);
+                    }
+                    break;
+                case TRAJECTORY_3:
+                    // Check if the drive class is busy following the trajectory.  If not, move onto the next state, WAIT_1
+                    if (!drive.isBusy()) {
+                        currentState = State.WAIT_1;
+                        // Start the wait timer once we switch to the next state.  This is so we can track how long we've been in the WAIT_1 state
+                        waitTimer1.reset();
+                    }
+                    break;
+                case WAIT_1:
+                    // Check if the timer has exceeded the specified wait time
+                    // If so, move on to the TURN_2 state
+                    if (waitTimer1.seconds() >= waitTime1) {
+                        currentState = State.TURN_2;
+                        drive.turnAsync(turnAngle2);
+                    }
+                    break;
+                case TURN_2:
+                    // Check if the drive class is busy turning.  If not, move onto the next state, IDLE.  We are done with the program
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case IDLE:
+                    // Do nothing in IDLE.  currentState does not change once in IDLE
+                    // This concludes the autonomous program
+                    break;
+            }
+
+            // Anything outside of the switch statement will run independent of the currentState
+
+            // We update drive continuously in the background, regardless of state
+            drive.update();
+            // We update our lift PID continuously in the background, regardless of state
+            lift.update();
+            // Read pose
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            // Continually write pose to `PoseStorage`
+            PoseStorage.currentPose = poseEstimate;
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
+        }
+    }
+
+**/
