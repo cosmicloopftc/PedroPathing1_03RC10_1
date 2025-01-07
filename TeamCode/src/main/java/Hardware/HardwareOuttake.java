@@ -1,4 +1,5 @@
 package Hardware;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
@@ -18,6 +19,7 @@ public class HardwareOuttake {
     public Servo outtakeArmAxon = null;
     public Servo outtakeExtension = null;
     public Servo claw = null;
+    public AnalogInput outtakeArmAxonPosition = null;
     /*Constructor*/
     public HardwareOuttake() {
     }
@@ -45,6 +47,8 @@ public class HardwareOuttake {
         claw = hardwareMap.get(Servo.class, "claw");
 
 
+//get our analog input from the hardwareMap
+        outtakeArmAxonPosition = hardwareMap.get(AnalogInput.class, "outtakeArmAxonPosition");
     }
 
 
@@ -89,23 +93,24 @@ public class HardwareOuttake {
     public void groundPositionOpen(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        //outtakeArmAxon.setPosition(0); //TODO: Find position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.27); //TODO: Find position for transfering (stays the same throughout process)
         extendIN();
-        openClaw();
+        //openClaw();
     }
     public void groundPositionClose(){
         leftSlideSetPositionPower(0,0);
         rightSlideSetPositionPower(0,0);
-        //outtakeArmAxon.setPosition(0); //Figure out position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.27); //Figure out position for transfering (stays the same throughout process)
         extendIN();
         closeClaw();
     }
 
-    public void readyPosition(){
-        //outtakeArmAxon.setPosition(0); //Should be same as ground position
+    public void readyPosition(){ // TODO: Do we need this?
+        leftSlideSetPositionPower(0,0);
+        rightSlideSetPositionPower(0,0);
+        outtakeArmAxon.setPosition(0.4); //Figure out position for transfering
         extendIN();
-        leftSlideSetPositionPower(500,1);
-        rightSlideSetPositionPower(500,1);
+        openClaw();
     }
 
     public void lowBasket(){
@@ -115,7 +120,7 @@ public class HardwareOuttake {
         rightSlideSetPositionPower(970,0.6);
     }
     public void highBasket(){
-        //outtakeArmAxon.setPosition(0); //TODO: Find position
+        outtakeArmAxon.setPosition(0.68);
         extendIN();
         leftSlideSetPositionPower(3400,1);
         rightSlideSetPositionPower(3400,1);
@@ -130,33 +135,33 @@ public class HardwareOuttake {
     public void highChamberSetFront(){
         leftSlideSetPositionPower(700,0.6); //Find position
         rightSlideSetPositionPower(700,0.6); //Find position
-        //outtakeArmAxon.setPosition(0); //Find position
+        outtakeArmAxon.setPosition(0.3); //Find position
         extendOUT();
     }
     public void highChamberFinishFront(){
         leftSlideSetPositionPower(700,1); //Find position (Go up from high chamber set position)
         rightSlideSetPositionPower(700,1);
-        //outtakeArmAxon.setPosition(0); //Find position -- same as high chamber set position
+        outtakeArmAxon.setPosition(0.3); //Find position -- same as high chamber set position
         extendOUT();
         openClaw();
     }
     public void highChamberSetBack(){
         leftSlideSetPositionPower(700,0.6); //Find position
         rightSlideSetPositionPower(700,0.6); //Find position
-        //outtakeArmAxon.setPosition(0); //Should be same as wall intake
+        outtakeArmAxon.setPosition(0.86); //Should be same as wall intake
         extendIN();
     }
     public void highChamberFinishBack(){
         leftSlideSetPositionPower(700,1); //Find position (Go down from high chamber set position)
         rightSlideSetPositionPower(700,1);
-        //outtakeArmAxon.setPosition(0); //Should be same as wall intake
+        outtakeArmAxon.setPosition(0.86); //Should be same as wall intake
         extendIN();
         openClaw();
     }
     public void wallIntake(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        //outtakeArmAxon.setPosition(0); //TODO: Find position
+        outtakeArmAxon.setPosition(0.86);
         extendIN();
     }
 
@@ -167,4 +172,10 @@ public class HardwareOuttake {
         return outtakeLeftSlide.getCurrent(CurrentUnit.MILLIAMPS);
     }
 
+    public double getOuttakeArmPosition(){
+        // get the voltage of our analog line
+// divide by 3.3 (the max voltage) to get a value between 0 and 1
+// multiply by 360 to convert it to 0 to 360 degrees
+        return outtakeArmAxonPosition.getVoltage() / 3.3;
+    }
 }
