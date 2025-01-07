@@ -237,93 +237,136 @@ public class TeleOpV1 extends OpMode {
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
-                if(gamepad2.a){
-                    //robot.Outtake.outtakeArmAxon.setPosition(0); //TODO: Axon servo programmer and test
+                telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
+                if(gamepad1.a){
+                    robot.Intake.intakeServoAxon.setPosition(0.92);
                 }
-                else if(gamepad2.b){
-                    //robot.Outtake.outtakeArmAxon.setPosition(1); //TODO: Axon servo programmer and test
-                }
+////                if (robot.Outtake.getOuttakeArmPosition() < 0.68 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() == 0.32) {
+////                    robot.Outtake.closeClaw();
+////                }
+//////                else{
+//////                    robot.Outtake.openClaw();
+//////                }
+////                if (gamepad1.a){
+////                    robot.Intake.intakeServoAxon.setPosition(0.6); //transfer position
+////                }
+////                else if (gamepad1.b){
+////                    robot.Outtake.readyPosition();
+////                    robot.Intake.intakeServoAxon.setPosition(0.9);
+////                }
+////                else if (gamepad1.y){
+////                    robot.Outtake.groundPositionOpen();
+////                }
+//                if (gamepad2.x){
+//                    robot.Intake.intakeSlideSetPositionPower(0,1);
+//                }
+//                else if (gamepad2.y){
+//                    robot.Intake.intakeSlideSetPositionPower(310,1); //200 = middle 310 = high
+//                }
+//
 //                if(gamepad2.a || outtakeOption.equals("start")) {
-//                    robot.Outtake.groundPositionOpen();
+//                    robot.Outtake.readyPosition();
+//                    robot.Intake.intakeTRANSFER();
 //                    outtakeOption = "";
 //                }
 //                if(gamepad2.dpad_down){
-//                    outtakeOption = "wallIntake";
-//                    state = State.OUTTAKE_READY;
+//                    outtakeOption = "wallIntakeBack";
+//                    //state = State.OUTTAKE_READY;
+//                }
+//                if(gamepad2.dpad_up){
+//                    outtakeOption = "wallIntakeFront";
+//                    //state = State.OUTTAKE_READY;
 //                }
 //                if(gamepad1.dpad_up){
 //                    robot.Intake.intakeSlideOUT();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                    robot.Intake.intakeUP();
+//                    state = State.INTAKE;
 //                }
 //                else if(gamepad1.dpad_left){
 //                    robot.Intake.intakeSlideMID();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                    robot.Intake.intakeUP();
+//                    state = State.INTAKE;
 //                }
 //                else if(gamepad1.dpad_right){
 //                    robot.Intake.intakeSlideIN();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                    robot.Intake.intakeUP();
+//                    state = State.INTAKE;
 //                }
 //                else if(gamepad1.dpad_down){
-//                    robot.Intake.intakeSTOP();
-//                    robot.Intake.intakeUP();
-//                    robot.Intake.intakeSlideIN();
+//                robot.Intake.intakeSTOP();
+//                robot.Intake.intakeTRANSFER();
+//                robot.Intake.intakeSlideIN();
 //                }
-//                if (gamepad1.left_trigger > 0.2){
-//                    robot.Intake.intakeIN();
-//                }
-//                else if (gamepad1.left_bumper){
-//                    robot.Intake.intakeOUT();
-//                }
-//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.leftIntakeServo.getPosition() == 1 && gamepad1.right_trigger > 0.2) {
-//                    robot.Intake.intakeOUT();
+////                while (gamepad1.left_trigger > 0.2){ //While loop?
+////                    robot.Intake.intakeDOWN();
+////                    robot.Intake.intakeIN();
+////                }
+////                while (gamepad1.left_bumper){
+////                    robot.Intake.intakeDOWN();
+////                    robot.Intake.intakeOUT();
+////                }
+//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
 //                    state = State.TRANSFER;
 //                }
                 break;
             case INTAKE:
-                break;
-            case TRANSFER:
-                if (gamepad1.right_trigger > 0.2) {
+                if (gamepad1.left_trigger > 0.2){
+                    robot.Intake.intakeDOWN();
+                    robot.Intake.intakeIN();
+                }
+                else if (gamepad1.left_bumper){
+                    robot.Intake.intakeUP();
                     robot.Intake.intakeOUT();
                 }
-                else if (gamepad1.left_trigger > 0.2){
+                else{
+                    robot.Intake.intakeUP();
                     robot.Intake.intakeSTOP();
                 }
-                else if (gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right){ //Be able to intake again
+                if(gamepad1.dpad_up){
+                    robot.Intake.intakeSlideOUT();
+                }
+                else if(gamepad1.dpad_left){
+                    robot.Intake.intakeSlideMID();
+                }
+                else if(gamepad1.dpad_right){
+                    robot.Intake.intakeSlideIN();
+                }
+                else if(gamepad1.dpad_down){
+                    //state = State.TRANSFER;
+//                    robot.Intake.intakeSTOP();
+//                    robot.Intake.intakeUP();
+//                    robot.Intake.intakeSlideIN();
+                }
+                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
+                    //state = State.TRANSFER;
+                }
+                break;
+            case TRANSFER:
+                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Outtake.getOuttakeArmPosition() < 0.28 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
+                    robot.Outtake.groundPositionClose();
+                }
+                if (gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right){ //Be able to intake again
                     state = State.START;
                 }
                 if(gamepad2.a || outtakeOption.equals("start")) { // this current code would be in transfer state when intake ready
                     robot.Outtake.groundPositionOpen();
                     outtakeOption = "";
                 }
-                else if(gamepad2.left_trigger > 0.2 || gamepad2.right_trigger > 0.2){
-                    robot.Outtake.groundPositionClose();
-                }
-//                if(gamepad2.b) { // would having these in this else if statement make sure that the claw is closed?
-//                    outtakeOption = "lowBasket";
-//                    //robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
+//                else if(gamepad2.left_trigger > 0.2 || gamepad2.right_trigger > 0.2){
+//                    robot.Outtake.groundPositionClose();
 //                }
                 if(robot.Outtake.claw.getPosition() == 0.32 && gamepad2.y) { //Make sure that claw is in closed position
                     outtakeOption = "highBasket";
                     //robot.Outtake.closeClaw();
-                    state = State.OUTTAKE_READY;
+                    //state = State.OUTTAKE_READY;
                 }
-//                if(gamepad2.b) {
-//                    outtakeOption = "lowBasket";
-//                    robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
-//                }
-//                else if(gamepad2.y) {
-//                    outtakeOption = "highBasket";
-//                    robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
-//                }
-                else if(gamepad2.dpad_down){
-                    outtakeOption = "wallIntake";
-                    state = State.OUTTAKE_READY;
+                if(gamepad2.dpad_down){
+                    outtakeOption = "wallIntakeBack";
+                    //state = State.OUTTAKE_READY;
+                }
+                if(gamepad2.dpad_up){
+                    outtakeOption = "wallIntakeFront";
+                    //state = State.OUTTAKE_READY;
                 }
                 break;
             case OUTTAKE_READY:
@@ -354,7 +397,7 @@ public class TeleOpV1 extends OpMode {
                 if (outtakeOption.equals("highBasket")){
                     robot.Outtake.leftSlideSetPositionPower(3400,1);
                     robot.Outtake.rightSlideSetPositionPower(3400,1);
-                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1500){
+                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1800){
                         robot.Outtake.highBasket();
                     }
                 }
@@ -435,8 +478,8 @@ public class TeleOpV1 extends OpMode {
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
         y = -gamepad1.left_stick_y;           // Remember,joystick value is reversed!
-        rx = gamepad1.left_stick_x;             // this is strafing  V1=positive
-        x = gamepad1.right_stick_x;                // this is strafing  V1=positive
+        x = -gamepad1.left_stick_x;             // this is strafing  V1=positive
+        rx = -gamepad1.right_stick_x;                // this is strafing  V1=positive
 
         //Cancel angle movement of gamepad left stick, make move move either up/down or right/left
         //if (Math.abs(y) >= Math.abs(x)) {
