@@ -237,6 +237,12 @@ public class TeleOpV1 extends OpMode {
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
+                if(gamepad1.a){
+                    robot.Outtake.groundPositionOpen();
+                }
+                else if(gamepad1.b){
+                    robot.Outtake.groundPositionClose();
+                }
 //                if(gamepad2.a || outtakeOption.equals("start")) {
 //                    robot.Outtake.groundPositionOpen();
 //                    outtakeOption = "";

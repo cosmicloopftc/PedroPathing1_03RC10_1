@@ -228,10 +228,10 @@ public class AutoRedSpecimen1 extends OpMode {
                 //follower.followPath(preLoadScore);
 
                 //TODO:start to raise outtake slider, start rotating outtake when halfway up
-                autoRobot.Outtake.closeClaw();
+//                autoRobot.Outtake.closeClaw();
                 //        autoRobot.Outtake.highChamberSet();
-                autoRobot.Intake.intakeUP();
-                autoRobot.Intake.intakeSlideIN();
+//                autoRobot.Intake.intakeUP();
+//                autoRobot.Intake.intakeSlideIN();
 //                autoRobot.Outtake.leftSlideSetPositionPower(3400,1);
 //                autoRobot.Outtake.rightSlideSetPositionPower(3400,1);
 //                if (pathTimer.getElapsedTimeSeconds()>5){
@@ -332,8 +332,8 @@ public class AutoRedSpecimen1 extends OpMode {
                 break;
             case 12:
                 if (pathTimer.getElapsedTimeSeconds()>1) {
-                    autoRobot.Outtake.wallIntake();
-                    autoRobot.Outtake.openClaw();
+//                    autoRobot.Outtake.wallIntake();
+//                    autoRobot.Outtake.openClaw();
                     follower.followPath(sample3path3, true);
                     setPathState(13);
                 }
@@ -360,8 +360,8 @@ public class AutoRedSpecimen1 extends OpMode {
 
         autoRobot.init(hardwareMap);   //TODO: check if conflicts with Follower(hardwareMap);note hardwareMap is default and part of FTC Robot Controller HardwareMap class
 
-        autoRobot.Outtake.wallIntake();
-        autoRobot.Outtake.closeClaw();
+//        autoRobot.Outtake.wallIntake();
+//        autoRobot.Outtake.closeClaw();
 
         poseUpdater = new PoseUpdater(hardwareMap);
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
@@ -372,8 +372,8 @@ public class AutoRedSpecimen1 extends OpMode {
         buildPaths();
 
         //  autoRobot.Outtake.groundPositionClose();
-        autoRobot.Intake.intakeUP();
-        autoRobot.Intake.intakeSlideIN();
+//        autoRobot.Intake.intakeUP();
+//        autoRobot.Intake.intakeSlideIN();
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.update();
 
@@ -394,7 +394,7 @@ public class AutoRedSpecimen1 extends OpMode {
         opmodeTimer.resetTimer();
         setPathState(0);
 
-        autoRobot.Outtake.closeClaw();
+//        autoRobot.Outtake.closeClaw();
 //       autoRobot.Outtake.highChamberSet();
         autoDebug(500, "Auto:Start", "DONE");
     }

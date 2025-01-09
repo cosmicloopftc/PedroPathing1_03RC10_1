@@ -89,14 +89,14 @@ public class HardwareOuttake {
     public void groundPositionOpen(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        outtakeArmAxon.setPosition(0.25); //TODO: Find position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.29); //TODO: Find position for transfering (stays the same throughout process)
         extendIN();
         openClaw();
     }
     public void groundPositionClose(){
         leftSlideSetPositionPower(0,0);
         rightSlideSetPositionPower(0,0);
-        outtakeArmAxon.setPosition(0.25); //Figure out position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.29); //Figure out position for transfering (stays the same throughout process)
         extendIN();
         closeClaw();
     }
@@ -117,8 +117,8 @@ public class HardwareOuttake {
     public void highBasket(){
         outtakeArmAxon.setPosition(0.68);
         extendIN();
-        leftSlideSetPositionPower(3400,1);
-        rightSlideSetPositionPower(3400,1);
+        leftSlideSetPositionPower(3200,1);
+        rightSlideSetPositionPower(3200,1);
     }
     public void lowChamber(){ //Not able to do this with current V1 robot
 //        leftSlideSetPositionPower(0,0);
@@ -130,15 +130,14 @@ public class HardwareOuttake {
     public void highChamberSetFront(){
         leftSlideSetPositionPower(700,0.6); //Find position
         rightSlideSetPositionPower(700,0.6); //Find position
-        outtakeArmAxon.setPosition(0.3); //Find position
+        outtakeArmAxon.setPosition(0.35); //Find position
         extendOUT();
     }
     public void highChamberFinishFront(){
-        leftSlideSetPositionPower(700,1); //Find position (Go up from high chamber set position)
-        rightSlideSetPositionPower(700,1);
-        outtakeArmAxon.setPosition(0.3); //Find position -- same as high chamber set position
+        leftSlideSetPositionPower(1300,1); //Find position (Go up from high chamber set position)
+        rightSlideSetPositionPower(1300,1);
+        outtakeArmAxon.setPosition(0.37); //Find position -- same as high chamber set position
         extendOUT();
-        openClaw();
     }
     public void highChamberSetBack(){
         leftSlideSetPositionPower(700,0.6); //Find position
