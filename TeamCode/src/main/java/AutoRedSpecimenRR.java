@@ -28,6 +28,7 @@ public final class AutoRedSpecimenRR extends LinearOpMode {
                 drive.actionBuilder(new Pose2d(3.5, -65, Math.toRadians(90)))
                 //    .lineToY(-33)
                     .splineToConstantHeading(new Vector2d(0, -32), Math.toRadians(90))// score preload
+
                     .lineToY(-45)
                         .setTangent(Math.toRadians(0))
                     .lineToX(20)
