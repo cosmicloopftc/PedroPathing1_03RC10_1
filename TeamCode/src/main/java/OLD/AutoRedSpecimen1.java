@@ -1,4 +1,4 @@
-
+package OLD;
 //import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOfrontIntakePickupLength;
 //import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample1X;
 //import static org.firstinspires.ftc.teamcode.AUTOstorageConstant.AUTOredSample1Y;
@@ -29,9 +29,7 @@ import Hardware.HardwareNoDriveTrainRobot;
 //import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Timer;
@@ -78,7 +76,7 @@ import pedroPathing.constants.LConstants;
 
 
 @Config
-@Autonomous(name = "Auto Red Specimen v1.1", group = "Auto")
+//@Autonomous(name = "Auto Red Specimen v1.1", group = "Auto")
 public class AutoRedSpecimen1 extends OpMode {
     int debugLevel = 499;
     private Telemetry telemetryA;
