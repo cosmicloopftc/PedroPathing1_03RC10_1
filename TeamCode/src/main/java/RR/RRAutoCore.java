@@ -16,6 +16,7 @@ import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -55,18 +56,9 @@ public class RRAutoCore extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        AutoOuttakeSlider autoOuttakeSlider = new  AutoOuttakeSlider();
 
-        Actions.runBlocking(autoOuttakeSlider.autoOuttakeSliderHighBasket());
 
     }
-
-
-
-
-
-
-
 
 
 
@@ -126,55 +118,126 @@ public class RRAutoCore extends LinearOpMode {
      *         );
      *
      */
-    public class AutoOuttakeSlider  {
-        //HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();
-        public class AutoOuttakeSliderHighBasket implements Action {
-            private boolean initialized = false;
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    autoRobot.Outtake.leftSlideSetPositionPower(3400,0.5);
-                    autoRobot.Outtake.rightSlideSetPositionPower(3400,0.5);
-                    initialized = true;
-                }
-                double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
-                packet.put("Outtake slider-left position", positionOuttakeLeftSlide);
-                if (positionOuttakeLeftSlide < 3400.0) {
-                    return true;
-                } else {
-                    return false;
-                }
+
+    /**positions of OuttakeSlider: 0=ground, max/high basket=3400; high specimen bar=1300  */
+    public class AutoOuttakeSliderAction implements Action {
+        private boolean initialized = false;
+        int desirePosition;
+        double desiredPower;
+        ElapsedTime timer;
+
+        public   AutoOuttakeSliderAction(int position, double power) {
+            this.desirePosition = position;this.desiredPower = power;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                autoRobot.Outtake.leftSlideSetPositionPower(desirePosition,desiredPower);
+                autoRobot.Outtake.rightSlideSetPositionPower(desirePosition,desiredPower);
+                initialized = true;
             }
-        }
-        public Action autoOuttakeSliderHighBasket() {
-            return new AutoOuttakeSliderHighBasket();
-        }
-
-
-        public class AutoOuttakeSliderReadyPosition implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                if (!initialized) {
-                    autoRobot.Outtake.leftSlideSetPositionPower(500,0.5);
-                    autoRobot.Outtake.rightSlideSetPositionPower(500,0.5);
-                    initialized = true;
-                }
-                double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
-                packet.put("Outtake slider-left position", positionOuttakeLeftSlide);
-
-                if (positionOuttakeLeftSlide > 500.0) {
-                    return true;
-                } else {
-                    return false;
-                }
+            double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
+            packet.put("Outtake slider-left position", positionOuttakeLeftSlide);
+            if (Math.abs((positionOuttakeLeftSlide - desirePosition)) > 20) {
+                return true;
+            } else {
+                return false;
             }
-        }
-        public Action autoOuttakeSliderReadyPosition(){
-            return new AutoOuttakeSliderReadyPosition();
         }
     }
+
+
+    /**safe range for OuttakeArmAxon = 0.29 to 0.35 to 0.37 to 0.68 to 0.86 */
+    public class AutoOuttakeArmAxonAction implements Action {
+        private boolean initialized = false;
+        double desirePosition;
+        ElapsedTime timer;
+
+        public   AutoOuttakeArmAxonAction(double position) {
+            this.desirePosition = position;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                autoRobot.Outtake.outtakeArmAxon.setPosition(desirePosition);
+                initialized = true;
+            }
+            return false;
+        }
+    }
+
+
+    public class AutoouttakeExtensionAction implements Action {
+        private boolean initialized = false;
+        double desirePosition;
+        ElapsedTime timer;
+
+        public   AutoouttakeExtensionAction(double position) {
+            this.desirePosition = position;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                autoRobot.Outtake.outtakeExtension.setPosition(desirePosition);
+                initialized = true;
+            }
+            return false;
+        }
+    }
+
+    public class AutoClawAction implements Action {
+        private boolean initialized = false;
+        double desirePosition;
+        ElapsedTime timer;
+
+        public   AutoClawAction(double position) {
+            this.desirePosition = position;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                autoRobot.Outtake.claw.setPosition(desirePosition);
+                initialized = true;
+            }
+            return false;
+        }
+    }
+
+
+    public class AutoIntakeSliderAction implements Action {
+        private boolean initialized = false;
+        int desirePosition;
+        double desiredPower;
+        ElapsedTime timer;
+        public   AutoIntakeSliderAction(int position, double power) {
+            this.desirePosition = position;this.desiredPower = power;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                autoRobot.Intake.intakeSlideSetPositionPower(desirePosition,desiredPower);
+                initialized = true;
+            }
+            double positionIntakeSlide = autoRobot.Intake.intakeSlides.getCurrentPosition();
+            packet.put("Intake slider position", positionIntakeSlide);
+            if (Math.abs((positionIntakeSlide - desirePosition)) > 20) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+    }
+
+
+
+
 
 
 
@@ -184,7 +247,52 @@ public class RRAutoCore extends LinearOpMode {
 
 
 
-
+//////-----------------------------------------------------------
+//public class AutoIntakeSlider  {
+//    //HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();
+//    public class AutoIntakeSlideOUT implements Action {
+//        private boolean initialized = false;
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket packet) {
+//            if (!initialized) {
+//                autoRobot.Intake.intakeSlideSetPositionPower(500,0.4); //TODO: find position and power  initialized = true;
+//            }
+//            double positionIntakeSlide = autoRobot.Intake.intakeSlides.getCurrentPosition();
+//            packet.put("Intake slider position", positionIntakeSlide);
+//            if (positionIntakeSlide < 500.0) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//    }
+//    public Action autoIntakeSlideOUT() {
+//        return new RRAutoCore.AutoIntakeSlider.AutoIntakeSlideOUT();
+//    }
+//
+//
+//    public class AutoIntakeSlideIN implements Action {
+//        private boolean initialized = false;
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket packet) {
+//            if (!initialized) {
+//                autoRobot.Intake.intakeSlideSetPositionPower(0,0.4); //TODO: find position and power  initialized = true;
+//                initialized = true;
+//            }
+//            double positionIntakeSlide = autoRobot.Intake.intakeSlides.getCurrentPosition();
+//            packet.put("Intake slider position", positionIntakeSlide);
+//            if (positionIntakeSlide > 0.0) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+//    }
+//    public Action autoIntakeSlideIN(){
+//        return new RRAutoCore.AutoIntakeSlider.AutoIntakeSlideIN();
+//    }
+//}
 
 
 
