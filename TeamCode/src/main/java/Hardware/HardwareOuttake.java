@@ -167,4 +167,13 @@ public class HardwareOuttake {
         return outtakeLeftSlide.getCurrent(CurrentUnit.MILLIAMPS);
     }
 
+    public void slidersOnlyHighBasket(){
+        leftSlideSetPositionPower(3200,1);
+        rightSlideSetPositionPower(3200,1);
+    }
+    public void slidersOnlyGroundPosition(){
+        leftSlideSetPositionPower(0,1);
+        rightSlideSetPositionPower(0,1);
+    }
+
 }
