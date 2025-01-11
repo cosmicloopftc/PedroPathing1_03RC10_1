@@ -237,94 +237,150 @@ public class TeleOpV1 extends OpMode {
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
-                if(gamepad1.a){
-                    robot.Outtake.groundPositionOpen();
-                }
-                else if(gamepad1.b){
-                    robot.Outtake.groundPositionClose();
-                }
-//                if(gamepad2.a || outtakeOption.equals("start")) {
-//                    robot.Outtake.groundPositionOpen();
-//                    outtakeOption = "";
+                telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
+//                if(gamepad1.a){
+//                    robot.Intake.intakeServoAxon.setPosition(0.5);
+//
 //                }
-//                if(gamepad2.dpad_down){
-//                    outtakeOption = "wallIntake";
-//                    state = State.OUTTAKE_READY;
+//                else if (gamepad1.b){
+//                    robot.Outtake.outtakeArmAxon.setPosition(0.28); //wall intake
+//                    robot.Outtake.openClaw();
+//                    robot.Outtake.extendOUT();
 //                }
-//                if(gamepad1.dpad_up){
-//                    robot.Intake.intakeSlideOUT();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                else if (gamepad1.x){
+//                    robot.Outtake.outtakeArmAxon.setPosition(0.9);
 //                }
-//                else if(gamepad1.dpad_left){
-//                    robot.Intake.intakeSlideMID();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                else if (gamepad1.y){
+//                    robot.Outtake.leftSlideSetPositionPower(1700,0.5);
+//                    robot.Outtake.rightSlideSetPositionPower(1700,0.5);
 //                }
-//                else if(gamepad1.dpad_right){
-//                    robot.Intake.intakeSlideIN();
-//                    robot.Intake.intakeDOWN();
-//                    //robot.Intake.intakeIN();
+//                else if (gamepad2.a){
+//                    robot.Outtake.leftSlideSetPositionPower(2300,1);
+//                    robot.Outtake.rightSlideSetPositionPower(2300,1);
 //                }
-//                else if(gamepad1.dpad_down){
-//                    robot.Intake.intakeSTOP();
-//                    robot.Intake.intakeUP();
-//                    robot.Intake.intakeSlideIN();
+//                if(robot.Outtake.getOuttakeArmPosition() < 0.65){
+//                    robot.Outtake.extendIN();
 //                }
-//                if (gamepad1.left_trigger > 0.2){
-//                    robot.Intake.intakeIN();
+//                else{
+//                    robot.Outtake.extendOUT();
 //                }
-//                else if (gamepad1.left_bumper){
-//                    robot.Intake.intakeOUT();
-//                }
-//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.leftIntakeServo.getPosition() == 1 && gamepad1.right_trigger > 0.2) {
-//                    robot.Intake.intakeOUT();
-//                    state = State.TRANSFER;
-//                }
-                break;
-            case INTAKE:
-                break;
-            case TRANSFER:
-                if (gamepad1.right_trigger > 0.2) {
-                    robot.Intake.intakeOUT();
-                }
-                else if (gamepad1.left_trigger > 0.2){
-                    robot.Intake.intakeSTOP();
-                }
-                else if (gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right){ //Be able to intake again
-                    state = State.START;
-                }
-                if(gamepad2.a || outtakeOption.equals("start")) { // this current code would be in transfer state when intake ready
-                    robot.Outtake.groundPositionOpen();
+                if(gamepad2.a || outtakeOption.equals("start")) {
+                    robot.Outtake.readyPosition();
+                    robot.Intake.intakeTRANSFER();
                     outtakeOption = "";
                 }
-                else if(gamepad2.left_trigger > 0.2 || gamepad2.right_trigger > 0.2){
-                    robot.Outtake.groundPositionClose();
-                }
-//                if(gamepad2.b) { // would having these in this else if statement make sure that the claw is closed?
-//                    outtakeOption = "lowBasket";
-//                    //robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
+//                if(gamepad2.dpad_down){
+//                    outtakeOption = "wallIntakeBack";
+//                    //state = State.OUTTAKE_READY;
 //                }
-                if(robot.Outtake.claw.getPosition() == 0.32 && gamepad2.y) { //Make sure that claw is in closed position
+                if(gamepad2.dpad_down){
+                    outtakeOption = "wallIntakeFront";
+                    state = State.OUTTAKE;
+                }
+                if(gamepad1.dpad_up){
+                    robot.Intake.intakeSlideOUT();
+                    robot.Intake.intakeUP();
+                    state = State.INTAKE;
+                }
+                else if(gamepad1.dpad_left){
+                    robot.Intake.intakeSlideMID();
+                    robot.Intake.intakeUP();
+                    state = State.INTAKE;
+                }
+                else if(gamepad1.dpad_right){
+                    robot.Intake.intakeSlideIN();
+                    robot.Intake.intakeUP();
+                    state = State.INTAKE;
+                }
+                else if(gamepad1.dpad_down){
+                robot.Intake.intakeSTOP();
+                robot.Intake.intakeTRANSFER();
+                robot.Intake.intakeSlideIN();
+                }
+//                while (gamepad1.left_trigger > 0.2){ //While loop?
+//                    robot.Intake.intakeDOWN();
+//                    robot.Intake.intakeIN();
+//                }
+//                while (gamepad1.left_bumper){
+//                    robot.Intake.intakeDOWN();
+//                    robot.Intake.intakeOUT();
+//                }
+                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
+                    state = State.TRANSFER;
+                }
+                break;
+            case INTAKE:
+                if (gamepad1.left_trigger > 0.2){
+                    robot.Intake.intakeDOWN();
+                    robot.Intake.intakeIN();
+                }
+                else if (gamepad1.left_bumper){
+                    robot.Intake.intakeUP();
+                    robot.Intake.intakeOUT();
+                }
+                else{
+                    robot.Intake.intakeUP();
+                    robot.Intake.intakeSTOP();
+                }
+                if(gamepad1.dpad_up){
+                    robot.Intake.intakeSlideOUT();
+                }
+                else if(gamepad1.dpad_left){
+                    robot.Intake.intakeSlideMID();
+                }
+                else if(gamepad1.dpad_right){
+                    robot.Intake.intakeSlideIN();
+                }
+                else if(gamepad1.dpad_down){
+                    state = State.TRANSFER;
+                    robot.Intake.intakeSTOP();
+                    robot.Intake.intakeTRANSFER();
+                    robot.Intake.intakeSlideIN();
+                }
+                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
+                    //state = State.TRANSFER;
+                }
+                break;
+            case TRANSFER:
+                telemetryA.addData("Outtake Arm Position reading:",robot.Outtake.getOuttakeArmPosition());
+                telemetryA.addData("Outtake Arm Position reading:", robot.Outtake.outtakeArmAxon.getPosition());
+                if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() == 0.32) {
+                    robot.Outtake.closeClaw();
+                }
+                else{
+                    robot.Outtake.openClaw();
+                }
+
+
+                if (gamepad2.left_trigger > 0.2){
+                    robot.Outtake.groundPosition();
+                }
+//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Outtake.getOuttakeArmPosition() < 0.28 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
+//                    robot.Outtake.groundPositionClose();
+//                }
+                if (gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right){ //Be able to intake again
+                    state = State.INTAKE;
+                }
+                if(gamepad2.a || outtakeOption.equals("start") || gamepad2.left_bumper) { // this current code would be in transfer state when intake ready
+                    robot.Outtake.readyPosition();
+                    outtakeOption = "";
+                }
+//                else if(gamepad2.left_trigger > 0.2 || gamepad2.right_trigger > 0.2){
+//                    robot.Outtake.groundPositionClose();
+//                }
+                if(robot.Outtake.claw.getPosition() == 1 && gamepad2.y) { //Make sure that claw is in closed position
                     outtakeOption = "highBasket";
                     //robot.Outtake.closeClaw();
-                    state = State.OUTTAKE_READY;
+                    state = State.OUTTAKE;
                 }
-//                if(gamepad2.b) {
-//                    outtakeOption = "lowBasket";
-//                    robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
+//                if(gamepad2.dpad_down){
+//                    outtakeOption = "wallIntakeBack";
+//                    //state = State.OUTTAKE_READY;
 //                }
-//                else if(gamepad2.y) {
-//                    outtakeOption = "highBasket";
-//                    robot.Outtake.closeClaw();
-//                    state = State.OUTTAKE_READY;
+//                if(gamepad2.dpad_up){
+//                    outtakeOption = "wallIntakeFront";
+//                    //state = State.OUTTAKE_READY;
 //                }
-                else if(gamepad2.dpad_down){
-                    outtakeOption = "wallIntake";
-                    state = State.OUTTAKE_READY;
-                }
                 break;
             case OUTTAKE_READY:
                 robot.Outtake.readyPosition();
@@ -337,78 +393,63 @@ public class TeleOpV1 extends OpMode {
                 break;
 
             case OUTTAKE:
-//                if (outtakeOption.equals("lowBasket")){
-//                    robot.Outtake.lowBasket();
-//                    if (gamepad2.left_bumper || gamepad2.right_bumper){
-//                        robot.Outtake.openClaw();
-//                    }
-//                    if (gamepad2.a){ // Move slides down
-//                        resetRuntime();
-//                        robot.Outtake.leftOuttakeArm.setPosition(0.98);
-//                        robot.Outtake.rightOuttakeArm.setPosition(0.02);
-//                        if (getRuntime() > 0.1){
-//                            state = State.READY_DOWN;
-//                        }
-//                    }
-//                }
+                telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
+                telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
+                if((robot.Outtake.getOuttakeArmPosition() < 0.65) && (outtakeOption.equals("wallIntakeFront"))){
+                    robot.Outtake.extendIN();
+                }
+                else{
+                    robot.Outtake.extendOUT();
+                }
                 if (outtakeOption.equals("highBasket")){
                     robot.Outtake.leftSlideSetPositionPower(3400,1);
                     robot.Outtake.rightSlideSetPositionPower(3400,1);
-                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1500){
+                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1800){
                         robot.Outtake.highBasket();
                     }
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.left_bumper || gamepad2.right_bumper){ // If at high basket position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
                 else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.a){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
 
-                if (outtakeOption.equals("wallIntake")){
+                if (outtakeOption.equals("wallIntakeFront")){
+                    robot.Intake.intakeINSIDEBOT();
                     robot.Outtake.openClaw();
-                    robot.Outtake.wallIntake();
+                    robot.Outtake.wallIntakeFront();
                 }
-//                if (robot.Outtake.leftOuttakeArm.getPosition() == 0.05 && gamepad2.left_trigger > 0.2 || gamepad2.right_trigger > 0.2){ // Only if at wall intake position
-//                    robot.Outtake.closeClaw();
-//                    outtakeOption = "highChamber";
-//                }
-//
-//                if (outtakeOption.equals("highChamber")){
-//                    robot.Outtake.highChamberSet();
-//                }
-//                if (robot.Outtake.leftOuttakeArm.getPosition() == 0.3 && gamepad2.left_bumper || gamepad2.right_bumper){ // Only if at high chamber set position
-//                    outtakeOption = "highChamberFinish";
-//                }
-//
-//                if (outtakeOption.equals("highChamberFinish")){
-//                    robot.Outtake.highChamberFinish();
-//                    //robot.Outtake.openClaw();
-//                }
-//                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 800 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1000 && gamepad2.left_bumper || gamepad2.right_bumper){ // If at high chamber finish position
-//                    robot.Outtake.openClaw();
-//                }
+                if (robot.Outtake.outtakeArmAxon.getPosition() == 0.28  && gamepad2.left_trigger > 0.2){ // Only if at wall intake position
+                    robot.Outtake.closeClaw();
+                    outtakeOption = "";
+                }
+                if (gamepad2.x){
+                    robot.Outtake.leftSlideSetPositionPower(200,1);
+                    robot.Outtake.rightSlideSetPositionPower(200,1);
+                    outtakeOption = "highChamber";
+                }
 
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 800 && robot.Outtake.claw.getPosition() == 0.17 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
+                if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>190){
+                    robot.Outtake.highChamberSetUpwards();
+                }
+                if (robot.Outtake.outtakeArmAxon.getPosition() == 0.9 && gamepad2.left_bumper){ // Only if at high chamber set position
+                    outtakeOption = "highChamberFinish";
+                }
+//
+                if (outtakeOption.equals("highChamberFinish")){
+                    robot.Outtake.highChamberFinishUpwards();
+                }
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && gamepad2.left_bumper){ // If at high chamber finish position
+                    robot.Outtake.openClaw();
+                }
+
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
                     state = State.READY_DOWN;
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 800 && robot.Outtake.claw.getPosition() == 0.17 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
-                    outtakeOption = "wallIntake";
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
+                    outtakeOption = "wallIntakeFront";
                 }
-
-//                if (gamepad2.a){ // Move slides down
-//                    if (outtakeOption.equals("lowBasket")){ //Makes sure arm does not hit intake when going down
-//                        resetRuntime();
-//                        robot.Outtake.leftOuttakeArm.setPosition(0.98);
-//                        robot.Outtake.rightOuttakeArm.setPosition(0.02);
-//                        if (getRuntime() > 0.1){
-//                            state = State.READY_DOWN;
-//                        }
-//                    }
-//                    else{
-//                        state = State.READY_DOWN;
-//                    }
-//                }
                 break;
             case READY_DOWN:
                 robot.Outtake.readyPosition();
@@ -422,15 +463,15 @@ public class TeleOpV1 extends OpMode {
 
         //Hang testing:
         // Move slides up before hanging
-        if (gamepad2.dpad_left) {
-            robot.Outtake.leftSlideSetPositionPower(3400, 1);
-            robot.Outtake.rightSlideSetPositionPower(3400, 1);
-        }
-        // Pull slides down to hang
-        else if(gamepad2.dpad_right) {
-            robot.Outtake.leftSlideSetPositionPower(1500, 1);
-            robot.Outtake.rightSlideSetPositionPower(1500, 1);
-        }
+//        if (gamepad2.dpad_left) {
+//            robot.Outtake.leftSlideSetPositionPower(3400, 1);
+//            robot.Outtake.rightSlideSetPositionPower(3400, 1);
+//        }
+//        // Pull slides down to hang
+//        else if(gamepad2.dpad_right) {
+//            robot.Outtake.leftSlideSetPositionPower(1500, 1);
+//            robot.Outtake.rightSlideSetPositionPower(1500, 1);
+//        }
 
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
