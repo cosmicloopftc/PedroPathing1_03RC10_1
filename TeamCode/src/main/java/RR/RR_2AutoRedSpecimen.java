@@ -46,7 +46,7 @@ public class RR_2AutoRedSpecimen extends LinearOpMode {
         AutoOuttakeSliderAction autoOuttakeSliderAction = null;
         autoRobot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
 
-        String AllianceBasketOrSpecimen = "1RedBasket";
+        String AllianceBasketOrSpecimen = "1RedSpecimen";
         Pose2d beginPose = new Pose2d(7.5, -63.5, Math.toRadians(-90));    //TODO: would overide this for each case
 
         int debugLevel = 499;
@@ -70,19 +70,93 @@ public class RR_2AutoRedSpecimen extends LinearOpMode {
         /**  .lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder */
 
 
-        TrajectoryActionBuilder preScore = drive.actionBuilder(beginPose)
-                .setTangent(45)
-                .strafeToSplineHeading(new Vector2d(-54, -59), Math.toRadians(45))
+//                .setTangent(-90)
+//                .strafeToSplineHeading(new Vector2d(0, -36), Math.toRadians(-90))
+//                .strafeToSplineHeading(new Vector2d(27, -39), Math.toRadians(-90))
+//                .setReversed(true)
+//                .splineToLinearHeading(new Pose2d(27, -13, Math.toRadians(-90)), Math.toRadians(-90))
+//                .setReversed(false)
+//                .splineToLinearHeading(new Pose2d(35, -16, Math.toRadians(-90)), Math.toRadians(-90))
+//                .strafeToSplineHeading(new Vector2d(35, -57), Math.toRadians(-90))
+//                .setReversed(true)
+//                .splineToLinearHeading(new Pose2d(35, -13, Math.toRadians(-90)), Math.toRadians(-90))
+//                .setReversed(false)
+//                .splineToLinearHeading(new Pose2d(40, -16, Math.toRadians(-90)), Math.toRadians(-90))
+//                .strafeToSplineHeading(new Vector2d(40, -57), Math.toRadians(-90))
+
+
+        TrajectoryActionBuilder preloadScore = drive.actionBuilder(beginPose)
+                .setTangent(-90)
+                .strafeToSplineHeading(new Vector2d(3, -35), Math.toRadians(-90))
                 //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
                 //.lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder
+                .waitSeconds(3);
+
+        TrajectoryActionBuilder deliverSamples = preloadScore.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(27, -43), Math.toRadians(-90))
+                .setTangent(-90)
+                //overshoot sample1
+                .lineToY(-13)
+                .setTangent(0)
+                //go to sample1
+                .lineToX(30)
+                //deliver sample1
+                .strafeToSplineHeading(new Vector2d(30, -57), Math.toRadians(-90))
+                .setReversed(true)
+                //overshoot sample2
+                .splineToLinearHeading(new Pose2d(35, -13, Math.toRadians(-90)), Math.toRadians(-90))
+                .setReversed(false)
+                //go to sample2
+                .splineToLinearHeading(new Pose2d(40, -16, Math.toRadians(-90)), Math.toRadians(-90))
+                //deliver sample2
+                .strafeToSplineHeading(new Vector2d(40, -57), Math.toRadians(-90));
+        ;
+        TrajectoryActionBuilder prePickup1 = deliverSamples.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(30, -57), Math.toRadians(-90))
                 .waitSeconds(0);
 
-        TrajectoryActionBuilder turnForSample3 = preScore.endTrajectory().fresh()
-//                .waitSeconds(5)
-                .turnTo(Math.toRadians(79))
+        TrajectoryActionBuilder pickup1 = prePickup1.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(30, -62), Math.toRadians(-90))
                 .waitSeconds(0);
 
+        TrajectoryActionBuilder scoreSpec2 = pickup1.endTrajectory().fresh()
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(3, -35), Math.toRadians(-90))
+                //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
+                //.lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder
+                .waitSeconds(3);
 
+//        TrajectoryActionBuilder prePickup2 = scoreSpec2.endTrajectory().fresh()
+//                .setReversed(false)
+//                .splineToLinearHeading(new Pose2d(30, -57, Math.toRadians(-90)), Math.toRadians(-90))
+//                .waitSeconds(0);
+//
+//        TrajectoryActionBuilder pickup2 = prePickup2.endTrajectory().fresh()
+//                .strafeToSplineHeading(new Vector2d(30, -62), Math.toRadians(-90))
+//                .waitSeconds(0);
+//
+//        TrajectoryActionBuilder scoreSpec2 = pickup1.endTrajectory().fresh()
+//                .setReversed(true)
+//                .splineToLinearHeading(new Pose2d(3, -35, Math.toRadians(-90)), Math.toRadians(-90))
+//                //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
+//                //.lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder
+//                .waitSeconds(3);
+//
+//        TrajectoryActionBuilder prePickup1 = deliverSamples.endTrajectory().fresh()
+//                .setReversed(false)
+//                .strafeToSplineHeading(new Vector2d(30, -57), Math.toRadians(-90))
+//                .waitSeconds(0);
+//
+//        TrajectoryActionBuilder pickup1 = prePickup1.endTrajectory().fresh()
+//                .strafeToSplineHeading(new Vector2d(30, -62), Math.toRadians(-90))
+//                .waitSeconds(0);
+//
+//        TrajectoryActionBuilder scoreSpec2 = pickup1.endTrajectory().fresh()
+//                .setReversed(true)
+//                .splineToLinearHeading(new Pose2d(3, -35, Math.toRadians(-90)), Math.toRadians(-90))
+//                //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
+//                //.lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder
+//                .waitSeconds(3);
 
 
 
@@ -111,21 +185,26 @@ public class RR_2AutoRedSpecimen extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         //Initalize
-                        autoOuttakeArmAxonAction(0.3),
-                        autoIntakeServoAxon(0.6),
+//                        autoOuttakeArmAxonAction(0.3),
+//                        autoIntakeServoAxon(0.6),
                         //Move Robot to basket
-                        preScore.build(),
-                        autoOuttakeSliderHighBasketAction(),
-                        autoOuttakeArmAxonAction(0.75),
-                        autoClawAction(0.7),
+                        preloadScore.build(),
+//                        autoOuttakeSliderHighBasketAction(),
+//                        autoOuttakeArmAxonAction(0.75),
+//                        autoClawAction(0.7),
 
-                        //turn to first sample
-                        turnForSample3.build(),
-                        autoIntakeSliderAction(10, sliderPower),
-                        autoIntakeServoAxon(0.9),
-                        autoIntakeSliderAction(0,sliderPower),
-                        autoIntakeServoAxon(0.6),
-                        autoClawAction(0.32)
+                        //move away from chamber
+                   //     afterScore.build(),
+//                        autoIntakeSliderAction(10, sliderPower),
+//                        autoIntakeServoAxon(0.9),
+//                        autoIntakeSliderAction(0,sliderPower),
+//                        autoIntakeServoAxon(0.6),
+//                        autoClawAction(0.32)
+                        //deliver samples
+                        deliverSamples.build(),
+                        prePickup1.build(),
+                        pickup1.build(),
+                        scoreSpec2.build()
                 )
         );
 

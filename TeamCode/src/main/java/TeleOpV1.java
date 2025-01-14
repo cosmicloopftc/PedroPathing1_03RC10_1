@@ -238,32 +238,6 @@ public class TeleOpV1 extends OpMode {
             case START:
                 telemetryA.addLine("Start");
                 telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
-//                if(gamepad1.a){
-//                    robot.Intake.intakeServoAxon.setPosition(0.5);
-//
-//                }
-//                else if (gamepad1.b){
-//                    robot.Outtake.outtakeArmAxon.setPosition(0.28); //wall intake
-//                    robot.Outtake.openClaw();
-//                    robot.Outtake.extendOUT();
-//                }
-//                else if (gamepad1.x){
-//                    robot.Outtake.outtakeArmAxon.setPosition(0.9);
-//                }
-//                else if (gamepad1.y){
-//                    robot.Outtake.leftSlideSetPositionPower(1700,0.5);
-//                    robot.Outtake.rightSlideSetPositionPower(1700,0.5);
-//                }
-//                else if (gamepad2.a){
-//                    robot.Outtake.leftSlideSetPositionPower(2300,1);
-//                    robot.Outtake.rightSlideSetPositionPower(2300,1);
-//                }
-//                if(robot.Outtake.getOuttakeArmPosition() < 0.65){
-//                    robot.Outtake.extendIN();
-//                }
-//                else{
-//                    robot.Outtake.extendOUT();
-//                }
                 if(gamepad2.a || outtakeOption.equals("start")) {
                     robot.Outtake.readyPosition();
                     robot.Intake.intakeTRANSFER();
@@ -293,25 +267,20 @@ public class TeleOpV1 extends OpMode {
                     state = State.INTAKE;
                 }
                 else if(gamepad1.dpad_down){
-                robot.Intake.intakeSTOP();
-                robot.Intake.intakeTRANSFER();
-                robot.Intake.intakeSlideIN();
+                    robot.Intake.intakeSTOP();
+                    robot.Intake.intakeTRANSFER();
+                    robot.Intake.intakeSlideIN();
                 }
-//                while (gamepad1.left_trigger > 0.2){ //While loop?
-//                    robot.Intake.intakeDOWN();
-//                    robot.Intake.intakeIN();
-//                }
-//                while (gamepad1.left_bumper){
-//                    robot.Intake.intakeDOWN();
-//                    robot.Intake.intakeOUT();
-//                }
                 if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
                     state = State.TRANSFER;
                 }
                 break;
             case INTAKE:
-                if (gamepad1.left_trigger > 0.2){
+                if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() > 0.8){
                     robot.Intake.intakeDOWN();
+                    robot.Intake.intakeIN();
+                }
+                else if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() < 0.7){
                     robot.Intake.intakeIN();
                 }
                 else if (gamepad1.left_bumper){
@@ -337,20 +306,22 @@ public class TeleOpV1 extends OpMode {
                     robot.Intake.intakeTRANSFER();
                     robot.Intake.intakeSlideIN();
                 }
-                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Intake.intakeServoAxon.getPosition() == 1 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
-                    //state = State.TRANSFER;
-                }
                 break;
             case TRANSFER:
                 telemetryA.addData("Outtake Arm Position reading:",robot.Outtake.getOuttakeArmPosition());
                 telemetryA.addData("Outtake Arm Position reading:", robot.Outtake.outtakeArmAxon.getPosition());
-                if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() == 0.32) {
+                if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
                     robot.Outtake.closeClaw();
                 }
                 else{
                     robot.Outtake.openClaw();
                 }
-
+                if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() < 0.7){
+                    robot.Intake.intakeIN();
+                }
+                else {
+                    robot.Intake.intakeSTOP();
+                }
 
                 if (gamepad2.left_trigger > 0.2){
                     robot.Outtake.groundPosition();
@@ -395,12 +366,12 @@ public class TeleOpV1 extends OpMode {
             case OUTTAKE:
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
-                if((robot.Outtake.getOuttakeArmPosition() < 0.65) && (outtakeOption.equals("wallIntakeFront"))){
-                    robot.Outtake.extendIN();
-                }
-                else{
-                    robot.Outtake.extendOUT();
-                }
+//                if((robot.Outtake.getOuttakeArmPosition() < 0.65) && (outtakeOption.equals("wallIntakeFront"))){
+//                    robot.Outtake.extendIN();
+//                }
+//                else{
+//                    robot.Outtake.extendOUT();
+//                }
                 if (outtakeOption.equals("highBasket")){
                     robot.Outtake.leftSlideSetPositionPower(3400,1);
                     robot.Outtake.rightSlideSetPositionPower(3400,1);
@@ -416,13 +387,21 @@ public class TeleOpV1 extends OpMode {
                 }
 
                 if (outtakeOption.equals("wallIntakeFront")){
-                    robot.Intake.intakeINSIDEBOT();
-                    robot.Outtake.openClaw();
-                    robot.Outtake.wallIntakeFront();
+                    if (gamepad2.a){
+                        state = State.READY_DOWN;
+                    }
+                    else {
+                        robot.Intake.intakeINSIDEBOT();
+                        robot.Outtake.openClaw();
+                        robot.Outtake.wallIntakeFront();
+                    }
                 }
-                if (robot.Outtake.outtakeArmAxon.getPosition() == 0.28  && gamepad2.left_trigger > 0.2){ // Only if at wall intake position
+                if (robot.Outtake.outtakeArmAxon.getPosition() < 0.3  && gamepad2.left_trigger > 0.2){ // Only if at wall intake position
                     robot.Outtake.closeClaw();
                     outtakeOption = "";
+                }
+                else if (robot.Outtake.outtakeArmAxon.getPosition() < 0.3  && gamepad2.left_bumper){
+                    robot.Outtake.openClaw();
                 }
                 if (gamepad2.x){
                     robot.Outtake.leftSlideSetPositionPower(200,1);
