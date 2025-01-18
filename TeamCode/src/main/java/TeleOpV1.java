@@ -412,6 +412,15 @@ public class TeleOpV1 extends OpMode {
                 if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>190){
                     robot.Outtake.highChamberSetUpwards();
                 }
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && gamepad2.b){ // Open claw if specimen scored
+                    robot.Outtake.openClaw();
+                }
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
+                    state = State.READY_DOWN;
+                }
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
+                    outtakeOption = "wallIntakeFront";
+                }
                 if (robot.Outtake.outtakeArmAxon.getPosition() == 0.9 && gamepad2.left_bumper){ // Only if at high chamber set position
                     outtakeOption = "highChamberFinish";
                 }
@@ -442,15 +451,15 @@ public class TeleOpV1 extends OpMode {
 
         //Hang testing:
         // Move slides up before hanging
-//        if (gamepad2.dpad_left) {
-//            robot.Outtake.leftSlideSetPositionPower(3400, 1);
-//            robot.Outtake.rightSlideSetPositionPower(3400, 1);
-//        }
-//        // Pull slides down to hang
-//        else if(gamepad2.dpad_right) {
-//            robot.Outtake.leftSlideSetPositionPower(1500, 1);
-//            robot.Outtake.rightSlideSetPositionPower(1500, 1);
-//        }
+        if (gamepad1.y) {
+            robot.Outtake.leftSlideSetPositionPower(3400, 1);
+            robot.Outtake.rightSlideSetPositionPower(3400, 1);
+        }
+        // Pull slides down to hang
+        else if(gamepad1.x) {
+            robot.Outtake.leftSlideSetPositionPower(1500, 1);
+            robot.Outtake.rightSlideSetPositionPower(1500, 1);
+        }
 
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
