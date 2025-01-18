@@ -26,8 +26,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import Hardware.HardwareNoDriveTrainRobot;
 
 @Config
-@Autonomous(name = "RR_2AutoRedSpecimen v1.1", group = "Auto")
-public class RR_2AutoRedSpecimen extends LinearOpMode {
+@Autonomous(name = "RR_2AutoRedSpecimen_PushTest v1.1", group = "Auto")
+public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
 
     //TODO: setup initial position for all subsystems
@@ -69,53 +69,28 @@ public class RR_2AutoRedSpecimen extends LinearOpMode {
         AccelConstraint accFast = new ProfileAccelConstraint(-60,60);
         /**  .lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder */
 
-//                .lineToY(-35)
-//                .splineToSplineHeading(new Pose2d(30,-43, Math.toRadians(270)),0)
-//                .splineToConstantHeading(new Vector2d(43,-12),0)
-//                .splineToConstantHeading(new Vector2d(43.2,-12),Math.toRadians(270))
-//                .splineToSplineHeading(new Pose2d(43.5,-50, Math.toRadians(270)),Math.toRadians(270))
-//
-//                .splineToConstantHeading(new Vector2d(46,-11),Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(55,-16),Math.toRadians(270))
-//                .splineToSplineHeading(new Pose2d(55,-50, Math.toRadians(270)),Math.toRadians(270))
-//
-//                .splineToConstantHeading(new Vector2d(58,-11),Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(58,-16),Math.toRadians(270))
-//                //.splineToSplineHeading(new Pose2d(58,-50, Math.toRadians(270)),Math.toRadians(270))
-//                //.splineToConstantHeading(new Vector2d(53,-50),Math.toRadians(270))
 
-//        TrajectoryActionBuilder preloadScore1 = drive.actionBuilder(beginPose)
-//                .lineToY(20);
-
-        TrajectoryActionBuilder preloadScore = drive.actionBuilder(beginPose)
+        TrajectoryActionBuilder preloadScore;
+        preloadScore = drive.actionBuilder(beginPose)
         //        .waitSeconds(0.5)
-                .lineToYConstantHeading(-33, velFast, accFast);
-//                .setTangent(-90)
-//                .strafeToSplineHeading(new Vector2d(3, -33), Math.toRadians(-90))
-                //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
-                //.lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder
-           //     .waitSeconds(1);
+                .lineToYConstantHeading(-33,velFast, accFast);
 
         TrajectoryActionBuilder preloadMoveBack= preloadScore.endTrajectory().fresh()
+                //claw open separately before this
                 .lineToYConstantHeading(-40, velFast, accFast)
-                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4))
-                .stopAndAdd(new AutoOuttakeSliderAction(0, 1));
-              //  .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60), velFast, accFast);
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4))          //rotate arm to inside robot
+                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))      //move outtake slider inside robot
+                .splineToLinearHeading(new Pose2d(28,-43, Math.toRadians(-90)),
+                        Math.toRadians(-90), velFast, accFast);
 
-//        TrajectoryActionBuilder deliverSamples = preloadMoveBack.endTrajectory().fresh()
-//                .splineToSplineHeading(new Pose2d(22,-43, Math.toRadians(270)),0)
-//                .splineToConstantHeading(new Vector2d(30,-12),0)
-////                .splineToConstantHeading(new Vector2d(43.2,-12),Math.toRadians(270))
-////                .splineToSplineHeading(new Pose2d(43.5,-50, Math.toRadians(270)),Math.toRadians(270))
-////
-////                .splineToConstantHeading(new Vector2d(46,-11),Math.toRadians(270))
-////                .splineToConstantHeading(new Vector2d(55,-16),Math.toRadians(270))
-////                .splineToSplineHeading(new Pose2d(55,-50, Math.toRadians(270)),Math.toRadians(270))
-////
-////                .splineToConstantHeading(new Vector2d(58,-11),Math.toRadians(270))
-////                .splineToConstantHeading(new Vector2d(58,-16),Math.toRadians(270))
-//
-//        ;
+        //  .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60), velFast, accFast);
+
+        TrajectoryActionBuilder gotoSample4 = preloadMoveBack.endTrajectory().fresh()
+                .lineToYConstantHeading(-20)
+                .splineToLinearHeading(new Pose2d(48,-5, Math.toRadians(-90)),
+                    Math.toRadians(-90), velFast, accFast);
+
+
 
 
 
@@ -255,13 +230,15 @@ public class RR_2AutoRedSpecimen extends LinearOpMode {
                         autoClawAction(0.7),
 
                         preloadMoveBack.build(),
-                        intakeSample1.build(),
-                        deliverSample1.build(),
-                        intakeSample2.build(),
-                        deliverSample2.build(),
-                        collectSpec1.build(),
-                        scoreSpec1.build(),
-                        collectSpec2.build()
+                        gotoSample4.build()
+
+//                        intakeSample1.build(),
+//                        deliverSample1.build(),
+//                        intakeSample2.build(),
+//                        deliverSample2.build(),
+//                        collectSpec1.build(),
+//                        scoreSpec1.build(),
+//                        collectSpec2.build()
 
 //                        intakeSample2.build(),
 //                        deliverSample2.build()

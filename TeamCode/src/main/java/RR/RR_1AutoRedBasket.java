@@ -6,12 +6,16 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,12 +25,14 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.*;
+import java.util.Arrays;
+
 import Hardware.HardwareNoDriveTrainRobot;
 
 @Config
 @Autonomous(name = "RR_1AutoRedBasket v1.1", group = "Auto")
 public class RR_1AutoRedBasket extends LinearOpMode {
-
 
     //TODO: setup initial position for all subsystems
     //    public static double autoEnd_SliderMotorPosition,
@@ -39,7 +45,7 @@ public class RR_1AutoRedBasket extends LinearOpMode {
     //-------------------------------------------------------------------------------------------------
     @Override
     public void runOpMode() throws InterruptedException {
-        double sliderPower = 0.5;
+        double sliderPower = 0.35;
         int sleepSeperation = 250;
 
         AutoOuttakeSliderAction autoOuttakeSliderAction = null;
@@ -61,19 +67,27 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         //autoDebug(500, "Auto:Init", "DONE");
         telemetryA.update();
 
+        //adjust these settings as needed for use in the trajectory codes
+        VelConstraint velSlow = new TranslationalVelConstraint(15);
+        VelConstraint velFast = new TranslationalVelConstraint(45);
+        AccelConstraint accSlow = new ProfileAccelConstraint(-15,15);
+        AccelConstraint accFast = new ProfileAccelConstraint(-45,45);
+        /**  .lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder */
 
         TrajectoryActionBuilder preScore = drive.actionBuilder(beginPose)
                 .setTangent(45)
-                .waitSeconds(0.75)
-                .strafeToSplineHeading(new Vector2d(-54, -59), Math.toRadians(45))
+                .waitSeconds(0.5)
+                .strafeToSplineHeading(new Vector2d(-55, -58), Math.toRadians(45));
+//                .strafeToConstantHeading(new Vector2d(-54, -59), velSlow,accSlow)
+
 //                .autoOuttakeSliderHighBasketAction()
 //                .autoOuttakeArmAxonAction(0.68)
 //                .autoClawAction(0.7)
-                //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
-                .waitSeconds(0.75);
+        //          .stopAndAdd(new AutoOuttakeSliderAction(3400, 0.5))
+//                .waitSeconds(0.25);
 
         TrajectoryActionBuilder waitPose = preScore.endTrajectory().fresh()
-                .waitSeconds(0.5);
+                .waitSeconds(0.4);
 
         TrajectoryActionBuilder turnForSample3 = preScore.endTrajectory().fresh()
                 .waitSeconds(0.5)
@@ -82,21 +96,44 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
         TrajectoryActionBuilder turnForSample2 = preScore.endTrajectory().fresh()
 //                .waitSeconds(5)
-                .turnTo(Math.toRadians(95))
+                .turnTo(Math.toRadians(85))
                 .waitSeconds(0);
 
         TrajectoryActionBuilder turnForSample1 = preScore.endTrajectory().fresh()
 //                .waitSeconds(5)
-                .turnTo(Math.toRadians(110))
+                .turnTo(Math.toRadians(140))
                 .waitSeconds(0);
 
         TrajectoryActionBuilder turnToBasket3 = turnForSample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-54, -59), Math.toRadians(45));
-//                .waitSeconds(0);
+                .waitSeconds(1)
+                .strafeToSplineHeading(new Vector2d(-52, -59), Math.toRadians(45));
+//                .waitSeconds(1);
+
+        TrajectoryActionBuilder turnToBasket2 = turnForSample2.endTrajectory().fresh()
+                .waitSeconds(1)
+                .strafeToSplineHeading(new Vector2d(-52, -57), Math.toRadians(45));
+//                .waitSeconds(1);
+
+        TrajectoryActionBuilder turnToBasket1 = turnForSample1.endTrajectory().fresh()
+                .waitSeconds(1)
+                .strafeToSplineHeading(new Vector2d(-53.5, -54.5), Math.toRadians(45));
+//                .waitSeconds(1);
 
         TrajectoryActionBuilder grabPose = turnForSample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-54, -45), Math.toRadians(55))
+                .strafeToSplineHeading(new Vector2d(-54, -45), Math.toRadians(56.5))
+//                .strafeTo(new Vector2d(-54, -45))
                 .waitSeconds(0);
+        TrajectoryActionBuilder grabPose2 = turnForSample1.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-58, -47), Math.toRadians(105))
+//                .strafeTo(new Vector2d(-54, -45))
+                .waitSeconds(0);
+        TrajectoryActionBuilder grabPose3 = turnForSample2.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-55, -46), Math.toRadians(85))
+//                .strafeTo(new Vector2d(-54, -45))
+                .waitSeconds(0);
+
+        TrajectoryActionBuilder grabWaitPose = grabPose.endTrajectory().fresh()
+                .waitSeconds(0.5);
 
 
 
@@ -108,6 +145,11 @@ public class RR_1AutoRedBasket extends LinearOpMode {
             autoRobot.Outtake.closeClaw();
             autoRobot.Intake.intakeINSIDEBOT();
 
+            telemetry.addLine("Initialized");
+            telemetry.addData("Alliance Color/Mode: ", AllianceBasketOrSpecimen);
+            telemetryA.addData("Starting X = ", beginPose.position.x);
+            telemetryA.addData("Starting Y = ", beginPose.position.y);
+            telemetryA.addData("Starting Heading (Degrees) = ", Math.toDegrees(beginPose.heading.toDouble()));
         }
 
         waitForStart();
@@ -127,85 +169,83 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         //Raise Outtake slider and Move Robot to basket
                         autoOuttakeSliderHighBasketAction(),
                         //SleepAction(sleepSeperation),
-                        autoOuttakeArmAxonAction(0.75),
+                        autoOuttakeArmAxonAction(0.75, 0),
                         preScore.build(),
 
                         //turn to first sample
-                        autoClawAction(0.7),
-                        waitPose.build(),
-                        //SleepAction(sleepSeperation),
-                        autoOuttakeArmAxonAction(0.4),
-                        autoOuttakeSliderAction(0, 1),
-                        turnForSample3.build(),
+                        autoClawAction(0.7, 0.5),
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(1, 1),
+//                        turnForSample3.build(),
                         autoIntakeServoAxonAction(0.94),
-                        autoIntakeSpiner(-1),
-                        waitPose.build(),
-                        waitPose.build(),
-                        waitPose.build(),
-                        waitPose.build(),
+                        autoIntakeSpiner(-1, 0),
                         //move to first sample
                         grabPose.build(),
-                        autoIntakeSliderAction(200, sliderPower),
-                        waitPose.build(),
-                        waitPose.build(),
-                        waitPose.build(),
-                        waitPose.build(),
-                        /**NEXT STEP*/
-                        autoIntakeSliderAction(0, sliderPower),
-                        autoIntakeServoAxonAction(0.6)
+//                        turnForSample3.build(),
+                        autoIntakeSliderAction(220, sliderPower, 0.5),
+                        grabWaitPose.build(),
 
-//                        SleepAction(4000),
-//                        autoIntakeSliderAction(0, sliderPower),
-//                        autoIntakeServoAxonAction(0.6)
-//                        autoClawAction(0.32),
-/*
-                        //outtake
-                        turnToBasket3.build(),
+                        /*NEXT STEP*/
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeServoAxonAction(0.62),
+                        autoIntakeSpiner(0, 0.75),
+                        autoOuttakeArmAxonAction(0.34, 0.5),
+                        autoClawAction(1, 0.25),
                         autoOuttakeSliderHighBasketAction(),
-                        autoOuttakeArmAxonAction(0.68),
-//                        SleepAction(sleepSeperation),
-                        autoClawAction(0.7),
-//                        SleepAction(sleepSeperation),
-                        autoOuttakeArmAxonAction(0.32),
-
-                        //move to sample 2
-                        turnForSample2.build(),
-                        autoIntakeSliderAction(10, sliderPower),
-                        autoIntakeServoAxonAction(0.9),
-//                        SleepAction(4000),
-                        autoIntakeSliderAction(0, sliderPower),
-                        autoIntakeServoAxonAction(0.6),
-                        autoClawAction(0.32),
-
-                        //outtake
                         turnToBasket3.build(),
-                        autoOuttakeSliderAction(0, 0.5),
-//                        SleepAction(sleepSeperation),
-                        autoOuttakeArmAxonAction(0.3),
-                        autoClawAction(0.7),
-                        autoOuttakeArmAxonAction(0.68),
+                        autoOuttakeArmAxonAction(0.75, 1),
+                        autoClawAction(0.7, 0.5),
 
-                        //sample1
-                        turnForSample1.build(),
-                        autoIntakeSliderAction(10, sliderPower),
-                        autoIntakeServoAxonAction(0.9),
-//                        SleepAction(4000),
-                        autoIntakeSliderAction(0, sliderPower),
-                        autoIntakeServoAxonAction(0.6),
-                        autoClawAction(0.32),
+                        /** Sample 2*/
+                        autoClawAction(0.7, 0.5),
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(1, 1),
+//                        turnForSample3.build(),
+                        autoIntakeServoAxonAction(0.94),
+                        autoIntakeSpiner(-1, 0),
+                        //move to first sample
+                        grabPose3.build(),
+//                        turnForSample3.build(),
+                        autoIntakeSliderAction(220, sliderPower, 0.75),
+//                        grabWaitPose.build(),
 
-                        //outtake
-                        turnToBasket3.build(),
-                        autoOuttakeSliderAction(0, 0.5),
-//                        SleepAction(sleepSeperation),
-                        autoOuttakeArmAxonAction(0.3),
-                        autoClawAction(0.7),
-                        autoOuttakeArmAxonAction(0.68),
+                        /*NEXT STEP*/
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeServoAxonAction(0.62),
+                        autoIntakeSpiner(0, 0.75),
+                        autoOuttakeArmAxonAction(0.34, 0.5),
+                        autoClawAction(1, 0.25),
+                        autoOuttakeSliderHighBasketAction(),
+                        turnToBasket2.build(),
+                        autoOuttakeArmAxonAction(0.75, 1),
+                        autoClawAction(0.7, 0.5),
 
-                        //necessary, requires the last action to be .build()
-                        turnToBasket3.build()
-*/
+                        /**Sample 3*/
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(1, 1),
+//                        turnForSample1.build(),
+                        autoIntakeServoAxonAction(0.94),
+                        autoIntakeSpiner(-1, 0),
+                        //move to first sample
+                        grabPose2.build(),
+//                        turnForSample1.build(),
+                        autoIntakeSliderAction(185, sliderPower, 0.75),
+                        grabWaitPose.build(),
 
+                        /*NEXT STEP*/
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeServoAxonAction(0.62),
+                        autoIntakeSpiner(0, 1),
+                        autoOuttakeArmAxonAction(0.34, 0.5),
+                        autoClawAction(1, 0.25),
+                        autoOuttakeSliderHighBasketAction(),
+                        turnToBasket1.build(),
+                        autoOuttakeArmAxonAction(0.75, 1),
+                        autoClawAction(0.7, 0.25),
+
+                        //final
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(0, 1)
                 )
         );
 
@@ -300,9 +340,11 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
+        double pauseTimeSec;
 
-        public AutoOuttakeArmAxonAction(double position) {
+        public AutoOuttakeArmAxonAction(double position, double pauseTimeSec) {
             this.desirePosition = position;
+            this.pauseTimeSec = pauseTimeSec;
         }
 
         @Override
@@ -312,12 +354,12 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 autoRobot.Outtake.outtakeArmAxon.setPosition(desirePosition);
                 initialized = true;
             }
-            return false;
+            return timer.seconds() < pauseTimeSec;
         }
     }
 
-    public Action autoOuttakeArmAxonAction(double position) {
-        return new AutoOuttakeArmAxonAction(position);
+    public Action autoOuttakeArmAxonAction(double position, double pauseTimeSec) {
+        return new AutoOuttakeArmAxonAction(position, pauseTimeSec);
     }
 
 
@@ -356,9 +398,10 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
-
-        public AutoClawAction(double position) {
+        double pauseTime;
+        public AutoClawAction(double position, double pauseTime) {
             this.desirePosition = position;
+            this.pauseTime = pauseTime;
         }
 
         @Override
@@ -368,12 +411,12 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 autoRobot.Outtake.claw.setPosition(desirePosition);
                 initialized = true;
             }
-            return false;
+            return timer.seconds() < pauseTime;
         }
     }
 
-    public Action autoClawAction(double position) {
-        return new AutoClawAction(position);
+    public Action autoClawAction(double position, double pauseTime) {
+        return new AutoClawAction(position, pauseTime);
     }
 
 
@@ -385,10 +428,11 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         int desirePosition;
         double desiredPower;
         ElapsedTime timer;
-
-        public AutoIntakeSliderAction(int position, double power) {
+        double pauseTime;
+        public AutoIntakeSliderAction(int position, double power, double pauseTime) {
             this.desirePosition = position;
             this.desiredPower = power;
+            this.pauseTime = pauseTime;
         }
 
         @Override
@@ -403,14 +447,14 @@ public class RR_1AutoRedBasket extends LinearOpMode {
             if (Math.abs((positionIntakeSlide - desirePosition)) > 20) {
                 return true;
             } else {
-                return false;
+                return timer.seconds() < pauseTime;
             }
 
         }
     }
 
-    public Action autoIntakeSliderAction(int position, double power) {
-        return new AutoIntakeSliderAction(position, power);
+    public Action autoIntakeSliderAction(int position, double power, double pauseTime) {
+        return new AutoIntakeSliderAction(position, power, pauseTime);
     }
 
 
@@ -437,6 +481,8 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         }
     }
     public Action autoIntakeServoAxonAction(double position) {
+
+        telemetry.addLine("autoIntakeServoAxonAction");
         return new AutoIntakeServoAxonAction(position);
     }
 
@@ -445,10 +491,11 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         private boolean initialized = false;
         double power;
         ElapsedTime timer;
-
-        public   AutoIntakeSpiner(double power) {
+        double pauseTimeSec;
+        public   AutoIntakeSpiner(double power, double pauseTimeSec) {
 
             this.power = power;
+            this.pauseTimeSec = pauseTimeSec;
         }
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -458,12 +505,35 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 autoRobot.Intake.intakeRightWheel.setPower(-power);
                 initialized = true;
             }
+            return timer.seconds() < pauseTimeSec;
+        }
+    }
+    //power:  positive = intake split OUT sample
+    public Action autoIntakeSpiner(double power, double pauseTimeSec){
+        return new AutoIntakeSpiner (power, pauseTimeSec);
+    }
+
+    public class AutoDiplayAction implements Action {
+        private boolean initialized = false;
+        String teleData;
+        ElapsedTime timer;
+
+        public AutoDiplayAction(String teleData) {
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                telemetry.addLine(teleData);
+                telemetry.update();
+                initialized = true;
+            }
             return false;
         }
     }
     //power:  positive = intake split OUT sample
-    public Action autoIntakeSpiner(double power){
-        return new AutoIntakeSpiner (power);
+    public Action autoDiplayAction(String teleData){
+        return new AutoDiplayAction(teleData);
     }
 
 }
