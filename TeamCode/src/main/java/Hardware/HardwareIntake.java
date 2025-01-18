@@ -78,15 +78,15 @@ public class HardwareIntake {
 
     //public method (function) for intaking in sample
     public void intakeIN() {
-        intakeLeftWheel.setPower(-1); //TODO: figure out directions
-        intakeRightWheel.setPower(1); // TODO: figure out directions
+        intakeLeftWheel.setPower(-1);
+        intakeRightWheel.setPower(1);
     }
 
 
     //public method (function) for spitting out sample
     public void intakeOUT() {
-        intakeLeftWheel.setPower(1); //TODO: figure out directions
-        intakeRightWheel.setPower(-1); // TODO: figure out directions
+        intakeLeftWheel.setPower(1);
+        intakeRightWheel.setPower(-1);
     }
 
     //public method (function) for stopping the intake
@@ -97,27 +97,34 @@ public class HardwareIntake {
 
     //method for the retracted position of the intake slides
     public void intakeSlideIN() {
-        intakeSlideSetPositionPower(0,0.4); //TODO: set power
+        intakeSlideSetPositionPower(0,0.4); //Inside robot
     }
 
     //method for the extended position of the intake slides
     public void intakeSlideOUT() {
-        intakeSlideSetPositionPower(310,0.8); //TODO: find position and power
+        intakeSlideSetPositionPower(310,0.8); //Far out position (within extension limit)
     }
     public void intakeSlideMID() {
-        intakeSlideSetPositionPower(200,0.8); //TODO: find position and power
+        intakeSlideSetPositionPower(200,0.8); //Middle position
     }
 
     public void intakeDOWN(){
-        intakeServoAxon.setPosition(0.94); //TODO: find correct position
+        intakeServoAxon.setPosition(0.94); //Position when intaking
     }
     public void intakeUP(){
-        intakeServoAxon.setPosition(0.85); //TODO: find correct position
+        intakeServoAxon.setPosition(0.85); //Position when down, but not intaking
     }
     public void intakeINSIDEBOT(){
-        intakeServoAxon.setPosition(0.5); //TODO: find correct position
+        intakeServoAxon.setPosition(0.5); //Position when grabbing specimen off wall
     }
-    public void intakeTRANSFER(){ //TODO: figure out how this is gonna work
-        intakeServoAxon.setPosition(0.6); // TODO: figure out position
+    public void intakeTRANSFER(){
+        intakeServoAxon.setPosition(0.62); //Position where sample gets grabbed out of intake
     }
+    public double getIntakeServoAxonPosition(){
+        // get the voltage of our analog line
+// divide by 3.3 (the max voltage) to get a value between 0 and 1
+// multiply by 360 to convert it to 0 to 360 degrees
+        return intakeServoAxonPosition.getVoltage() / 3.3;
+    }
+
 }

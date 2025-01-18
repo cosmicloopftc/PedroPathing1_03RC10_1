@@ -38,7 +38,7 @@ public class HardwareSensors {
 
     public DistanceSensor distanceTest;
     /** The colorSensor field will contain a reference to our color sensor hardware object */
-    public NormalizedColorSensor colorTest;
+    public NormalizedColorSensor colorIntake;
     /** The relativeLayout field is used to aid in providing interesting visual feedback
      * in this sample application; you probably *don't* need this when you use a color sensor on your
      * robot. Note that you won't see anything change on the Driver Station, only on the Robot Controller. */
@@ -58,7 +58,7 @@ public class HardwareSensors {
 
         // use NormalizedColorSensor over ColorSensor, because NormalizedColorSensor consistently
         // gives values between 0 and 1, while values you get from ColorSensor are dependent on specific sensor you're using.
-        colorTest = hardwareMap.get(NormalizedColorSensor.class, "colorTest");
+        colorIntake = hardwareMap.get(NormalizedColorSensor.class, "colorIntake");
         distanceTest = hardwareMap.get(DistanceSensor.class, "distanceTest");
 
         try {
@@ -84,8 +84,8 @@ public class HardwareSensors {
 
     public void runSample() {
         // If possible, turn light on at beginning (it might already be on anyway, we just make sure it is if we can).
-        if (colorTest instanceof SwitchableLight) {
-            ((SwitchableLight) colorTest).enableLight(true);
+        if (colorIntake instanceof SwitchableLight) {
+            ((SwitchableLight) colorIntake).enableLight(true);
 
         }
 
@@ -107,7 +107,7 @@ public class HardwareSensors {
     public float getColorInfo(int index) {
         final float[] hsvValues = new float[3];
         //take the readings, etc.
-        NormalizedRGBA colors = ((NormalizedColorSensor) colorTest).getNormalizedColors();
+        NormalizedRGBA colors = ((NormalizedColorSensor) colorIntake).getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
 //        Color.RGBToHSV((int) (colorIntake1.red() * 8),
 //                (int) (colorIntake1.green() * 8),

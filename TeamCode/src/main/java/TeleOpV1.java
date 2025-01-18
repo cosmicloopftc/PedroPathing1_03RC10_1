@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
@@ -79,6 +80,12 @@ import pedroPathing.constants.LConstants;
 @TeleOp(group="Primary", name= "TeleOpV1.2")
 public class TeleOpV1 extends OpMode {
     private Telemetry telemetryA;
+    boolean endGameRumble45secondsWarningOnce = true;
+    boolean endGameRumble31secondSTARTonce = true;
+    boolean endGameRumble20secondsLeftOnce = true;
+    boolean endGameRumble6secondsLeftOnce = true;
+
+    Gamepad.RumbleEffect customRumbleEffect;
 
     //based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
     // * @version 2.0, 11/28/2024
@@ -134,6 +141,52 @@ public class TeleOpV1 extends OpMode {
     boolean xButtonPreviouslyPressed = false;
     boolean xButtonCurrentlyPressed = false;
 
+
+    Gamepad.LedEffect flashingWhite6Sec = new Gamepad.LedEffect.Builder()
+            .addStep(1, 1, 1, 500) // Show white for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 1, 1, 500) // Show white for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 1, 1, 500) // Show white for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 1, 1, 500) // Show white for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 1, 1, 500) // Show white for 500ms
+            .addStep(0, 0, 0, 500)
+            .build();
+
+    Gamepad.LedEffect flashingBlue6Sec = new Gamepad.LedEffect.Builder()
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+            .addStep(0, 0, 1, 500) // Show blue for 500ms
+            .addStep(0, 0, 0, 500) //
+//                .addStep(1, 0, 0, 250) // Show red for 250ms
+//                .addStep(0, 1, 0, 250) // Show green for 250ms
+//                .addStep(0, 0, 1, 250) // Show blue for 250ms
+//                .addStep(1, 1, 1, 250) // Show white for 250ms
+            .build();
+    Gamepad.LedEffect flashingRed6Sec = new Gamepad.LedEffect.Builder()
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .addStep(1, 0, 0, 500) // Show red for 500ms
+            .addStep(0, 0, 0, 500)
+            .build();
 
     //__________________________________________________________________________________________________
     @Override
@@ -308,8 +361,10 @@ public class TeleOpV1 extends OpMode {
                 }
                 break;
             case TRANSFER:
-                telemetryA.addData("Outtake Arm Position reading:",robot.Outtake.getOuttakeArmPosition());
-                telemetryA.addData("Outtake Arm Position reading:", robot.Outtake.outtakeArmAxon.getPosition());
+                telemetryA.addData("Outtake Arm Position actual reading:",robot.Outtake.getOuttakeArmPosition());
+                telemetryA.addData("Outtake Arm set position:", robot.Outtake.outtakeArmAxon.getPosition());
+                telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
+                telemetryA.addData("Intake Axon Servo set position:", robot.Intake.getIntakeServoAxonPosition());
                 if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
                     robot.Outtake.closeClaw();
                 }
@@ -326,9 +381,10 @@ public class TeleOpV1 extends OpMode {
                 if (gamepad2.left_trigger > 0.2){
                     robot.Outtake.groundPosition();
                 }
-//                if (robot.Intake.intakeSlides.getCurrentPosition() < 10 && robot.Outtake.getOuttakeArmPosition() < 0.28 && gamepad2.right_trigger > 0.2) { //TODO: Find correct servo position
-//                    robot.Outtake.groundPositionClose();
+//                else if (robot.Intake.getIntakeServoAxonPosition() < 0.4){ //TODO: Find correct axon value
+//                    robot.Outtake.groundPosition();
 //                }
+
                 if (gamepad1.dpad_up || gamepad1.dpad_left || gamepad1.dpad_right){ //Be able to intake again
                     state = State.INTAKE;
                 }
@@ -344,14 +400,14 @@ public class TeleOpV1 extends OpMode {
                     //robot.Outtake.closeClaw();
                     state = State.OUTTAKE;
                 }
-//                if(gamepad2.dpad_down){
-//                    outtakeOption = "wallIntakeBack";
-//                    //state = State.OUTTAKE_READY;
-//                }
-//                if(gamepad2.dpad_up){
-//                    outtakeOption = "wallIntakeFront";
-//                    //state = State.OUTTAKE_READY;
-//                }
+                if(gamepad2.dpad_down){
+                    outtakeOption = "wallIntakeFront";
+                    state = State.OUTTAKE;
+                }
+                if(gamepad2.dpad_right){
+                    outtakeOption = "sampleDeliver";
+                    state = State.OUTTAKE;
+                }
                 break;
             case OUTTAKE_READY:
                 robot.Outtake.readyPosition();
@@ -364,14 +420,10 @@ public class TeleOpV1 extends OpMode {
                 break;
 
             case OUTTAKE:
+                telemetryA.addData("Outtake Arm Position actual reading:",robot.Outtake.getOuttakeArmPosition());
+                telemetryA.addData("Outtake Arm set position:", robot.Outtake.outtakeArmAxon.getPosition());
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
-//                if((robot.Outtake.getOuttakeArmPosition() < 0.65) && (outtakeOption.equals("wallIntakeFront"))){
-//                    robot.Outtake.extendIN();
-//                }
-//                else{
-//                    robot.Outtake.extendOUT();
-//                }
                 if (outtakeOption.equals("highBasket")){
                     robot.Outtake.leftSlideSetPositionPower(3400,1);
                     robot.Outtake.rightSlideSetPositionPower(3400,1);
@@ -384,6 +436,19 @@ public class TeleOpV1 extends OpMode {
                 }
                 else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.a){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
+                }
+
+                if (outtakeOption.equals("sampleDeliver")) { //Deliver sample to human player TODO: test
+                    robot.Intake.intakeOUT();
+                    robot.Outtake.sampleDelivery();
+                    if (robot.Outtake.getOuttakeArmPosition() < 0.2){
+                        robot.Outtake.openClaw();
+                        robot.Intake.intakeSTOP();
+                        state = State.READY_DOWN;
+                    }
+                    else{
+                        robot.Intake.intakeOUT();
+                    }
                 }
 
                 if (outtakeOption.equals("wallIntakeFront")){
@@ -411,6 +476,15 @@ public class TeleOpV1 extends OpMode {
 
                 if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>190){
                     robot.Outtake.highChamberSetUpwards();
+                }
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && gamepad2.b){ // Open claw if specimen scored
+                    robot.Outtake.openClaw();
+                }
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
+                    state = State.READY_DOWN;
+                }
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
+                    outtakeOption = "wallIntakeFront";
                 }
                 if (robot.Outtake.outtakeArmAxon.getPosition() == 0.9 && gamepad2.left_bumper){ // Only if at high chamber set position
                     outtakeOption = "highChamberFinish";
@@ -442,15 +516,15 @@ public class TeleOpV1 extends OpMode {
 
         //Hang testing:
         // Move slides up before hanging
-//        if (gamepad2.dpad_left) {
-//            robot.Outtake.leftSlideSetPositionPower(3400, 1);
-//            robot.Outtake.rightSlideSetPositionPower(3400, 1);
-//        }
-//        // Pull slides down to hang
-//        else if(gamepad2.dpad_right) {
-//            robot.Outtake.leftSlideSetPositionPower(1500, 1);
-//            robot.Outtake.rightSlideSetPositionPower(1500, 1);
-//        }
+        if (gamepad1.y) {
+            robot.Outtake.leftSlideSetPositionPower(3400, 1);
+            robot.Outtake.rightSlideSetPositionPower(3400, 1);
+        }
+        // Pull slides down to hang
+        else if(gamepad1.x) {
+            robot.Outtake.leftSlideSetPositionPower(1500, 1);
+            robot.Outtake.rightSlideSetPositionPower(1500, 1);
+        }
 
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
@@ -468,15 +542,15 @@ public class TeleOpV1 extends OpMode {
         //  }
         //DRIVETRAIN
         //baseline speed =  reduce motor speed to 60% max
-        double motorPowerDefault = 0.6;
+        double motorPowerDefault = 0.5;
         double powerChange;
 
         //SLOW DOWN with RIGHT LOWER TRIGGER (lower of the top side button) press with the other gamepad stick.
         if ((Math.abs(gamepad1.left_stick_y) > 0.1 && gamepad1.right_trigger > 0.1) || (Math.abs(gamepad1.left_stick_x) > 0.1 && gamepad1.right_trigger > 0.1) || (Math.abs(gamepad1.right_stick_x) > 0.1 && gamepad1.right_trigger > 0.1)) {
-            powerChange = -0.3;
+            powerChange = -0.2;
             //SPEED UP with RIGHT UPPER BUMPER (up of the top side button) press with the other gamepad stick.
         } else if ((Math.abs(gamepad1.left_stick_y) > 0.1 && gamepad1.right_bumper) || (Math.abs(gamepad1.left_stick_x) > 0.1 && gamepad1.right_bumper) || (Math.abs(gamepad1.right_stick_x) > 0.1 && gamepad1.right_bumper)) {
-            powerChange = 0.4;
+            powerChange = 0.5;
         } else {
             powerChange = 0;
         }
@@ -523,6 +597,40 @@ public class TeleOpV1 extends OpMode {
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
 //        telemetry.update();
+
+        if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
+            rumble();
+            telemetryA.addLine("45 SECONDS LEFT");
+            telemetryA.addLine("");
+            endGameRumble45secondsWarningOnce = false;
+            gamepad1.runLedEffect(flashingWhite6Sec);
+        }
+        if ((runtime.seconds()  > 89) && endGameRumble31secondSTARTonce) {
+            rumble();
+            telemetryA.addLine("30 SECONDS LEFT");
+            telemetryA.addLine("");
+            rumble();
+            endGameRumble31secondSTARTonce = false;
+            gamepad1.runLedEffect(flashingBlue6Sec);
+        }
+        //one rumble for 20 seconds left
+        if ((runtime.seconds() > 100 ) && endGameRumble20secondsLeftOnce) {
+            rumble();
+            telemetryA.addLine("20 SECONDS LEFT");
+            telemetryA.addLine("");
+            endGameRumble20secondsLeftOnce = false;
+            gamepad1.runLedEffect(flashingRed6Sec);
+        }
+
+        //one rumble for 6 seconds left for hanging
+        if ((runtime.seconds() > 114 ) && endGameRumble6secondsLeftOnce) {
+            rumble6sec();
+            telemetryA.addLine("6 SECONDS LEFT---HANGING NOW");
+            telemetryA.addLine("");
+            endGameRumble20secondsLeftOnce = false;
+            gamepad1.runLedEffect(flashingRed6Sec);
+        }
+
         telemetryA.update();
 
 
@@ -545,9 +653,9 @@ public class TeleOpV1 extends OpMode {
         telemetryA.addData("Gain", colorGain);
         telemetryA.addLine("");
         // Tell sensor desired gain value (normally you would do this during initialization, not during loop)
-        robot.Sensor.colorTest.setGain(colorGain);
+        robot.Sensor.colorIntake.setGain(colorGain);
         // Get the normalized colors from the sensor
-        NormalizedRGBA colors = robot.Sensor.colorTest.getNormalizedColors();
+        NormalizedRGBA colors = robot.Sensor.colorIntake.getNormalizedColors();
 
         /* Use telemetry to display feedback on Driver Station. Show red/green/blue normalized values
          *from sensor (0 to 1), and equivalent HSV (hue/saturation/value) values.
@@ -568,8 +676,8 @@ public class TeleOpV1 extends OpMode {
         /* If this color sensor also has a distance sensor, display the measured distance.
          * Note that the reported distance is only useful at very close range, and is impacted by
          * ambient light and surface reflectivity. */
-        if (robot.Sensor.colorTest instanceof DistanceSensor) {
-            telemetryA.addData("Distance (cm)", "%.3f", ((DistanceSensor) robot.Sensor.colorTest).getDistance(DistanceUnit.CM));
+        if (robot.Sensor.colorIntake instanceof DistanceSensor) {
+            telemetryA.addData("Distance (cm)", "%.3f", ((DistanceSensor) robot.Sensor.colorIntake).getDistance(DistanceUnit.CM));
         }
     }
 
@@ -591,8 +699,8 @@ public class TeleOpV1 extends OpMode {
         if (xButtonCurrentlyPressed != xButtonPreviouslyPressed) {
             // If the button is (now) down, then toggle the light
             if (xButtonCurrentlyPressed) {
-                if (robot.Sensor.colorTest instanceof SwitchableLight) {
-                    SwitchableLight light = (SwitchableLight)robot.Sensor.colorTest;
+                if (robot.Sensor.colorIntake instanceof SwitchableLight) {
+                    SwitchableLight light = (SwitchableLight)robot.Sensor.colorIntake;
                     light.enableLight(!light.isLightOn());
                 }
             }
@@ -600,10 +708,40 @@ public class TeleOpV1 extends OpMode {
         xButtonPreviouslyPressed = xButtonCurrentlyPressed;
 
     }
+    public void rumble(){
+        Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence.
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .build();
+        gamepad1.runRumbleEffect(customRumbleEffect);
+        gamepad2.runRumbleEffect(customRumbleEffect);
+    }
 
+    public void rumble6sec(){
+        Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence.
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
 
-
-
-
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .build();
+        gamepad1.runRumbleEffect(customRumbleEffect);
+        gamepad2.runRumbleEffect(customRumbleEffect);
+    }
 
 }
