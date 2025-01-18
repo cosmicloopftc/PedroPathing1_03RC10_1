@@ -125,29 +125,15 @@ public class HardwareOuttake {
         leftSlideSetPositionPower(3400,1);
         rightSlideSetPositionPower(3400,1);
     }
-    public void lowChamber(){ //Not able to do this with current V1 robot
-//        leftSlideSetPositionPower(0,0);
-//        rightSlideSetPositionPower(0,0);
-//        leftOuttakeArm.setPosition(0);
-//        rightOuttakeArm.setPosition(1);
-//        claw.setPosition(0);
+    public void sampleDelivery(){
+        outtakeArmAxon.setPosition(0.9);
+        extendIN();
+        leftSlideSetPositionPower(0,1);
+        rightSlideSetPositionPower(0,1);
     }
-//    public void highChamberSetFront(){
-//        leftSlideSetPositionPower(700,0.6); //Find position
-//        rightSlideSetPositionPower(700,0.6); //Find position
-//        outtakeArmAxon.setPosition(0.3); //Find position
-//        extendOUT();
-//    }
-//    public void highChamberFinishFront(){
-//        leftSlideSetPositionPower(700,1); //Find position (Go up from high chamber set position)
-//        rightSlideSetPositionPower(700,1);
-//        outtakeArmAxon.setPosition(0.3); //Find position -- same as high chamber set position
-//        extendOUT();
-//        openClaw();
-//    }
     public void highChamberSetUpwards(){
-        leftSlideSetPositionPower(1700,1); //Find position
-        rightSlideSetPositionPower(1700,1); //Find position
+        leftSlideSetPositionPower(1700,1);
+        rightSlideSetPositionPower(1700,1);
         outtakeArmAxon.setPosition(0.9); //Should be same as wall intake
         extendIN();
     }
