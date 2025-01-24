@@ -1,16 +1,16 @@
-package OLD;//import static AUTOstorageConstant.AUTORedNetX;
+package OLD;//import static RR.AUTOstorageConstant.AUTORedNetX;
 ///**
 //
-////import static AUTOstorageConstant.AUTORedNetY;
-////import static AUTOstorageConstant.AUTOfrontIntakePickupLength;
-////import static AUTOstorageConstant.AUTOredSample1X;
-////import static AUTOstorageConstant.AUTOredSample1Y;
-////import static AUTOstorageConstant.AUTOredSample2X;
-////import static AUTOstorageConstant.AUTOredSample2Y;
-////import static AUTOstorageConstant.AUTOredSample3X;
-////import static AUTOstorageConstant.AUTOredSample3Y;
-////import static AUTOstorageConstant.AUTOstartRedNetX;
-////import static AUTOstorageConstant.AUTOstartRedNetY;
+////import static RR.AUTOstorageConstant.AUTORedNetY;
+////import static RR.AUTOstorageConstant.AUTOfrontIntakePickupLength;
+////import static RR.AUTOstorageConstant.AUTOredSample1X;
+////import static RR.AUTOstorageConstant.AUTOredSample1Y;
+////import static RR.AUTOstorageConstant.AUTOredSample2X;
+////import static RR.AUTOstorageConstant.AUTOredSample2Y;
+////import static RR.AUTOstorageConstant.AUTOredSample3X;
+////import static RR.AUTOstorageConstant.AUTOredSample3Y;
+////import static RR.AUTOstorageConstant.AUTOstartRedNetX;
+////import static RR.AUTOstorageConstant.AUTOstartRedNetY;
 //
 //
 //import com.acmerobotics.dashboard.FtcDashboard;
@@ -112,8 +112,8 @@ package OLD;//import static AUTOstorageConstant.AUTORedNetX;
 //    HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();    //TODO: will this interfere with follower(hardwareMap)? in .init
 //
 //    //private Pose startPose = new Pose(23.6 * 5 + 16, 39.75, Math.toRadians(90));  //(AUTOstartRedNetX, AUTOstartRedNetY, Math.toRadians(90));
-//    private Pose pickup1Pose = new Pose(AUTOstorageConstant.AUTOredSample1X + AUTOstorageConstant.AUTOfrontIntakePickupLength, AUTOstorageConstant.AUTOredSample1Y, Math.toRadians(180));
-//    private Pose pickup2Pose = new Pose(AUTOstorageConstant.AUTOredSample2X + AUTOstorageConstant.AUTOfrontIntakePickupLength, AUTOstorageConstant.AUTOredSample2Y, Math.toRadians(180));
+//    private Pose pickup1Pose = new Pose(RR.AUTOstorageConstant.AUTOredSample1X + RR.AUTOstorageConstant.AUTOfrontIntakePickupLength, RR.AUTOstorageConstant.AUTOredSample1Y, Math.toRadians(180));
+//    private Pose pickup2Pose = new Pose(RR.AUTOstorageConstant.AUTOredSample2X + RR.AUTOstorageConstant.AUTOfrontIntakePickupLength, RR.AUTOstorageConstant.AUTOredSample2Y, Math.toRadians(180));
 ////    private Pose pickup3Pose = new Pose(AUTOredSample3X + AUTOfrontIntakePickupLength, AUTOredSample3Y, Math.toRadians(180));
 //    //private Pose pickup3Pose = new Pose(125, 19.5, Math.toRadians(180));
 //    //private Pose moveForward = new Pose(120, 19.5, Math.toRadians(180));

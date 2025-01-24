@@ -1,3 +1,6 @@
+package RR;
+
+import com.acmerobotics.roadrunner.Pose2d;
 
 /**
  * Simple static field serving as a storage medium for the bot's pose and other CONSTANT
@@ -95,18 +98,24 @@ public class AUTOstorageConstant {
 //-----------------------------------------------------------------------------
 /*Values transfer RoadRunner Auto, etc.
   1/5/2025: created
-
+  1/26/2025: variables from AutoRedBasket program
  */
 
-
-
+    public static String AllianceBasketOrSpecimen;
     //Intake servo and motor position position:
-
+    public static int autoEnd_Intake_intakeSlides_MotorPosition;
+    public static double autoEnd_Intake_intakeServoAxon_ServoPosition;
     //Outtake servo and motor position:
-
+    public static int autoEnd_Outtake_outtakeLeftSlide_MotorPosition;
+    public static int autoEnd_Outtake_outtakeRightSlide_MotorPosition;
+    public static double autoEnd_Outtake_outtakeArmAxon_ServoPosition;
+    public static double autoEnd_Outtake_claw_ServoPosition;
     //Drivetrain: Pose and heading
-
-
+    public static double autoEndheadingIMU_yawDEG;
+    public static Pose2d autoPoseEnd;
+    public static double autoEndX;
+    public static double autoEndY;
+    public static double autoEndHeadingDEG;
 
 
 }
