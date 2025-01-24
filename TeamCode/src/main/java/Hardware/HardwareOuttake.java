@@ -116,14 +116,14 @@ public class HardwareOuttake {
     public void lowBasket(){
         //outtakeArmAxon.setPosition(0); //Should be same as high basket
         //outtakeExtension.setPosition(0); //No extension
-        leftSlideSetPositionPower(970,0.6);
-        rightSlideSetPositionPower(970,0.6);
+        //leftSlideSetPositionPower(970,0.6);
+        //rightSlideSetPositionPower(970,0.6);
     }
     public void highBasket(){
         outtakeArmAxon.setPosition(0.75);
         extendIN();
-        leftSlideSetPositionPower(3400,1);
-        rightSlideSetPositionPower(3400,1);
+        leftSlideSetPositionPower(2400,1);
+        rightSlideSetPositionPower(2400,1);
     }
     public void sampleDelivery(){
         outtakeArmAxon.setPosition(0.9);
@@ -132,14 +132,14 @@ public class HardwareOuttake {
         rightSlideSetPositionPower(0,1);
     }
     public void highChamberSetUpwards(){
-        leftSlideSetPositionPower(1700,1);
-        rightSlideSetPositionPower(1700,1);
+        leftSlideSetPositionPower(1240,1);
+        rightSlideSetPositionPower(1240,1);
         outtakeArmAxon.setPosition(0.9); //Should be same as wall intake
         extendIN();
     }
     public void highChamberFinishUpwards(){
-        leftSlideSetPositionPower(2300,1); //Find position (Go down from high chamber set position)
-        rightSlideSetPositionPower(2300,1);
+        leftSlideSetPositionPower(1630,1); //Find position (Go down from high chamber set position)
+        rightSlideSetPositionPower(1630,1);
         outtakeArmAxon.setPosition(0.9); //Should be same as wall intake
         extendIN();
     }
@@ -165,8 +165,8 @@ public class HardwareOuttake {
     }
 
     public void slidersOnlyHighBasket(){
-        leftSlideSetPositionPower(3400,1);
-        rightSlideSetPositionPower(3400,1);
+        leftSlideSetPositionPower(2400,1);
+        rightSlideSetPositionPower(2400,1);
     }
 
 

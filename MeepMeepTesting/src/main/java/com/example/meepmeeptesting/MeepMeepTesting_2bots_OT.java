@@ -16,15 +16,27 @@ public class MeepMeepTesting_2bots_OT {
         RoadRunnerBotEntity myFirstBot = new DefaultBotBuilder(meepMeep)
                 // We set this bot to be red
                 .setColorScheme(new ColorSchemeRedDark())
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 14)
                 .build();
-        Pose2d beginPose = new Pose2d(-7.5, -62.85, Math.toRadians(-90));
+        //Pose2d beginPose = new Pose2d(-7.5, -62.85, Math.toRadians(-90));     //auto start at LEFT of center mat
+
+        Pose2d beginPose = new Pose2d(38, -62.85, Math.toRadians(-90));
+
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(beginPose)
+                .lineToYConstantHeading(-60 )
+
+                .splineToConstantHeading(new Vector2d(10,-40),Math.toRadians(90))
+                .lineToYConstantHeading(-33 )
+                //.splineToLinearHeading(new Pose2d(0,-35, Math.toRadians(-90)),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(38,-55),Math.toRadians(90))
+                .lineToYConstantHeading(-62.85)
+
                 //.waitSeconds(0.5)
-                .lineToYConstantHeading(-33)
+                //.lineToYConstantHeading(-33)
 //                .lineToYConstantHeading(-40)
 //                .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60))
+
 
 
 
@@ -46,15 +58,19 @@ public class MeepMeepTesting_2bots_OT {
 //            .turnTo(Math.toRadians(270))            //dropoff
 //                .waitSeconds(1)
 
-                .lineToY(-35)
-                .splineToSplineHeading(new Pose2d(25,-43, Math.toRadians(270)),0)
-                .splineToConstantHeading(new Vector2d(35,-20), Math.toRadians(270))
 
 
 
-                .splineToConstantHeading(new Vector2d(43.2,-12),Math.toRadians(270))
+
+//                .lineToY(-35)
+//                .splineToSplineHeading(new Pose2d(25,-43, Math.toRadians(270)),0)
+//                .splineToConstantHeading(new Vector2d(35,-20), Math.toRadians(270))
+//                .splineToConstantHeading(new Vector2d(43.2,-12),Math.toRadians(270))
+
+
+
+
 //                .splineToSplineHeading(new Pose2d(43.5,-50, Math.toRadians(270)),Math.toRadians(270))
-
 //                .splineToConstantHeading(new Vector2d(46,-11),Math.toRadians(270))
 //                .splineToConstantHeading(new Vector2d(55,-16),Math.toRadians(270))
 //                .splineToSplineHeading(new Pose2d(55,-50, Math.toRadians(270)),Math.toRadians(270))
@@ -75,7 +91,7 @@ public class MeepMeepTesting_2bots_OT {
         RoadRunnerBotEntity mySecondBot = new DefaultBotBuilder(meepMeep)
                 // We set this bot to be blue
                 .setColorScheme(new ColorSchemeBlueDark())
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 14)
                 .build();
 
         mySecondBot.runAction(mySecondBot.getDrive().actionBuilder(new Pose2d(30, 30, Math.toRadians(180)))
