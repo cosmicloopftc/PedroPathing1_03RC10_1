@@ -96,7 +96,7 @@ public class HardwareNoDriveTrainRobot {
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         //Initialize IMU with this mounting orientation
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+    //    imu.resetYaw();
 
 
 
