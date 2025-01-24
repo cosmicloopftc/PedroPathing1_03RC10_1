@@ -59,19 +59,19 @@ public final class MecanumDrive {
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;          //done 1/4/2025
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;       //done 1/4/2025
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;         //<--update 1/25/2025   BACKWARD;       //done 1/4/2025
 
         // drive model parameters
-        public double inPerTick = 0.001973754401;   //00196520672 //done 1/5/2025 166.5/84357=0.001973754401
-        public double lateralInPerTick = 0.0009460105374178588;
+        public double inPerTick = 0.001964962776;   //<--1/25/2025,new strafe odom    0.001973754401;   //00196520672 //done 1/5/2025 166.5/84357=0.001973754401
+        public double lateralInPerTick = 0.0013537580254020833;     //<--1/25/2025,new strafe odom    0.0009460105374178588;
         // public double lateralInPerTick = 0.0009460105374178588;  //TODO: uncertain if ok since strafe encoder is different than from other 2 encoder; done 1/5/2025 based on KV, KS, and above inPerTick
         //0.000946010537417859
-        public double trackWidthTicks = 5845.534790932576;
+        public double trackWidthTicks = 5613.720482693609;      //<--1/25/2025,new strafe odom   5845.534790932576;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8047462160296934;
-        public double kV =  0.00038661556931805546;
-        public double kA = 0.0001;
+        public double kS =  0.9796148245680487;             //<--1/25/2025,new strafe odom      0.8047462160296934;
+        public double kV =  0.0003831274289692773;         //<--1/25/2025,new strafe odom      0.00038661556931805546;
+        public double kA = 0.000051;       //<--1/25/2025,new strafe odom      0.0001;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -85,7 +85,7 @@ public final class MecanumDrive {
         // path controller gains
         public double axialGain = 6.0;          //8.0, 7.0;
         public double lateralGain = 3.0;        //3.0;
-        public double headingGain = 4.0;        //4.0; // shared with turn
+        public double headingGain = 5.0;        //4.0; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
