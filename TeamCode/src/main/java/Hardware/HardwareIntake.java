@@ -109,16 +109,16 @@ public class HardwareIntake {
     }
 
     public void intakeDOWN(){
-        intakeServoAxon.setPosition(0.94); //Position when intaking
+        intakeServoAxon.setPosition(0.97); //Position when intaking
     }
     public void intakeUP(){
-        intakeServoAxon.setPosition(0.85); //Position when down, but not intaking
+        intakeServoAxon.setPosition(0.87); //Position when down, but not intaking
     }
     public void intakeINSIDEBOT(){
-        intakeServoAxon.setPosition(0.5); //Position when grabbing specimen off wall
+        intakeServoAxon.setPosition(0.52); //Position when grabbing specimen off wall
     }
     public void intakeTRANSFER(){
-        intakeServoAxon.setPosition(0.62); //Position where sample gets grabbed out of intake
+        intakeServoAxon.setPosition(0.64); //Position where sample gets grabbed out of intake
     }
     public double getIntakeServoAxonPosition(){
         // get the voltage of our analog line

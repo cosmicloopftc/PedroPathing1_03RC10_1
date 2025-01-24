@@ -92,7 +92,7 @@ public class TeleOpV1 extends OpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
 
-
+    private String sampleColor = "none";
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
     public static double intakeSlidesCurrent;
@@ -286,7 +286,6 @@ public class TeleOpV1 extends OpMode {
 
 
 
-
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
@@ -425,16 +424,16 @@ public class TeleOpV1 extends OpMode {
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
                 if (outtakeOption.equals("highBasket")){
-                    robot.Outtake.leftSlideSetPositionPower(3400,1);
-                    robot.Outtake.rightSlideSetPositionPower(3400,1);
-                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1800){
+                    robot.Outtake.leftSlideSetPositionPower(2400,1);
+                    robot.Outtake.rightSlideSetPositionPower(2400,1);
+                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1400){
                         robot.Outtake.highBasket();
                     }
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.left_bumper){ // If at high basket position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.a){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
 
@@ -469,21 +468,21 @@ public class TeleOpV1 extends OpMode {
                     robot.Outtake.openClaw();
                 }
                 if (gamepad2.x){
-                    robot.Outtake.leftSlideSetPositionPower(200,1);
-                    robot.Outtake.rightSlideSetPositionPower(200,1);
+                    robot.Outtake.leftSlideSetPositionPower(150,1);
+                    robot.Outtake.rightSlideSetPositionPower(150,1);
                     outtakeOption = "highChamber";
                 }
 
-                if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>190){
+                if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>140){
                     robot.Outtake.highChamberSetUpwards();
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && gamepad2.b){ // Open claw if specimen scored
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && gamepad2.b){ // Open claw if specimen scored
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
                     state = State.READY_DOWN;
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
                     outtakeOption = "wallIntakeFront";
                 }
                 if (robot.Outtake.outtakeArmAxon.getPosition() == 0.9 && gamepad2.left_bumper){ // Only if at high chamber set position
@@ -493,14 +492,14 @@ public class TeleOpV1 extends OpMode {
                 if (outtakeOption.equals("highChamberFinish")){
                     robot.Outtake.highChamberFinishUpwards();
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && gamepad2.left_bumper){ // If at high chamber finish position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && gamepad2.left_bumper){ // If at high chamber finish position
                     robot.Outtake.openClaw();
                 }
 
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
                     state = State.READY_DOWN;
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
                     outtakeOption = "wallIntakeFront";
                 }
                 break;
@@ -517,13 +516,13 @@ public class TeleOpV1 extends OpMode {
         //Hang testing:
         // Move slides up before hanging
         if (gamepad1.y) {
-            robot.Outtake.leftSlideSetPositionPower(3400, 1);
-            robot.Outtake.rightSlideSetPositionPower(3400, 1);
+            robot.Outtake.leftSlideSetPositionPower(2400, 1);
+            robot.Outtake.rightSlideSetPositionPower(2400, 1);
         }
         // Pull slides down to hang
         else if(gamepad1.x) {
-            robot.Outtake.leftSlideSetPositionPower(1500, 1);
-            robot.Outtake.rightSlideSetPositionPower(1500, 1);
+            robot.Outtake.leftSlideSetPositionPower(1000, 1);
+            robot.Outtake.rightSlideSetPositionPower(1000, 1);
         }
 
 //Drivetrain Movement:
@@ -673,6 +672,7 @@ public class TeleOpV1 extends OpMode {
         telemetryA.addLine("");
         telemetryA.addData("Alpha", "%.3f", colors.alpha);
         telemetryA.addLine("");
+        telemetryA.addLine("Sample color sensed: " + sampleColor);
         /* If this color sensor also has a distance sensor, display the measured distance.
          * Note that the reported distance is only useful at very close range, and is impacted by
          * ambient light and surface reflectivity. */
