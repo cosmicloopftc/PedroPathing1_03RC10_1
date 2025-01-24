@@ -46,7 +46,6 @@ public class RR_1AutoRedBasket extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         double sliderPower = 0.35;
-        int sleepSeperation = 250;
 
         AutoOuttakeSliderAction autoOuttakeSliderAction = null;
         autoRobot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
@@ -77,7 +76,7 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         TrajectoryActionBuilder preScore = drive.actionBuilder(beginPose)
                 .setTangent(45)
                 .waitSeconds(0.5)
-                .strafeToSplineHeading(new Vector2d(-55, -58), Math.toRadians(45));
+                .strafeToSplineHeading(new Vector2d(-56, -55), Math.toRadians(45));
 //                .strafeToConstantHeading(new Vector2d(-54, -59), velSlow,accSlow)
 
 //                .autoOuttakeSliderHighBasketAction()
@@ -101,12 +100,29 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
         TrajectoryActionBuilder turnForSample1 = preScore.endTrajectory().fresh()
 //                .waitSeconds(5)
-                .turnTo(Math.toRadians(140))
+                .turnTo(Math.toRadians(110))
                 .waitSeconds(0);
 
-        TrajectoryActionBuilder turnToBasket3 = turnForSample3.endTrajectory().fresh()
+        TrajectoryActionBuilder grabPose = turnForSample3.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-56, -43), Math.toRadians(69))
+//                .strafeTo(new Vector2d(-54, -45))
+                .waitSeconds(0);
+        TrajectoryActionBuilder grabPose2 = turnForSample2.endTrajectory().fresh()
+                .waitSeconds(0.5)
+                .strafeToSplineHeading(new Vector2d(-56, -43), Math.toRadians(95))
+//                .strafeTo(new Vector2d(-54, -45))
+                .waitSeconds(0);
+        TrajectoryActionBuilder grabPose3 = turnForSample1.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-56, -43), Math.toRadians(124))
+//                .strafeTo(new Vector2d(-54, -45))
+                .waitSeconds(0);
+
+        TrajectoryActionBuilder grabWaitPose = grabPose.endTrajectory().fresh()
+                .waitSeconds(0.5);
+
+        TrajectoryActionBuilder turnToBasket3 = grabPose.endTrajectory().fresh()
                 .waitSeconds(1)
-                .strafeToSplineHeading(new Vector2d(-52, -59), Math.toRadians(45));
+                .strafeToSplineHeading(new Vector2d(-56, -55), Math.toRadians(45));
 //                .waitSeconds(1);
 
         TrajectoryActionBuilder turnToBasket2 = turnForSample2.endTrajectory().fresh()
@@ -118,22 +134,6 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 .waitSeconds(1)
                 .strafeToSplineHeading(new Vector2d(-53.5, -54.5), Math.toRadians(45));
 //                .waitSeconds(1);
-
-        TrajectoryActionBuilder grabPose = turnForSample3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-54, -45), Math.toRadians(56.5))
-//                .strafeTo(new Vector2d(-54, -45))
-                .waitSeconds(0);
-        TrajectoryActionBuilder grabPose2 = turnForSample1.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-58, -47), Math.toRadians(105))
-//                .strafeTo(new Vector2d(-54, -45))
-                .waitSeconds(0);
-        TrajectoryActionBuilder grabPose3 = turnForSample2.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-55, -46), Math.toRadians(85))
-//                .strafeTo(new Vector2d(-54, -45))
-                .waitSeconds(0);
-
-        TrajectoryActionBuilder grabWaitPose = grabPose.endTrajectory().fresh()
-                .waitSeconds(0.5);
 
 
 
@@ -177,71 +177,69 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         autoOuttakeArmAxonAction(0.4, 0),
                         autoOuttakeSliderAction(1, 1),
 //                        turnForSample3.build(),
-                        autoIntakeServoAxonAction(0.94),
+                        autoIntakeServoAxonAction(0.97),
                         autoIntakeSpiner(-1, 0),
                         //move to first sample
                         grabPose.build(),
 //                        turnForSample3.build(),
                         autoIntakeSliderAction(220, sliderPower, 0.5),
-                        grabWaitPose.build(),
 
                         /*NEXT STEP*/
                         autoIntakeSliderAction(1, sliderPower, 0),
-                        autoIntakeServoAxonAction(0.62),
+                        autoIntakeServoAxonAction(0.64),
                         autoIntakeSpiner(0, 0.75),
-                        autoOuttakeArmAxonAction(0.34, 0.5),
+                        autoOuttakeArmAxonAction(0.33, 0.5),
+                        autoClawAction(1, 0.25),
+                        autoOuttakeSliderHighBasketAction(),
+                        turnToBasket3.build(),
+                        autoOuttakeArmAxonAction(0.75, 1),
+                        autoClawAction(0.7, 0),
+
+//                        /** Sample 2*/
+                        autoClawAction(0.7, 0.5),
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(1, 1),
+//                        turnForSample3.build(),
+                        autoIntakeServoAxonAction(0.97),
+                        autoIntakeSpiner(-1, 0),
+                        //move to first sample
+                        grabPose2.build(),
+//                        turnForSample3.build(),
+                        autoIntakeSliderAction(220, sliderPower, 0.5),
+
+                        /*NEXT STEP*/
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeServoAxonAction(0.64),
+                        autoIntakeSpiner(0, 0.75),
+                        autoOuttakeArmAxonAction(0.32, 0.5),
+                        autoClawAction(1, 0.25),
+                        autoOuttakeSliderHighBasketAction(),
+                        turnToBasket3.build(),
+                        autoOuttakeArmAxonAction(0.75, 1),
+                        autoClawAction(0.7, 0),
+//
+//                        /**Sample 3*/
+                        autoClawAction(0.7, 0.5),
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(1, 1),
+//                        turnForSample3.build(),
+                        autoIntakeServoAxonAction(0.97),
+                        autoIntakeSpiner(-1, 0),
+                        //move to first sample
+                        grabPose3.build(),
+//                        turnForSample3.build(),
+                        autoIntakeSliderAction(240, sliderPower, 0.5),
+
+                        /*NEXT STEP*/
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeServoAxonAction(0.64),
+                        autoIntakeSpiner(0, 0.75),
+                        autoOuttakeArmAxonAction(0.33, 0.5),
                         autoClawAction(1, 0.25),
                         autoOuttakeSliderHighBasketAction(),
                         turnToBasket3.build(),
                         autoOuttakeArmAxonAction(0.75, 1),
                         autoClawAction(0.7, 0.5),
-
-                        /** Sample 2*/
-                        autoClawAction(0.7, 0.5),
-                        autoOuttakeArmAxonAction(0.4, 0),
-                        autoOuttakeSliderAction(1, 1),
-//                        turnForSample3.build(),
-                        autoIntakeServoAxonAction(0.94),
-                        autoIntakeSpiner(-1, 0),
-                        //move to first sample
-                        grabPose3.build(),
-//                        turnForSample3.build(),
-                        autoIntakeSliderAction(220, sliderPower, 0.75),
-//                        grabWaitPose.build(),
-
-                        /*NEXT STEP*/
-                        autoIntakeSliderAction(1, sliderPower, 0),
-                        autoIntakeServoAxonAction(0.62),
-                        autoIntakeSpiner(0, 0.75),
-                        autoOuttakeArmAxonAction(0.34, 0.5),
-                        autoClawAction(1, 0.25),
-                        autoOuttakeSliderHighBasketAction(),
-                        turnToBasket2.build(),
-                        autoOuttakeArmAxonAction(0.75, 1),
-                        autoClawAction(0.7, 0.5),
-
-                        /**Sample 3*/
-                        autoOuttakeArmAxonAction(0.4, 0),
-                        autoOuttakeSliderAction(1, 1),
-//                        turnForSample1.build(),
-                        autoIntakeServoAxonAction(0.94),
-                        autoIntakeSpiner(-1, 0),
-                        //move to first sample
-                        grabPose2.build(),
-//                        turnForSample1.build(),
-                        autoIntakeSliderAction(185, sliderPower, 0.75),
-                        grabWaitPose.build(),
-
-                        /*NEXT STEP*/
-                        autoIntakeSliderAction(1, sliderPower, 0),
-                        autoIntakeServoAxonAction(0.62),
-                        autoIntakeSpiner(0, 1),
-                        autoOuttakeArmAxonAction(0.34, 0.5),
-                        autoClawAction(1, 0.25),
-                        autoOuttakeSliderHighBasketAction(),
-                        turnToBasket1.build(),
-                        autoOuttakeArmAxonAction(0.75, 1),
-                        autoClawAction(0.7, 0.25),
 
                         //final
                         autoOuttakeArmAxonAction(0.4, 0),

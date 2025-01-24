@@ -21,9 +21,9 @@ import RR.messages.ThreeDeadWheelInputsMessage;
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double par0YTicks =  -3004.1181461673405; // y position of the first parallel encoder (in tick units)
-        public double par1YTicks =  2806.1243265858097; // y position of the second parallel encoder (in tick units)
-        public double perpXTicks = -410.5549451366593; // x position of the perpendicular encoder (in tick units)
+        public double par0YTicks =  -3007.7119393119096;            //<--1/25/2025,new strafe odom   -3004.1181461673405; // y position of the first parallel encoder (in tick units)
+        public double par1YTicks =  2620.0683395493984;        //<--1/25/2025,new strafe odom    2806.1243265858097; // y position of the second parallel encoder (in tick units)
+        public double perpXTicks = -216.30793848660971;         //<--1/25/2025,new strafe odom    -410.5549451366593; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -45,7 +45,8 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightRear")));      //TODO: temporary change 1/4/2025 PedroPathing=rightRear
 
         // TODO: reverse encoder directions if needed
-        //   par0.setDirection(DcMotorSimple.Direction.REVERSE);        //TODO: no reversal in PedroPathing setup
+           //par0.setDirection(DcMotorEx.Direction.REVERSE);        //TODO: no reversal in PedroPathing setup
+        perp.setDirection(DcMotorEx.Direction.REVERSE);
 
         this.inPerTick = inPerTick;
 

@@ -13,23 +13,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import Hardware.HardwareDrivetrain;
-import Hardware.HardwareIntake;
 import Hardware.HardwareNoDriveTrainRobot;
 
 //import pedroPathing.follower.Follower;
@@ -37,7 +33,6 @@ import Hardware.HardwareNoDriveTrainRobot;
 //import pedroPathing.localization.PoseUpdater;
 //import pedroPathing.util.DashboardPoseTracker;
 
-import android.provider.SyncStateContract;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.util.Constants;
@@ -77,8 +72,8 @@ import pedroPathing.constants.LConstants;
 
 
 @Config    //need this to allow appearance in FtcDashboard Configuration to make adjust of variables
-@TeleOp(group="Primary", name= "TeleOpV1.2")
-public class TeleOpV1 extends OpMode {
+@TeleOp(group="Primary", name= "RED_TeleOpV1.2")
+public class RED_TeleOpV1 extends OpMode {
     private Telemetry telemetryA;
     boolean endGameRumble45secondsWarningOnce = true;
     boolean endGameRumble31secondSTARTonce = true;
@@ -92,7 +87,7 @@ public class TeleOpV1 extends OpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
 
-
+    private String sampleColor = "NONE";
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
     public static double intakeSlidesCurrent;
@@ -130,7 +125,7 @@ public class TeleOpV1 extends OpMode {
 
 
     //Declare variables for Color sensor for color, hue, distance
-    float colorGain = 2;
+    float colorGain = 15;
     // Once per loop, we will update this hsvValues array.
     // first element (0)= hue, second element (1)=saturation, third element (2)= value.
     // See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
@@ -284,9 +279,6 @@ public class TeleOpV1 extends OpMode {
         botHeading = imuAngle;
 
 
-
-
-
         switch (state) {
             case START:
                 telemetryA.addLine("Start");
@@ -336,7 +328,7 @@ public class TeleOpV1 extends OpMode {
                 else if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() < 0.7){
                     robot.Intake.intakeIN();
                 }
-                else if (gamepad1.left_bumper){
+                else if (gamepad1.left_bumper || sampleColor.equals("BLUE")){
                     robot.Intake.intakeUP();
                     robot.Intake.intakeOUT();
                 }
@@ -425,16 +417,16 @@ public class TeleOpV1 extends OpMode {
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
                 if (outtakeOption.equals("highBasket")){
-                    robot.Outtake.leftSlideSetPositionPower(3400,1);
-                    robot.Outtake.rightSlideSetPositionPower(3400,1);
-                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1800){
+                    robot.Outtake.leftSlideSetPositionPower(2400,1);
+                    robot.Outtake.rightSlideSetPositionPower(2400,1);
+                    if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1400){
                         robot.Outtake.highBasket();
                     }
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.left_bumper){ // If at high basket position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 3200 && gamepad2.a){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
 
@@ -469,21 +461,21 @@ public class TeleOpV1 extends OpMode {
                     robot.Outtake.openClaw();
                 }
                 if (gamepad2.x){
-                    robot.Outtake.leftSlideSetPositionPower(200,1);
-                    robot.Outtake.rightSlideSetPositionPower(200,1);
+                    robot.Outtake.leftSlideSetPositionPower(150,1);
+                    robot.Outtake.rightSlideSetPositionPower(150,1);
                     outtakeOption = "highChamber";
                 }
 
-                if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>190){
+                if (outtakeOption.equals("highChamber") && robot.Outtake.outtakeLeftSlide.getCurrentPosition()>140){
                     robot.Outtake.highChamberSetUpwards();
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && gamepad2.b){ // Open claw if specimen scored
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && gamepad2.b){ // Open claw if specimen scored
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber set position and claw is open
                     state = State.READY_DOWN;
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1600 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1800 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1300 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber set position and claw is open
                     outtakeOption = "wallIntakeFront";
                 }
                 if (robot.Outtake.outtakeArmAxon.getPosition() == 0.9 && gamepad2.left_bumper){ // Only if at high chamber set position
@@ -493,14 +485,14 @@ public class TeleOpV1 extends OpMode {
                 if (outtakeOption.equals("highChamberFinish")){
                     robot.Outtake.highChamberFinishUpwards();
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && gamepad2.left_bumper){ // If at high chamber finish position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && gamepad2.left_bumper){ // If at high chamber finish position
                     robot.Outtake.openClaw();
                 }
 
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.a){ // Only if at high Chamber finish position and claw is open
                     state = State.READY_DOWN;
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2100 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 2400 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 1550 && robot.Outtake.outtakeLeftSlide.getCurrentPosition() < 1700 && robot.Outtake.claw.getPosition() < 0.8 && gamepad2.dpad_down){ // Only if at high Chamber finish position and claw is open
                     outtakeOption = "wallIntakeFront";
                 }
                 break;
@@ -517,13 +509,13 @@ public class TeleOpV1 extends OpMode {
         //Hang testing:
         // Move slides up before hanging
         if (gamepad1.y) {
-            robot.Outtake.leftSlideSetPositionPower(3400, 1);
-            robot.Outtake.rightSlideSetPositionPower(3400, 1);
+            robot.Outtake.leftSlideSetPositionPower(2450, 1);
+            robot.Outtake.rightSlideSetPositionPower(2450, 1);
         }
         // Pull slides down to hang
         else if(gamepad1.x) {
-            robot.Outtake.leftSlideSetPositionPower(1500, 1);
-            robot.Outtake.rightSlideSetPositionPower(1500, 1);
+            robot.Outtake.leftSlideSetPositionPower(1400, 1);
+            robot.Outtake.rightSlideSetPositionPower(1400, 1);
         }
 
 //Drivetrain Movement:
@@ -630,7 +622,7 @@ public class TeleOpV1 extends OpMode {
             endGameRumble20secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
-
+        telemetryAllColorInfo();
         telemetryA.update();
 
 
@@ -656,7 +648,18 @@ public class TeleOpV1 extends OpMode {
         robot.Sensor.colorIntake.setGain(colorGain);
         // Get the normalized colors from the sensor
         NormalizedRGBA colors = robot.Sensor.colorIntake.getNormalizedColors();
-
+        if (colors.red > 0.02 && colors.red > colors.green && colors.red > colors.blue){
+            sampleColor = "RED";
+        }
+        else if (colors.blue > 0.02 && colors.blue > colors.green && colors.blue > colors.red){
+            sampleColor = "BLUE";
+        }
+        else if (colors.green > 0.02 && colors.green > colors.red && colors.green > colors.blue){
+            sampleColor = "YELLOW";
+        }
+        else{
+            sampleColor = "NONE";
+        }
         /* Use telemetry to display feedback on Driver Station. Show red/green/blue normalized values
          *from sensor (0 to 1), and equivalent HSV (hue/saturation/value) values.
          * See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
@@ -673,6 +676,7 @@ public class TeleOpV1 extends OpMode {
         telemetryA.addLine("");
         telemetryA.addData("Alpha", "%.3f", colors.alpha);
         telemetryA.addLine("");
+        telemetryA.addLine("Sample color: " + sampleColor);
         /* If this color sensor also has a distance sensor, display the measured distance.
          * Note that the reported distance is only useful at very close range, and is impacted by
          * ambient light and surface reflectivity. */
@@ -688,7 +692,7 @@ public class TeleOpV1 extends OpMode {
         // Update the gain value if either of the A or B gamepad buttons is being held
         if (gamepad1.a) {
             // Only increase the gain by a small amount, since this loop will occur multiple times per second.
-            colorGain += 0.005;
+            colorGain += 0.5;
         } else if (gamepad1.b && colorGain > 1) { // A gain of less than 1 will make the values smaller, which is not helpful.
             colorGain -= 0.005;
         }

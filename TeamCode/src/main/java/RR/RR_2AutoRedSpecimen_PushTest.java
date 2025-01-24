@@ -47,7 +47,7 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         autoRobot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
 
         String AllianceBasketOrSpecimen = "1RedSpecimen";
-        Pose2d beginPose = new Pose2d(-7.5, -62.85, Math.toRadians(-90));    //TODO: would overide this for each case
+        Pose2d beginPose = new Pose2d(7.5, -62.85, Math.toRadians(-90));    //TODO: would overide this for each case
 
         int debugLevel = 499;
         Telemetry telemetryA;
@@ -66,7 +66,7 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         VelConstraint velSlow = new TranslationalVelConstraint(15);
         VelConstraint velFast = new TranslationalVelConstraint(90);
         AccelConstraint accSlow = new ProfileAccelConstraint(-15,15);
-        AccelConstraint accFast = new ProfileAccelConstraint(-90,90);
+        AccelConstraint accFast = new ProfileAccelConstraint(-60,60);
         /**  .lineToX(24.5,velSlow,accSlow)        //example on how to use these in drive.actionBuilder */
 
 
@@ -77,53 +77,62 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
         TrajectoryActionBuilder preloadMoveBack= preloadScore.endTrajectory().fresh()
                 //claw open separately before this
-                .lineToYConstantHeading(-40, velFast, accFast)
-             //   .stopAndAdd(new AutoOuttakeArmAxonAction(0.4))          //rotate arm to inside robot
-             //   .stopAndAdd(new AutoOuttakeSliderAction(0, 1))   //move outtake slider inside robot
-                .splineToLinearHeading(new Pose2d(21,-43, Math.toRadians(-90)),
+                .lineToYConstantHeading(-47, velFast, accFast)
+            //    .waitSeconds(0.5)
+                .splineToLinearHeading(new Pose2d(31,-40, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
+//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
+//                .stopAndAdd(new AutoOuttakeSliderAction(0, 1));  //move outtake slider inside robot
+           //     .splineToLinearHeading(new Pose2d(25,-45, Math.toRadians(-90)),
+            //            Math.toRadians(-90), velFast, accFast);
 
         //  .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60), velFast, accFast);
 
+
         TrajectoryActionBuilder gotoSample4 = preloadMoveBack.endTrajectory().fresh()
                 .lineToYConstantHeading(-20, velFast, accFast)
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
                 //next spline to behind Sample4 and ready to push it home.
-                .splineToLinearHeading(new Pose2d(28,-8, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(34,-8, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder pushSample4HomeThenToSample5 = gotoSample4.endTrajectory().fresh()
+         //       .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
+//                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
                 .lineToYConstantHeading(-52, velFast, accFast)
                 .lineToYConstantHeading(-20, velFast, accFast)
-                .splineToLinearHeading(new Pose2d(34,-8, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(40,-8, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder pushSample5HomeThenToSample6 = pushSample4HomeThenToSample5.endTrajectory().fresh()
                 .lineToYConstantHeading(-52, velFast, accFast)
                 .lineToYConstantHeading(-20, velFast, accFast)
-                .splineToLinearHeading(new Pose2d(38,-8, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(44,-8, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder pushSample6Home = pushSample5HomeThenToSample6.endTrajectory().fresh()
                 .lineToYConstantHeading(-54, velFast, accFast)
                 .setTangent(0)
-                .strafeToLinearHeading(new Vector2d(26, -54), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(30, -54), Math.toRadians(-90));
 
         TrajectoryActionBuilder collectSpec1 = pushSample6Home.endTrajectory().fresh()
              //   .lineToY(-57)
-                .waitSeconds(0.5)
-//                .stopAndAdd(new AutoouttakeExtensionAction(0.85))  //extend arm (need to this to the place after preloadscore
-//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.28))   //extend arm (need to this to the place after preloadscore
-                .setTangent(-90)
-                .lineToY(-63)
-               // .stopAndAdd(new AutoClawAction(1))                //close claw
-                .waitSeconds(0.5);
-//                .stopAndAdd(new AutoOuttakeSliderAction(1700, 1))         //move slider up
-//                .stopAndAdd(new AutoouttakeExtensionAction(1))            //bring arm in
-//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.9));           //rotate to specimen score position
+                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
+                //.waitSeconds(0.5)
+                .stopAndAdd(new AutoouttakeExtensionAction(0.85))  //extend arm (need to this to the place after preloadscore
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.28,0))   //extend arm (need to this to the place after preloadscore
+             //   .setTangent(-90)
+                //.lineToY(-63)
+                .strafeToLinearHeading(new Vector2d(30, -63), Math.toRadians(-90))
+                .stopAndAdd(new AutoClawAction(1, 0.5))               //close claw
+              //  .waitSeconds(0.5);
+                .stopAndAdd(new AutoOuttakeSliderAction(1700, 1))         //move slider up
+                .stopAndAdd(new AutoouttakeExtensionAction(1))            //bring arm in
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.9,0));           //rotate to specimen score position
 
         TrajectoryActionBuilder firstScoreSpec = collectSpec1.endTrajectory().fresh()
                 .setReversed(true)
-                .strafeToSplineHeading(new Vector2d(-4, -38), Math.toRadians(-90), velFast, accFast)
+                .strafeToSplineHeading(new Vector2d(2, -38), Math.toRadians(-90), velFast, accFast)
                 .waitSeconds(0.1)
                 .lineToY(-33)
                 .waitSeconds(0.1)
@@ -131,6 +140,10 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
         TrajectoryActionBuilder collectSpec2 = firstScoreSpec.endTrajectory().fresh()
                 .setReversed(false)
+                .lineToYConstantHeading(-47, velFast, accFast)
+                //    .waitSeconds(0.5)
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
+                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))   //move outtake slider inside robot
                 .splineToConstantHeading(new Vector2d(26, -57), Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder secondScoreSpec = collectSpec2.endTrajectory().fresh()
@@ -163,42 +176,42 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         TrajectoryActionBuilder intakeSample1 = preloadMoveBack.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60), velFast, accFast)
                 .stopAndAdd(new AutoIntakeServoAxonAction(0.94))
-                .stopAndAdd(new AutoIntakeSpinerAction(-1))
-                .waitSeconds(0.5)
-                .stopAndAdd(new AutoIntakeSliderAction(200, 0.3))
-                .waitSeconds(0.1);
+                .stopAndAdd(new AutoIntakeSpinerAction(-1,0.5))
+              //  .waitSeconds(0.5)
+                .stopAndAdd(new AutoIntakeSliderAction(200, 0.3,0.1));
+            //    .waitSeconds(0.1);
         //  .stopAndAdd(new AutoIntakeSpinerAction(0));
         //.stopAndAdd(new AutoIntakeSliderAction(, 0.5));
 
         TrajectoryActionBuilder deliverSample1 = intakeSample1.endTrajectory().fresh()
-                .stopAndAdd(new AutoIntakeSliderAction(0, 1))
+                .stopAndAdd(new AutoIntakeSliderAction(0, 1,0))
                 .turnTo(Math.toRadians(-60))
-                .stopAndAdd(new AutoIntakeSliderAction(200, 1))
+                .stopAndAdd(new AutoIntakeSliderAction(200, 1,0.1))
                 //     .waitSeconds(0.1)
-                .stopAndAdd(new AutoIntakeSpinerAction(1))
-                .waitSeconds(0.1)
-                .stopAndAdd(new AutoIntakeSpinerAction(0))
-                .waitSeconds(0.1)
+                .stopAndAdd(new AutoIntakeSpinerAction(1,0.1))
+              //  .waitSeconds(0.1)
+                .stopAndAdd(new AutoIntakeSpinerAction(0,0.1))
+              //  .waitSeconds(0.1)
 //                .stopAndAdd(new AutoIntakeServoAxonAction(0.5))
-                .stopAndAdd(new AutoIntakeSliderAction(0, 1));
+                .stopAndAdd(new AutoIntakeSliderAction(0, 1,0));
 
         TrajectoryActionBuilder intakeSample2 = deliverSample1.endTrajectory().fresh()
                 .strafeToSplineHeading(new Vector2d(35, -42), Math.toRadians(67))
                 //       .turnTo(Math.toRadians(50))
 //                .stopAndAdd(new AutoIntakeServoAxonAction(0.94))
-                .stopAndAdd(new AutoIntakeSpinerAction(-1))
-                .waitSeconds(0.5)
-                .stopAndAdd(new AutoIntakeSliderAction(200, 0.3));
+                .stopAndAdd(new AutoIntakeSpinerAction(-1, 0.5))
+              //  .waitSeconds(0.5)
+                .stopAndAdd(new AutoIntakeSliderAction(200, 0.3,0));
 
         TrajectoryActionBuilder deliverSample2 = intakeSample2.endTrajectory().fresh()
-                .stopAndAdd(new AutoIntakeSliderAction(0, 1))
+                .stopAndAdd(new AutoIntakeSliderAction(0, 1,0))
                 .turnTo(Math.toRadians(-50))
-                .stopAndAdd(new AutoIntakeSliderAction(200, 1))
-                .stopAndAdd(new AutoIntakeSpinerAction(1))
-                .waitSeconds(0.1)
-                .stopAndAdd(new AutoIntakeSpinerAction(0))
+                .stopAndAdd(new AutoIntakeSliderAction(200, 1,0))
+                .stopAndAdd(new AutoIntakeSpinerAction(1,0.1))
+              //  .waitSeconds(0.1)
+                .stopAndAdd(new AutoIntakeSpinerAction(0,0))
                 .stopAndAdd(new AutoIntakeServoAxonAction(0.5))
-                .stopAndAdd(new AutoIntakeSliderAction(0, 1));
+                .stopAndAdd(new AutoIntakeSliderAction(0, 1,0));
 
         TrajectoryActionBuilder getSpec1 = deliverSample2.endTrajectory().fresh()
                 //  .strafeToSplineHeading(new Vector2d(40, -57), Math.toRadians(-90))
@@ -206,13 +219,13 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-57)
                 .stopAndAdd(new AutoouttakeExtensionAction(0.85))
-                .stopAndAdd(new AutoOuttakeArmAxonAction(0.28))
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.28,0))
                 .lineToY(-63)
-                .stopAndAdd(new AutoClawAction(1))
-                .waitSeconds(0.5)
+                .stopAndAdd(new AutoClawAction(1,0.5))
+               // .waitSeconds(0.5)
                 .stopAndAdd(new AutoOuttakeSliderAction(1700, 1))
                 .stopAndAdd(new AutoouttakeExtensionAction(1))
-                .stopAndAdd(new AutoOuttakeArmAxonAction(0.9));
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.9,0));
 
 
         TrajectoryActionBuilder scoreSpec1 = collectSpec1.endTrajectory().fresh()
@@ -220,9 +233,9 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 .strafeToSplineHeading(new Vector2d(6, -40), Math.toRadians(-90), velFast, accFast)
                 .waitSeconds(0.1)
                 .lineToY(-33)
-                .stopAndAdd(new AutoClawAction(0.7))
+                .stopAndAdd(new AutoClawAction(0.7,0))
                 .lineToY(-40)
-                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4))
+                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4,0))
                 .stopAndAdd(new AutoOuttakeSliderAction(0, 1));
 
         TrajectoryActionBuilder getSpec2 = scoreSpec1.endTrajectory().fresh()
@@ -258,10 +271,10 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
             /**then PLACE LED reading here for reading purpose*/
 
-//            autoRobot.Outtake.extendIN();
-//            autoRobot.Outtake.outtakeArmAxon.setPosition(0.28);
-//            autoRobot.Outtake.closeClaw();
-//            autoRobot.Intake.intakeINSIDEBOT();
+            autoRobot.Outtake.extendIN();
+            autoRobot.Outtake.outtakeArmAxon.setPosition(0.28);
+            autoRobot.Outtake.closeClaw();
+      //      autoRobot.Intake.intakeINSIDEBOT();
 
             telemetry.addLine("Initialized");
             telemetry.addData("Alliance Color/Mode: ", AllianceBasketOrSpecimen);
@@ -286,11 +299,11 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         //Initialize
-                        //autoOuttakeArmAxonAction(0.9),        //rotate outtake arm to scoring position
-                        //autoOuttakeSliderAction(1700,1),      //raise outtake  slider to scoring position
+                        autoOuttakeArmAxonAction(0.9,0),        //rotate outtake arm to scoring position
+                        autoOuttakeSliderAction(1700,1),      //raise outtake  slider to scoring position
                         preloadScore.build(),
 
-                        //autoClawAction(0.7),                  //open claw
+                        autoClawAction(0.7,0),                  //open claw
 
                         preloadMoveBack.build(),
                         gotoSample4.build(),
@@ -299,12 +312,12 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                         pushSample6Home.build(),
                         collectSpec1.build(),
                         firstScoreSpec.build(),
-                        collectSpec2.build(),
-                        secondScoreSpec.build(),
-                        collectSpec3.build(),
-                        thirdScoreSpec.build()
-                     //   collectSpec1.build(),
-                       // firstScoreSpec.build()
+                        collectSpec2.build()
+//                        collectSpec2.build(),
+//                        secondScoreSpec.build(),
+//                        collectSpec3.build(),
+//                        thirdScoreSpec.build()
+
 
 
 
@@ -368,6 +381,12 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
 
 
+    private Action SleepAction(long milliseconds) {
+        sleep(milliseconds);
+        return null;
+    }
+
+
     /**ACTION METHODS
      * to implementing actions with SequentialAction
      *         Actions.runBlocking(
@@ -384,23 +403,26 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
      *
      */
 
-    /**positions of OuttakeSlider: 0=ground, max/high basket=3400; high specimen bar=1300  */
+    /**
+     * positions of OuttakeSlider: 0=ground, max/high basket=3400; high specimen bar=1300
+     */
     public class AutoOuttakeSliderAction implements Action {
         private boolean initialized = false;
         int desirePosition;
         double desiredPower;
         ElapsedTime timer;
 
-        public   AutoOuttakeSliderAction(int position, double power) {
-            this.desirePosition = position;this.desiredPower = power;
+        public AutoOuttakeSliderAction(int position, double power) {
+            this.desirePosition = position;
+            this.desiredPower = power;
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 timer = new ElapsedTime();
-                autoRobot.Outtake.leftSlideSetPositionPower(desirePosition,desiredPower);
-                autoRobot.Outtake.rightSlideSetPositionPower(desirePosition,desiredPower);
+                autoRobot.Outtake.leftSlideSetPositionPower(desirePosition, desiredPower);
+                autoRobot.Outtake.rightSlideSetPositionPower(desirePosition, desiredPower);
                 initialized = true;
             }
             double positionOuttakeLeftSlide = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
@@ -412,7 +434,8 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
             }
         }
     }
-    public Action autoOuttakeSliderAction(int position, double power){
+
+    public Action autoOuttakeSliderAction(int position, double power) {
         return new AutoOuttakeSliderAction(position, power);
     }
 
@@ -424,20 +447,26 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
             return false;
         }
     }
+
     public Action autoOuttakeSliderHighBasketAction() {
         return new AutoOuttakeSliderHighBasketAction();
     }
 
 
-    /**safe range for OuttakeArmAxon = 0.29 to 0.35 to 0.37 to 0.68 to 0.86 */
+    /**
+     * safe range for OuttakeArmAxon = 0.29 to 0.35 to 0.37 to 0.68 to 0.86
+     */
     public class AutoOuttakeArmAxonAction implements Action {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
+        double pauseTimeSec;
 
-        public   AutoOuttakeArmAxonAction(double position) {
+        public AutoOuttakeArmAxonAction(double position, double pauseTimeSec) {
             this.desirePosition = position;
+            this.pauseTimeSec = pauseTimeSec;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
@@ -445,23 +474,27 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 autoRobot.Outtake.outtakeArmAxon.setPosition(desirePosition);
                 initialized = true;
             }
-            return false;
+            return timer.seconds() < pauseTimeSec;
         }
     }
-    public Action autoOuttakeArmAxonAction(double position){
-        return new AutoOuttakeArmAxonAction(position);
+
+    public Action autoOuttakeArmAxonAction(double position, double pauseTimeSec) {
+        return new AutoOuttakeArmAxonAction(position, pauseTimeSec);
     }
 
 
-    /**safe range for  outtakeExtension =                                */
+    /**
+     * safe range for  outtakeExtension =
+     */
     public class AutoouttakeExtensionAction implements Action {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
 
-        public   AutoouttakeExtensionAction(double position) {
+        public AutoouttakeExtensionAction(double position) {
             this.desirePosition = position;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
@@ -472,20 +505,25 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
             return false;
         }
     }
-    public Action autoouttakeExtensionAction(double position){
+
+    public Action autoouttakeExtensionAction(double position) {
         return new AutoouttakeExtensionAction(position);
     }
 
 
-    /**safe range for cLAW =                                */
+    /**
+     * safe range for cLAW =
+     */
     public class AutoClawAction implements Action {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
-
-        public   AutoClawAction(double position) {
+        double pauseTime;
+        public AutoClawAction(double position, double pauseTime) {
             this.desirePosition = position;
+            this.pauseTime = pauseTime;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
@@ -493,29 +531,35 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 autoRobot.Outtake.claw.setPosition(desirePosition);
                 initialized = true;
             }
-            return false;
+            return timer.seconds() < pauseTime;
         }
     }
-    public Action autoClawAction(double position){
 
-        return new AutoClawAction(position);
+    public Action autoClawAction(double position, double pauseTime) {
+        return new AutoClawAction(position, pauseTime);
     }
 
 
-    /**safe range for IntakeSlider MOTOR                               */
+    /**
+     * safe range for IntakeSlider MOTOR
+     */
     public class AutoIntakeSliderAction implements Action {
         private boolean initialized = false;
         int desirePosition;
         double desiredPower;
         ElapsedTime timer;
-        public   AutoIntakeSliderAction(int position, double power) {
-            this.desirePosition = position;this.desiredPower = power;
+        double pauseTime;
+        public AutoIntakeSliderAction(int position, double power, double pauseTime) {
+            this.desirePosition = position;
+            this.desiredPower = power;
+            this.pauseTime = pauseTime;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 timer = new ElapsedTime();
-                autoRobot.Intake.intakeSlideSetPositionPower(desirePosition,desiredPower);
+                autoRobot.Intake.intakeSlideSetPositionPower(desirePosition, desiredPower);
                 initialized = true;
             }
             double positionIntakeSlide = autoRobot.Intake.intakeSlides.getCurrentPosition();
@@ -523,25 +567,29 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
             if (Math.abs((positionIntakeSlide - desirePosition)) > 20) {
                 return true;
             } else {
-                return false;
+                return timer.seconds() < pauseTime;
             }
 
         }
     }
-    public Action autoIntakeSliderAction(int position, double power){
-        return new AutoIntakeSliderAction(position, power);
+
+    public Action autoIntakeSliderAction(int position, double power, double pauseTime) {
+        return new AutoIntakeSliderAction(position, power, pauseTime);
     }
 
 
-    /**safe range for intakeServoAxon =                                */
+    /**
+     * safe range for intakeServoAxon =
+     */
     public class AutoIntakeServoAxonAction implements Action {
         private boolean initialized = false;
         double desirePosition;
         ElapsedTime timer;
 
-        public   AutoIntakeServoAxonAction(double position) {
+        public AutoIntakeServoAxonAction(double position) {
             this.desirePosition = position;
         }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
@@ -552,7 +600,9 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
             return false;
         }
     }
-    public Action autoIntakeServoAxonAction(double position){
+    public Action autoIntakeServoAxonAction(double position) {
+
+        telemetry.addLine("autoIntakeServoAxonAction");
         return new AutoIntakeServoAxonAction(position);
     }
 
@@ -561,9 +611,11 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         private boolean initialized = false;
         double power;
         ElapsedTime timer;
-        public   AutoIntakeSpinerAction(double power) {
+        double pauseTimeSec;
+        public   AutoIntakeSpinerAction(double power, double pauseTimeSec) {
 
             this.power = power;
+            this.pauseTimeSec = pauseTimeSec;
         }
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -573,12 +625,35 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 autoRobot.Intake.intakeRightWheel.setPower(-power);
                 initialized = true;
             }
+            return timer.seconds() < pauseTimeSec;
+        }
+    }
+    //power:  positive = intake split OUT sample
+    public Action autoIntakeSpiner(double power, double pauseTimeSec){
+        return new AutoIntakeSpinerAction(power, pauseTimeSec);
+    }
+
+    public class AutoDiplayAction implements Action {
+        private boolean initialized = false;
+        String teleData;
+        ElapsedTime timer;
+
+        public AutoDiplayAction(String teleData) {
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                telemetry.addLine(teleData);
+                telemetry.update();
+                initialized = true;
+            }
             return false;
         }
     }
     //power:  positive = intake split OUT sample
-    public Action autoIntakeSpinerAction(double power){
-        return new AutoIntakeSpinerAction(power);
+    public Action autoDiplayAction(String teleData){
+        return new AutoDiplayAction(teleData);
     }
 
 
