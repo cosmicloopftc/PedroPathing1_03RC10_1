@@ -94,6 +94,7 @@ public class RED_TeleOpV1 extends OpMode {
     private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
 
     private String sampleColor = "NONE";
+    private boolean intakeExtend = false;
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
     public static double intakeSlidesCurrent;
@@ -353,8 +354,17 @@ public class RED_TeleOpV1 extends OpMode {
                 else if(gamepad1.dpad_left){
                     robot.Intake.intakeSlideMID();
                 }
-                else if(gamepad1.dpad_right){
+                else if(gamepad1.dpad_right || (!intakeExtend && (sampleColor.equals("RED") || sampleColor.equals("YELLOW")))){
                     robot.Intake.intakeSlideIN();
+                    if(gamepad1.dpad_down){
+                        state = State.TRANSFER;
+                        robot.Intake.intakeSTOP();
+                        robot.Intake.intakeTRANSFER();
+                        robot.Intake.intakeSlideIN();
+                    }
+                    if (gamepad1.ps){
+                        intakeExtend = true;
+                    }
                 }
                 else if(gamepad1.dpad_down){
                     state = State.TRANSFER;

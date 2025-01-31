@@ -79,6 +79,7 @@ public class BLUE_TeleOpV1 extends OpMode {
     private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
 
     private String sampleColor = "NONE";
+    private boolean intakeExtend = false;
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
     public static double intakeSlidesCurrent;
@@ -333,8 +334,17 @@ public class BLUE_TeleOpV1 extends OpMode {
                 else if(gamepad1.dpad_left){
                     robot.Intake.intakeSlideMID();
                 }
-                else if(gamepad1.dpad_right){
+                else if(gamepad1.dpad_right || (!intakeExtend && (sampleColor.equals("BLUE") || sampleColor.equals("YELLOW")))){
                     robot.Intake.intakeSlideIN();
+                    if(gamepad1.dpad_down){
+                        state = State.TRANSFER;
+                        robot.Intake.intakeSTOP();
+                        robot.Intake.intakeTRANSFER();
+                        robot.Intake.intakeSlideIN();
+                    }
+                    if (gamepad1.ps){
+                        intakeExtend = true;
+                    }
                 }
                 else if(gamepad1.dpad_down){
                     state = State.TRANSFER;
@@ -344,6 +354,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 }
                 break;
             case TRANSFER:
+                intakeExtend = false;
                 telemetryA.addData("Outtake Arm Position actual reading:",robot.Outtake.getOuttakeArmPosition());
                 telemetryA.addData("Outtake Arm set position:", robot.Outtake.outtakeArmAxon.getPosition());
                 telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
