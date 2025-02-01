@@ -43,7 +43,9 @@ public class HardwareOuttake {
         outtakeRightSlide.setPower(0);
 
         outtakeArmAxon = hardwareMap.get(Servo.class, "outtakeArmAxon");
+        outtakeArmAxon.setDirection(Servo.Direction.REVERSE);
         outtakeExtension = hardwareMap.get(Servo.class, "outtakeExtension");
+        outtakeExtension.setDirection(Servo.Direction.REVERSE);
         claw = hardwareMap.get(Servo.class, "claw");
 
 
@@ -93,7 +95,7 @@ public class HardwareOuttake {
     public void groundPosition(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        outtakeArmAxon.setPosition(0.32); //TODO: Find position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.34 ); //TODO: Find position for transfering (stays the same throughout process)
         extendIN();
         //openClaw();
     }
@@ -108,7 +110,7 @@ public class HardwareOuttake {
     public void readyPosition(){ // TODO: Do we need this?
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        outtakeArmAxon.setPosition(0.4); //Figure out position for transfering
+        outtakeArmAxon.setPosition(0.43); //Figure out position for transfering
         extendIN();
         openClaw();
     }

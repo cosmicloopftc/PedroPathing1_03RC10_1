@@ -73,34 +73,23 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
         TrajectoryActionBuilder preloadScore;
         preloadScore = drive.actionBuilder(beginPose)
-                //        .waitSeconds(0.5)
                 .lineToYConstantHeading(-37,velFast, accFast);
 
         TrajectoryActionBuilder preloadMoveBack= preloadScore.endTrajectory().fresh()
                 //claw open separately before this
-                .lineToYConstantHeading(-47, velFast, accFast)
-            //    .waitSeconds(0.5)
+                .lineToYConstantHeading(-43, velFast, accFast)
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
-                .splineToLinearHeading(new Pose2d(40,-40, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(38,-40, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
-//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
-//                .stopAndAdd(new AutoOuttakeSliderAction(0, 1));  //move outtake slider inside robot
-           //     .splineToLinearHeading(new Pose2d(25,-45, Math.toRadians(-90)),
-            //            Math.toRadians(-90), velFast, accFast);
 
-        //  .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60), velFast, accFast);
 
 
         TrajectoryActionBuilder gotoSample4 = preloadMoveBack.endTrajectory().fresh()
                 .lineToYConstantHeading(-20, velFast, accFast)
-//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
-                //next spline to behind Sample4 and ready to push it home.
-                .splineToLinearHeading(new Pose2d(45,-8, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(47,-14, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder pushSample4HomeThenToSample5 = gotoSample4.endTrajectory().fresh()
-         //       .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
-//                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
                 .lineToYConstantHeading(-52, velFast, accFast)
                 .lineToYConstantHeading(-20, velFast, accFast)
                 .splineToLinearHeading(new Pose2d(51,-8, Math.toRadians(-90)),
@@ -109,51 +98,33 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
         TrajectoryActionBuilder pushSample5HomeThenToSample6 = gotoSample4.endTrajectory().fresh()
                 .lineToYConstantHeading(-52, velFast, accFast)
                 .lineToYConstantHeading(-20, velFast, accFast)
-                .splineToLinearHeading(new Pose2d(55,-8, Math.toRadians(-90)),
+                .splineToLinearHeading(new Pose2d(58,-16, Math.toRadians(-90)),
                         Math.toRadians(-90), velFast, accFast);
 
         TrajectoryActionBuilder pushSample6Home = pushSample5HomeThenToSample6.endTrajectory().fresh()
                 .lineToYConstantHeading(-54, velFast, accFast);
-            //    .setTangent(0);
-             //   .strafeToLinearHeading(new Vector2d(38, -54), Math.toRadians(-90));
 
         TrajectoryActionBuilder collectSpec1 = pushSample6Home.endTrajectory().fresh()
-             //   .lineToY(-57)
                 .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
-                //.waitSeconds(0.5)
                 .stopAndAdd(new AutoouttakeExtensionAction(0.85))  //extend arm (need to this to the place after preloadscore
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.28,0))   //extend arm (need to this to the place after preloadscore
                 .setTangent(-90)
                 .lineToY(-65)
-          //      .strafeToLinearHeading(new Vector2d(30, -63), Math.toRadians(-90))
                 .stopAndAdd(new AutoClawAction(1, 0.5))               //close claw
-              //  .waitSeconds(0.5);
                 .stopAndAdd(new AutoOuttakeSliderAction(1240, 1))         //move slider up
                 .stopAndAdd(new AutoouttakeExtensionAction(1))            //bring arm in
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.9,0));           //rotate to specimen score position
 
         TrajectoryActionBuilder firstScoreSpec =  collectSpec1.endTrajectory().fresh()
-//                .setReversed(true)
-//                .strafeToSplineHeading(new Vector2d(2, -38), Math.toRadians(-90), velFast, accFast)
-//                .waitSeconds(0.1)
-//                .lineToY(-33)
-//                .waitSeconds(0.1)
-//                .lineToY(-40);
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(5,-43),Math.toRadians(90))
-                .lineToYConstantHeading(-37 );
+                .lineToYConstantHeading(-62)
+                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
+                .lineToYConstantHeading(-37);
 
         TrajectoryActionBuilder collectSpec2 = firstScoreSpec.endTrajectory().fresh()
-//                .setReversed(false)
-//                .lineToYConstantHeading(-47, velFast, accFast)
-//                //    .waitSeconds(0.5)
-//                .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))          //rotate arm to inside robot
-//                .stopAndAdd(new AutoOuttakeSliderAction(0, 1))   //move outtake slider inside robot
-//                .splineToConstantHeading(new Vector2d(26, -57), Math.toRadians(-90), velFast, accFast);
                 .lineToYConstantHeading(-45)
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
                 .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
-                //.waitSeconds(0.5)
+
                 .stopAndAdd(new AutoouttakeExtensionAction(0.85))  //extend arm (need to this to the place after preloadscore
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.28,0))   //extend arm (need to this to the place after preloadscore
                 .lineToYConstantHeading(-45)
@@ -161,29 +132,21 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 .lineToYConstantHeading(-65)
 
                 .stopAndAdd(new AutoClawAction(1, 0.5))               //close claw
-                //  .waitSeconds(0.5);
+
                 .stopAndAdd(new AutoOuttakeSliderAction(1240, 1))         //move slider up
                 .stopAndAdd(new AutoouttakeExtensionAction(1))            //bring arm in
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.9,0));
 
         TrajectoryActionBuilder secondScoreSpec = collectSpec2.endTrajectory().fresh()
-//                .setReversed(true)
-//                .strafeToSplineHeading(new Vector2d(-1, -38), Math.toRadians(-90), velFast, accFast)
-//                .waitSeconds(0.1)
-//                .lineToY(-33)
-//                .waitSeconds(0.1)
-//                .lineToY(-40);
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(0,-40),Math.toRadians(90))
-                .lineToYConstantHeading(-37 );
+                .lineToYConstantHeading(-62)
+                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
+                .lineToYConstantHeading(-37);
 
         TrajectoryActionBuilder collectSpec3 = secondScoreSpec.endTrajectory().fresh()
-//                .setReversed(false)
-//                .splineToConstantHeading(new Vector2d(26, -57), Math.toRadians(-90), velFast, accFast);
                 .lineToYConstantHeading(-45)
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
                 .stopAndAdd(new AutoOuttakeSliderAction(0, 1))
-                //.waitSeconds(0.5)
+
                 .stopAndAdd(new AutoouttakeExtensionAction(0.85))  //extend arm (need to this to the place after preloadscore
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.28,0))   //extend arm (need to this to the place after preloadscore
                 .lineToYConstantHeading(-45)
@@ -191,23 +154,18 @@ public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
                 .lineToYConstantHeading(-65)
 
                 .stopAndAdd(new AutoClawAction(1, 0.5))               //close claw
-                //  .waitSeconds(0.5);
+
                 .stopAndAdd(new AutoOuttakeSliderAction(1240, 1))         //move slider up
                 .stopAndAdd(new AutoouttakeExtensionAction(1))            //bring arm in
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.9,0));
 
         TrajectoryActionBuilder thirdScoreSpec = collectSpec3.endTrajectory().fresh()
-//                .strafeToSplineHeading(new Vector2d(2, -38), Math.toRadians(-90), velFast, accFast)
-//                .waitSeconds(0.1)
-//                .lineToY(-33)
-//                .waitSeconds(0.1)
-//                .lineToY(-40);
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(-5,-40),Math.toRadians(90))
+                .lineToYConstantHeading(-62)
+                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
                 .lineToYConstantHeading(-37 )
 
                 .stopAndAdd(autoClawAction(0.7,0))
-                .lineToYConstantHeading(-45)
+                .lineToYConstantHeading(-43)
                 .stopAndAdd(new AutoOuttakeArmAxonAction(0.4, 0))
                 .stopAndAdd(new AutoOuttakeSliderAction(0, 1));
 

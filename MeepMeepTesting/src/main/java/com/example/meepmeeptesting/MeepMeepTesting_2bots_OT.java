@@ -29,24 +29,30 @@ public class MeepMeepTesting_2bots_OT {
                 //move back and head to sample 3 area, get read to rotate push it home
 
                 //from wall to Submerge, score 2nd specimen
+                     //   .setReversed(true)
                 .lineToYConstantHeading(-60 )
                 .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
                 .lineToYConstantHeading(-33 )
                 //from Submerge to Wall
+                    //    .setReversed(false)
                 .lineToYConstantHeading(-40)
                 .splineToConstantHeading(new Vector2d(38,-60),Math.toRadians(270))
                 .lineToYConstantHeading(-62.85)
                 //from wall to Submerge, score 3nd specimen
+                    //    .setReversed(true)
                 .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(0,-40),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
                 .lineToYConstantHeading(-33 )
                 //from Submerge to Wall
+                  //      .setReversed(false)
                 .lineToYConstantHeading(-40)
                 .splineToConstantHeading(new Vector2d(38,-60),Math.toRadians(270))
                 .lineToYConstantHeading(-62.85)
                 //from wall to Submerge, score 4th specimen
+                     //   .setReversed(true)
                 .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(-5,-40),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
+         //               .splineToLinearHeading(new Pose2d(-5, -40, Math.toRadians(90)), Math.toRadians(90))
                 .lineToYConstantHeading(-33 )
 
 
