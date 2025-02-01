@@ -1,4 +1,4 @@
-package RR;
+package RR.OLD;
 
 import androidx.annotation.NonNull;
 
@@ -24,9 +24,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import Hardware.HardwareNoDriveTrainRobot;
+import RR.MecanumDrive;
 
-@Config
-@Autonomous(name = "RR_2AutoRedSpecPUSHTEST v1.1", group = "Auto")
+//@Config
+//@Autonomous(name = "RR_2AutoRedSpecPUSHTEST v1.1", group = "Auto")
 public class RR_2AutoRedSpecimenTESTPUSH extends LinearOpMode {
 
 
