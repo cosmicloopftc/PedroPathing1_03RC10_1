@@ -275,6 +275,7 @@ public class BLUE_TeleOpV1 extends OpMode {
             case START:
                 telemetryA.addLine("Start");
                 telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
+
                 if(gamepad2.a || outtakeOption.equals("start")) {
                     robot.Outtake.readyPosition();
                     robot.Intake.intakeTRANSFER();
@@ -359,7 +360,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 telemetryA.addData("Outtake Arm set position:", robot.Outtake.outtakeArmAxon.getPosition());
                 telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
                 telemetryA.addData("Intake Axon Servo set position:", robot.Intake.getIntakeServoAxonPosition());
-                if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
+                if (robot.Outtake.getOuttakeArmPosition() < 0.4 && robot.Outtake.getOuttakeArmPosition() > 0.32 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
                     robot.Outtake.closeClaw();
                 }
                 else{
@@ -435,7 +436,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 if (outtakeOption.equals("sampleDeliver")) { //Deliver sample to human player TODO: test
                     robot.Intake.intakeOUT();
                     robot.Outtake.sampleDelivery();
-                    if (robot.Outtake.getOuttakeArmPosition() < 0.2){
+                    if (robot.Outtake.getOuttakeArmPosition() > 0.8){
                         robot.Outtake.openClaw();
                         robot.Intake.intakeSTOP();
                         state = State.READY_DOWN;
