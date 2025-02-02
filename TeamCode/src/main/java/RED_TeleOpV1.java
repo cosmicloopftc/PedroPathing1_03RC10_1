@@ -1,46 +1,32 @@
-
 import android.graphics.Color;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.PoseUpdater;
+import com.pedropathing.util.Constants;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.List;
+
 import Hardware.HardwareDrivetrain;
 import Hardware.HardwareNoDriveTrainRobot;
-
-//import pedroPathing.follower.Follower;
-//import pedroPathing.localization.Pose;
-//import pedroPathing.localization.PoseUpdater;
-//import pedroPathing.util.DashboardPoseTracker;
-
-import com.pedropathing.follower.Follower;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.util.Constants;
-
-import RR.MecanumDrive;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
@@ -89,7 +75,6 @@ public class RED_TeleOpV1 extends OpMode {
 
     //based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
     // * @version 2.0, 11/28/2024
-    //TODO: need to update the starting pose transfer from AUTO
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
 
@@ -102,11 +87,6 @@ public class RED_TeleOpV1 extends OpMode {
     //label robot for all hardware except drivetrain; and drivetrain is a separate object
     HardwareNoDriveTrainRobot robot = new HardwareNoDriveTrainRobot();
     HardwareDrivetrain drivetrain = new HardwareDrivetrain();
-
-    //from RoadRunner setup
-    //TODO: need to update the starting pose transfer from AUTO
-    MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-
 
     VoltageSensor battery;
 
@@ -124,10 +104,12 @@ public class RED_TeleOpV1 extends OpMode {
 
 
     private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime clawTime = new ElapsedTime();
     double botHeading;
     String drivingOrientation = "robotOriented";   //TODO: as default for Eduardo, but will also reset in init as well.
     double lastTime;
     double imuAngle;
+    boolean clawStatusOpen = false;
     String outtakeOption = "";
 
 
@@ -295,6 +277,7 @@ public class RED_TeleOpV1 extends OpMode {
             case START:
                 telemetryA.addLine("Start");
                 telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
+
                 if(gamepad2.a || outtakeOption.equals("start")) {
                     robot.Outtake.readyPosition();
                     robot.Intake.intakeTRANSFER();
@@ -374,11 +357,12 @@ public class RED_TeleOpV1 extends OpMode {
                 }
                 break;
             case TRANSFER:
+                intakeExtend = false;
                 telemetryA.addData("Outtake Arm Position actual reading:",robot.Outtake.getOuttakeArmPosition());
                 telemetryA.addData("Outtake Arm set position:", robot.Outtake.outtakeArmAxon.getPosition());
                 telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
                 telemetryA.addData("Intake Axon Servo set position:", robot.Intake.getIntakeServoAxonPosition());
-                if (robot.Outtake.getOuttakeArmPosition() < 0.69 && robot.Outtake.getOuttakeArmPosition() > 0.65 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
+                if (robot.Outtake.getOuttakeArmPosition() < 0.4 && robot.Outtake.getOuttakeArmPosition() > 0.32 && robot.Outtake.outtakeArmAxon.getPosition() < 0.35) {
                     robot.Outtake.closeClaw();
                 }
                 else{
@@ -447,14 +431,15 @@ public class RED_TeleOpV1 extends OpMode {
                 if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
+
 
                 if (outtakeOption.equals("sampleDeliver")) { //Deliver sample to human player TODO: test
                     robot.Intake.intakeOUT();
                     robot.Outtake.sampleDelivery();
-                    if (robot.Outtake.getOuttakeArmPosition() < 0.2){
+                    if (robot.Outtake.getOuttakeArmPosition() > 0.8){
                         robot.Outtake.openClaw();
                         robot.Intake.intakeSTOP();
                         state = State.READY_DOWN;
@@ -469,9 +454,17 @@ public class RED_TeleOpV1 extends OpMode {
                         state = State.READY_DOWN;
                     }
                     else {
-                        robot.Intake.intakeINSIDEBOT();
-                        robot.Outtake.openClaw();
-                        robot.Outtake.wallIntakeFront();
+                        if (robot.Outtake.getOuttakeArmPosition() > 0.7){
+                            robot.Intake.intakeINSIDEBOT();
+                            robot.Outtake.leftSlideSetPositionPower(0,1);
+                            robot.Outtake.rightSlideSetPositionPower(0,1);
+                            robot.Outtake.outtakeArmAxon.setPosition(0.28);
+                        }
+                        else {
+                            robot.Intake.intakeINSIDEBOT();
+                            robot.Outtake.openClaw();
+                            robot.Outtake.wallIntakeFront();
+                        }
                     }
                 }
                 if (robot.Outtake.outtakeArmAxon.getPosition() < 0.3  && gamepad2.left_trigger > 0.2){ // Only if at wall intake position
@@ -530,8 +523,8 @@ public class RED_TeleOpV1 extends OpMode {
         //Hang testing:
         // Move slides up before hanging
         if (gamepad1.y) {
-            robot.Outtake.leftSlideSetPositionPower(2450, 1);
-            robot.Outtake.rightSlideSetPositionPower(2450, 1);
+            robot.Outtake.leftSlideSetPositionPower(2600, 1);
+            robot.Outtake.rightSlideSetPositionPower(2600, 1);
         }
         // Pull slides down to hang
         else if(gamepad1.x) {
@@ -580,28 +573,13 @@ public class RED_TeleOpV1 extends OpMode {
  - Robot-Centric Mode: true
  --original:  follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
  */
-        //Below set the max power as set above; PedroPathing method
-        //if use, the comment out RoadRunner drive below
+        //follower.setTeleOpMovementVectors(-y*powerShift, -x*powerShift, -rx*powerShift, true);
+        //Below set the max power as set above
         follower.setTeleOpMovementVectors(
                 Range.clip(y,-powerShift, +powerShift),
                 Range.clip(x,-powerShift, +powerShift),
                 Range.clip(rx,-powerShift, +powerShift), true);
         follower.update();
-
-        // Below is for RoadRunner
-        // if use, then comment out PedroPathing follower above
-//        drive.setDrivePowers(new PoseVelocity2d(
-//                new Vector2d(
-//                        Range.clip(y,-powerShift, +powerShift),
-//                        Range.clip(x,-powerShift, +powerShift)
-//                              ),
-//                Range.clip(rx,-powerShift, +powerShift)
-//                ));
-//        drive.updatePoseEstimate();
-//        Pose2d pose = drive.localizer.getPose();
-
-
-
 
 
 
@@ -616,7 +594,7 @@ public class RED_TeleOpV1 extends OpMode {
         telemetryA.addData("State = ", state);
         telemetryA.addData("Time in State (seconds) = ", 0);
         telemetryA.addData("lastTime = ", lastTime);
-        telemetryA.addLine("");
+
         telemetryA.addData("OuttakeSliderLeftCurrent mA = ", robot.Outtake.getOuttakeSliderLeftCurrent());
         telemetryA.addData("OuttakeSliderRightCurrent mA = ", robot.Outtake.getOuttakeSliderRightCurrent());
 
