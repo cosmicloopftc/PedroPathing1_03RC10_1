@@ -104,10 +104,12 @@ public class BLUE_TeleOpV1 extends OpMode {
 
 
     private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime clawTime = new ElapsedTime();
     double botHeading;
     String drivingOrientation = "robotOriented";   //TODO: as default for Eduardo, but will also reset in init as well.
     double lastTime;
     double imuAngle;
+    boolean clawStatusOpen = false;
     String outtakeOption = "";
 
 
@@ -429,9 +431,10 @@ public class BLUE_TeleOpV1 extends OpMode {
                 if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
+
 
                 if (outtakeOption.equals("sampleDeliver")) { //Deliver sample to human player TODO: test
                     robot.Intake.intakeOUT();
@@ -451,9 +454,17 @@ public class BLUE_TeleOpV1 extends OpMode {
                         state = State.READY_DOWN;
                     }
                     else {
-                        robot.Intake.intakeINSIDEBOT();
-                        robot.Outtake.openClaw();
-                        robot.Outtake.wallIntakeFront();
+                        if (robot.Outtake.getOuttakeArmPosition() > 0.7){
+                            robot.Intake.intakeINSIDEBOT();
+                            robot.Outtake.leftSlideSetPositionPower(0,1);
+                            robot.Outtake.rightSlideSetPositionPower(0,1);
+                            robot.Outtake.outtakeArmAxon.setPosition(0.28);
+                        }
+                        else {
+                            robot.Intake.intakeINSIDEBOT();
+                            robot.Outtake.openClaw();
+                            robot.Outtake.wallIntakeFront();
+                        }
                     }
                 }
                 if (robot.Outtake.outtakeArmAxon.getPosition() < 0.3  && gamepad2.left_trigger > 0.2){ // Only if at wall intake position
@@ -512,8 +523,8 @@ public class BLUE_TeleOpV1 extends OpMode {
         //Hang testing:
         // Move slides up before hanging
         if (gamepad1.y) {
-            robot.Outtake.leftSlideSetPositionPower(2450, 1);
-            robot.Outtake.rightSlideSetPositionPower(2450, 1);
+            robot.Outtake.leftSlideSetPositionPower(2600, 1);
+            robot.Outtake.rightSlideSetPositionPower(2600, 1);
         }
         // Pull slides down to hang
         else if(gamepad1.x) {

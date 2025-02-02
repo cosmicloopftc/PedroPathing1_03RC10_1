@@ -90,7 +90,7 @@ public class HardwareOuttake {
         outtakeExtension.setPosition(1);
     }
     public void extendOUT(){
-        outtakeExtension.setPosition(0.75);
+        outtakeExtension.setPosition(0.85); //All the way out is 0.75, 0.85 is within the robot
     }
     public void groundPosition(){
         leftSlideSetPositionPower(0,1);
