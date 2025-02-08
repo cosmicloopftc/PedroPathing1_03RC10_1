@@ -186,7 +186,6 @@ public class BLUE_TeleOpV1 extends OpMode {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
 
-
         robot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
         robot.imu.resetYaw();      //reset the IMU/Gyro angle with each match.
         drivetrain.init(hardwareMap);   //for drivetrain only
@@ -247,7 +246,18 @@ public class BLUE_TeleOpV1 extends OpMode {
         telemetryA.addData("Distance Sensor = ", "%.1f", robot.Sensor.getDistance());
         telemetryAllColorInfo();
         gamePadColorControl();
-
+        robot.LED.ledStick.setColor(5, Color.WHITE);
+        robot.LED.ledStick.setBrightness(0,0);
+        robot.LED.ledStick.setBrightness(1,0);
+        robot.LED.ledStick.setBrightness(2,0);
+        robot.LED.ledStick.setBrightness(3,0);
+        robot.LED.ledStick.setBrightness(4,0);
+        robot.LED.ledStick.setBrightness(5,1);
+        robot.LED.ledStick.setBrightness(6,0);
+        robot.LED.ledStick.setBrightness(7,0);
+        robot.LED.ledStick.setBrightness(8,0);
+        robot.LED.ledStick.setBrightness(9,0);
+        robot.LED.ledStick.setBrightness(10,0);
 
 
 
@@ -261,6 +271,18 @@ public class BLUE_TeleOpV1 extends OpMode {
         runtime.reset();
         drivingOrientation = "robotOriented";
         state = State.START;
+        robot.LED.ledStick.setColor(5, Color.WHITE);
+        robot.LED.ledStick.setBrightness(0,0);
+        robot.LED.ledStick.setBrightness(1,0);
+        robot.LED.ledStick.setBrightness(2,0);
+        robot.LED.ledStick.setBrightness(3,0);
+        robot.LED.ledStick.setBrightness(4,0);
+        robot.LED.ledStick.setBrightness(5,1);
+        robot.LED.ledStick.setBrightness(6,0);
+        robot.LED.ledStick.setBrightness(7,0);
+        robot.LED.ledStick.setBrightness(8,0);
+        robot.LED.ledStick.setBrightness(9,0);
+        robot.LED.ledStick.setBrightness(10,0);
 
         //This starts teleop drive control by 1. breakFollowing() and set teleopDrive = true;
         //If regular manual control by JAVA for FTC method, then comment this out.
@@ -316,6 +338,19 @@ public class BLUE_TeleOpV1 extends OpMode {
                 }
                 break;
             case INTAKE:
+//                if (sampleColor.equals("NONE")){
+//                    robot.LED.ledStick.setColor(1, Color.WHITE);
+//                    robot.LED.ledStick.setBrightness(1,1);
+//                    robot.LED.ledStick.setBrightness(2,0);
+//                    robot.LED.ledStick.setBrightness(3,0);
+//                    robot.LED.ledStick.setBrightness(4,0);
+//                    robot.LED.ledStick.setBrightness(5,0);
+//                    robot.LED.ledStick.setBrightness(6,0);
+//                    robot.LED.ledStick.setBrightness(7,0);
+//                    robot.LED.ledStick.setBrightness(8,0);
+//                    robot.LED.ledStick.setBrightness(9,0);
+//                    robot.LED.ledStick.setBrightness(10,0);
+//                }
                 if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() > 0.8){
                     robot.Intake.intakeDOWN();
                     robot.Intake.intakeIN();
@@ -324,12 +359,17 @@ public class BLUE_TeleOpV1 extends OpMode {
                     robot.Intake.intakeIN();
                 }
                 else if (gamepad1.left_bumper || sampleColor.equals("RED")){
+//                    if (sampleColor.equals("RED")){
+//                        robot.LED.ledStick.setColor(Color.RED);
+//                        robot.LED.ledStick.setBrightness(1);
+//                    }
                     robot.Intake.intakeUP();
                     robot.Intake.intakeOUT();
                 }
                 else{
                     robot.Intake.intakeUP();
                     robot.Intake.intakeSTOP();
+
                 }
                 if(gamepad1.dpad_up){
                     robot.Intake.intakeSlideOUT();
@@ -338,6 +378,14 @@ public class BLUE_TeleOpV1 extends OpMode {
                     robot.Intake.intakeSlideMID();
                 }
                 else if(gamepad1.dpad_right || (!intakeExtend && (sampleColor.equals("BLUE") || sampleColor.equals("YELLOW")))){
+//                    if (sampleColor.equals("BLUE")){
+//                        robot.LED.ledStick.setColor(Color.BLUE);
+//                        robot.LED.ledStick.setBrightness(1);
+//                    }
+//                    else if (sampleColor.equals("YELLOW")){
+//                        robot.LED.ledStick.setColor(Color.YELLOW);
+//                        robot.LED.ledStick.setBrightness(1);
+//                    }
                     robot.Intake.intakeSlideIN();
                     if(gamepad1.dpad_down){
                         state = State.TRANSFER;
@@ -422,16 +470,16 @@ public class BLUE_TeleOpV1 extends OpMode {
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
                 if (outtakeOption.equals("highBasket")){
-                    robot.Outtake.leftSlideSetPositionPower(2400,1);
-                    robot.Outtake.rightSlideSetPositionPower(2400,1);
+                    robot.Outtake.leftSlideSetPositionPower(2300,1);
+                    robot.Outtake.rightSlideSetPositionPower(2300,1);
                     if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1400){
                         robot.Outtake.highBasket();
                     }
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2250 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2250 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
 
@@ -531,6 +579,31 @@ public class BLUE_TeleOpV1 extends OpMode {
             robot.Outtake.leftSlideSetPositionPower(1400, 1);
             robot.Outtake.rightSlideSetPositionPower(1400, 1);
         }
+        if (sampleColor.equals("YELLOW")){
+            robot.LED.ledStick.setColor(Color.YELLOW);
+            robot.LED.ledStick.setBrightness(1);
+        }else if (sampleColor.equals("BLUE")){
+            robot.LED.ledStick.setColor(Color.BLUE);
+            robot.LED.ledStick.setBrightness(1);
+        }else if (sampleColor.equals("RED")){
+            robot.LED.ledStick.setColor(Color.RED);
+            robot.LED.ledStick.setBrightness(1);
+        }else{
+            robot.LED.ledStick.setColor(5, Color.WHITE);
+            robot.LED.ledStick.setBrightness(0,0);
+            robot.LED.ledStick.setBrightness(1,0);
+            robot.LED.ledStick.setBrightness(2,0);
+            robot.LED.ledStick.setBrightness(3,0);
+            robot.LED.ledStick.setBrightness(4,0);
+            robot.LED.ledStick.setBrightness(5,1);
+            robot.LED.ledStick.setBrightness(6,0);
+            robot.LED.ledStick.setBrightness(7,0);
+            robot.LED.ledStick.setBrightness(8,0);
+            robot.LED.ledStick.setBrightness(9,0);
+            robot.LED.ledStick.setBrightness(10,0);
+        }
+
+
 
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
