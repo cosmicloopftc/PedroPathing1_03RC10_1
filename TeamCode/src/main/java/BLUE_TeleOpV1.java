@@ -422,16 +422,16 @@ public class BLUE_TeleOpV1 extends OpMode {
                 telemetryA.addData("Outtake claw Position: ",robot.Outtake.claw.getPosition());
                 telemetryA.addData("Outtake left slide Position: ",robot.Outtake.outtakeLeftSlide.getCurrentPosition());
                 if (outtakeOption.equals("highBasket")){
-                    robot.Outtake.leftSlideSetPositionPower(2400,1);
-                    robot.Outtake.rightSlideSetPositionPower(2400,1);
+                    robot.Outtake.leftSlideSetPositionPower(2300,1);
+                    robot.Outtake.rightSlideSetPositionPower(2300,1);
                     if (robot.Outtake.outtakeLeftSlide.getCurrentPosition()>1400){
                         robot.Outtake.highBasket();
                     }
                 }
-                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.left_bumper){ // If at high basket position
+                if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2250 && gamepad2.left_bumper){ // If at high basket position
                     robot.Outtake.openClaw();
                 }
-                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2300 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
+                else if (robot.Outtake.outtakeLeftSlide.getCurrentPosition() > 2250 && gamepad2.a && robot.Outtake.claw.getPosition() < 0.75){ // Should robot make sure claw is open before going down
                     state = State.READY_DOWN;
                 }
 

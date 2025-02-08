@@ -95,7 +95,7 @@ public class HardwareOuttake {
     public void groundPosition(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        outtakeArmAxon.setPosition(0.34 ); //TODO: Find position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.34); //TODO: Find position for transfering (stays the same throughout process)
         extendIN();
         //openClaw();
     }
@@ -122,10 +122,10 @@ public class HardwareOuttake {
         //rightSlideSetPositionPower(970,0.6);
     }
     public void highBasket(){
-        outtakeArmAxon.setPosition(0.75);
+        outtakeArmAxon.setPosition(0.72);
         extendIN();
-        leftSlideSetPositionPower(2400,1);
-        rightSlideSetPositionPower(2400,1);
+        leftSlideSetPositionPower(2300,1);
+        rightSlideSetPositionPower(2300,1);
     }
     public void sampleDelivery(){
         outtakeArmAxon.setPosition(0.9);
@@ -134,8 +134,8 @@ public class HardwareOuttake {
         rightSlideSetPositionPower(0,1);
     }
     public void highChamberSetUpwards(){
-        leftSlideSetPositionPower(1240,1);
-        rightSlideSetPositionPower(1240,1);
+        leftSlideSetPositionPower(1260,1);
+        rightSlideSetPositionPower(1260,1);
         outtakeArmAxon.setPosition(0.9); //Should be same as wall intake
         extendIN();
     }
