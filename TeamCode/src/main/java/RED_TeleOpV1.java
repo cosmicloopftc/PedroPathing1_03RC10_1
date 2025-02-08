@@ -248,7 +248,18 @@ public class RED_TeleOpV1 extends OpMode {
         telemetryAllColorInfo();
         gamePadColorControl();
 
-
+        robot.LED.ledStick.setColor(5, Color.WHITE);
+        robot.LED.ledStick.setBrightness(0,0);
+        robot.LED.ledStick.setBrightness(1,0);
+        robot.LED.ledStick.setBrightness(2,0);
+        robot.LED.ledStick.setBrightness(3,0);
+        robot.LED.ledStick.setBrightness(4,0);
+        robot.LED.ledStick.setBrightness(5,1);
+        robot.LED.ledStick.setBrightness(6,0);
+        robot.LED.ledStick.setBrightness(7,0);
+        robot.LED.ledStick.setBrightness(8,0);
+        robot.LED.ledStick.setBrightness(9,0);
+        robot.LED.ledStick.setBrightness(10,0);
 
 
         telemetryA.update();
@@ -261,6 +272,18 @@ public class RED_TeleOpV1 extends OpMode {
         runtime.reset();
         drivingOrientation = "robotOriented";
         state = State.START;
+        robot.LED.ledStick.setColor(5, Color.WHITE);
+        robot.LED.ledStick.setBrightness(0,0);
+        robot.LED.ledStick.setBrightness(1,0);
+        robot.LED.ledStick.setBrightness(2,0);
+        robot.LED.ledStick.setBrightness(3,0);
+        robot.LED.ledStick.setBrightness(4,0);
+        robot.LED.ledStick.setBrightness(5,1);
+        robot.LED.ledStick.setBrightness(6,0);
+        robot.LED.ledStick.setBrightness(7,0);
+        robot.LED.ledStick.setBrightness(8,0);
+        robot.LED.ledStick.setBrightness(9,0);
+        robot.LED.ledStick.setBrightness(10,0);
 
         //This starts teleop drive control by 1. breakFollowing() and set teleopDrive = true;
         //If regular manual control by JAVA for FTC method, then comment this out.
@@ -531,7 +554,29 @@ public class RED_TeleOpV1 extends OpMode {
             robot.Outtake.leftSlideSetPositionPower(1400, 1);
             robot.Outtake.rightSlideSetPositionPower(1400, 1);
         }
-
+        if (sampleColor.equals("YELLOW")){
+            robot.LED.ledStick.setColor(Color.YELLOW);
+            robot.LED.ledStick.setBrightness(1);
+        }else if (sampleColor.equals("BLUE")){
+            robot.LED.ledStick.setColor(Color.BLUE);
+            robot.LED.ledStick.setBrightness(1);
+        }else if (sampleColor.equals("RED")){
+            robot.LED.ledStick.setColor(Color.RED);
+            robot.LED.ledStick.setBrightness(1);
+        }else{
+            robot.LED.ledStick.setColor(5, Color.WHITE);
+            robot.LED.ledStick.setBrightness(0,0);
+            robot.LED.ledStick.setBrightness(1,0);
+            robot.LED.ledStick.setBrightness(2,0);
+            robot.LED.ledStick.setBrightness(3,0);
+            robot.LED.ledStick.setBrightness(4,0);
+            robot.LED.ledStick.setBrightness(5,1);
+            robot.LED.ledStick.setBrightness(6,0);
+            robot.LED.ledStick.setBrightness(7,0);
+            robot.LED.ledStick.setBrightness(8,0);
+            robot.LED.ledStick.setBrightness(9,0);
+            robot.LED.ledStick.setBrightness(10,0);
+        }
 //Drivetrain Movement:
 //MANUAL DRIVE for Mecanum wheel drive.
         y = -gamepad1.left_stick_y;           // Remember,joystick value is reversed!
