@@ -1,6 +1,7 @@
 package Hardware;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.sparkfun.SparkFunLEDStick;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -21,6 +22,7 @@ public class HardwareLED {
     public DigitalChannel LEDleft2Red;
     public DigitalChannel LEDleft2Green;
     public ColorSensor colorSensor;
+    public SparkFunLEDStick ledStick;
 
 
     public HardwareLED() {
@@ -41,16 +43,37 @@ public class HardwareLED {
         LEDright2Red = hardwareMap.get(DigitalChannel.class, "right2red");                 //connect to Digital port 7
 
 //        colorSensor = hardwareMap.get(ColorSensor.class,"colorSensor");
+        ledStick = hardwareMap.get(SparkFunLEDStick.class,"leds");
 
 
 //        neopixels = hardwareMap.get(AdafruitNeoDriver.class,"neopixels");
 //        neopixels.setNumberOfPixels(NUM_PIXELS);
     }
     public void start() {
-
+        ledStick.setColor(1, Color.WHITE);
+        ledStick.setBrightness(1,1);
+        ledStick.setBrightness(2,0);
+        ledStick.setBrightness(3,0);
+        ledStick.setBrightness(4,0);
+        ledStick.setBrightness(5,0);
+        ledStick.setBrightness(6,0);
+        ledStick.setBrightness(7,0);
+        ledStick.setBrightness(8,0);
+        ledStick.setBrightness(9,0);
+        ledStick.setBrightness(10,0);
     }
     public void stop() {
-
+        ledStick.setColor(1, Color.WHITE);
+        ledStick.setBrightness(1,1);
+        ledStick.setBrightness(2,0);
+        ledStick.setBrightness(3,0);
+        ledStick.setBrightness(4,0);
+        ledStick.setBrightness(5,0);
+        ledStick.setBrightness(6,0);
+        ledStick.setBrightness(7,0);
+        ledStick.setBrightness(8,0);
+        ledStick.setBrightness(9,0);
+        ledStick.setBrightness(10,0);
     }
     public void LEDinitReady() {
         LEDrightGreen.setMode(DigitalChannel.Mode.OUTPUT);
