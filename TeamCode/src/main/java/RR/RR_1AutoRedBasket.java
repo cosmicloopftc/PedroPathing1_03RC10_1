@@ -40,7 +40,7 @@ public class RR_1AutoRedBasket extends LinearOpMode {
     //-------------------------------------------------------------------------------------------------
     @Override
     public void runOpMode() throws InterruptedException {
-        double sliderPower = 0.35;
+        double sliderPower = 0.4;
 
         AutoOuttakeSliderAction autoOuttakeSliderAction = null;
         autoRobot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
@@ -88,7 +88,14 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 .strafeToSplineHeading(new Vector2d(-56, -43), Math.toRadians(124));
 
         TrajectoryActionBuilder submersible = turnToBasket3.endTrajectory().fresh()
-                .strafeToSplineHeading(new Vector2d(-16, 0), Math.toRadians(0));
+                .setTangent(45)
+                .splineToSplineHeading(new Pose2d(-22.5, 0, 0), Math.toRadians(35))
+                .waitSeconds(0.25);
+
+        TrajectoryActionBuilder turnToBasket2 = submersible.endTrajectory().fresh()
+                .setTangent(45)
+                .strafeToConstantHeading(new Vector2d(-25, 0))
+                .strafeToSplineHeading(new Vector2d(-56, -43), Math.toRadians(45));
 
 
 
@@ -118,6 +125,7 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         //      opmodeTimer.resetTimer();
 
         Actions.runBlocking(
+//                        preScore.build(),
                 new SequentialAction(
                         //Raise Outtake slider and Move Robot to basket
                         autoOuttakeSliderHighBasketAction(),
@@ -125,7 +133,7 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         preScore.build(),
 
                         /** Sample 1*/
-                        autoClawAction(0.7, 0.25),
+                        autoClawAction(0.7, 0.15),
                         autoOuttakeArmAxonAction(0.4, 0),
                         autoOuttakeSliderAction(1, 1),
                         autoIntakeServoAxonAction(0.97),
@@ -137,16 +145,15 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         /*NEXT STEP*/
                         autoIntakeSliderAction(1, sliderPower, 0),
                         autoIntakeServoAxonAction(0.64),
-                        autoIntakeSpiner(0, 0.75),
-                        autoOuttakeArmAxonAction(0.33, 0.5),
+                        autoIntakeSpiner(0, 0.25),
+                        autoOuttakeArmAxonAction(0.33, 0.25),
                         autoClawAction(1, 0.25),
                         autoOuttakeSliderHighBasketAction(),
                         turnToBasket3.build(),
-                        autoOuttakeArmAxonAction(0.75, 0.75),
-                        autoClawAction(0.7, 0),
+                        autoOuttakeArmAxonAction(0.75, 0.25),
+                        autoClawAction(0.7, 0.15),
 
                         /** Sample 2*/
-                        autoClawAction(0.7, 0.5),
                         autoOuttakeArmAxonAction(0.4, 0),
                         autoOuttakeSliderAction(1, 1),
                         autoIntakeServoAxonAction(0.97),
@@ -158,16 +165,15 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         /*NEXT STEP*/
                         autoIntakeSliderAction(1, sliderPower, 0),
                         autoIntakeServoAxonAction(0.64),
-                        autoIntakeSpiner(0, 0.75),
-                        autoOuttakeArmAxonAction(0.32, 0.5),
+                        autoIntakeSpiner(0, 0.25),
+                        autoOuttakeArmAxonAction(0.32, 0.25),
                         autoClawAction(1, 0.25),
                         autoOuttakeSliderHighBasketAction(),
                         turnToBasket3.build(),
-                        autoOuttakeArmAxonAction(0.75, 0.75),
-                        autoClawAction(0.7, 0),
+                        autoOuttakeArmAxonAction(0.75, 0.25),
+                        autoClawAction(0.7, 0.15),
 
                         /**Sample 3*/
-                        autoClawAction(0.7, 0.5),
                         autoOuttakeArmAxonAction(0.4, 0),
                         autoOuttakeSliderAction(1, 1),
                         autoIntakeServoAxonAction(0.97),
@@ -179,19 +185,38 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         /*NEXT STEP*/
                         autoIntakeSliderAction(1, sliderPower, 0),
                         autoIntakeServoAxonAction(0.64),
-                        autoIntakeSpiner(0, 0.75),
-                        autoOuttakeArmAxonAction(0.33, 0.5),
+                        autoIntakeSpiner(0, 0.25),
+                        autoOuttakeArmAxonAction(0.33, 0.25),
                         autoClawAction(1, 0.25),
                         autoOuttakeSliderHighBasketAction(),
                         turnToBasket3.build(),
-                        autoOuttakeArmAxonAction(0.75, 0.75),
-                        autoClawAction(0.7, 0.5),
+                        autoOuttakeArmAxonAction(0.75, 0.25),
+                        autoClawAction(0.7, 0.15),
 
                         //End of V1
                         autoOuttakeArmAxonAction(0.4, 0),
-                        autoOuttakeSliderAction(0, 1)
+                        autoOuttakeSliderAction(1, 1),
 
                         //Start of V2
+                        submersible.build(),
+                        autoIntakeServoAxonAction(0.97),
+                        autoIntakeSpiner(-1, 0),
+                        autoIntakeSliderAction(220, sliderPower, 0.5),
+
+                        //Move to basket
+                        autoIntakeSliderAction(1, sliderPower, 0),
+                        turnToBasket2.build(),
+                        autoIntakeServoAxonAction(0.64),
+                        autoIntakeSpiner(0, 0.25),
+                        autoOuttakeArmAxonAction(0.33, 0.25),
+                        autoClawAction(1, 0.25),
+                        autoOuttakeSliderHighBasketAction(),
+                        autoOuttakeArmAxonAction(0.75, 0.25),
+                        autoClawAction(0.7, 0.15),
+
+                        //Final
+                        autoOuttakeArmAxonAction(0.4, 0),
+                        autoOuttakeSliderAction(0, 1)
 
                 )
         );
