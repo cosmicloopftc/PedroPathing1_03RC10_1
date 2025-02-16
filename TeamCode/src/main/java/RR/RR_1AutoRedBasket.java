@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import Hardware.HardwareNoDriveTrainRobot;
 
@@ -254,6 +255,29 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 //        RRAutoCoreTelemetryDuringteleOp();          //show robot drawing on FTC Dashboard //TODO: add in the AUTOcore method to transfer data to teleOp
         telemetryA.update();
         //telemetry.update();
+
+
+        /**TRANSFER SUBSYSTEM positions at end of AUTO TO TELEOP */
+        AUTOstorageConstant.AllianceBasketOrSpecimen = AllianceBasketOrSpecimen;
+        //Intake servo and motor position position:
+        AUTOstorageConstant.autoEnd_Intake_intakeSlides_MotorPosition = autoRobot.Intake.intakeSlides.getCurrentPosition();
+        AUTOstorageConstant.autoEnd_Intake_intakeServoAxon_ServoPosition = autoRobot.Intake.intakeServoAxon.getPosition();  //TODO: confirm name
+        //Outtake servo and motor position:
+        AUTOstorageConstant.autoEnd_Outtake_outtakeLeftSlide_MotorPosition = autoRobot.Outtake.outtakeLeftSlide.getCurrentPosition();
+        AUTOstorageConstant.autoEnd_Outtake_outtakeRightSlide_MotorPosition = autoRobot.Outtake.outtakeRightSlide.getCurrentPosition();
+        AUTOstorageConstant.autoEnd_Outtake_outtakeArmAxon_ServoPosition = autoRobot.Outtake.outtakeArmAxon.getPosition();  //TODO: confirm name
+        AUTOstorageConstant.autoEnd_Outtake_claw_ServoPosition = autoRobot.Outtake.claw.getPosition();
+        //Drivetrain: Pose and heading
+        AUTOstorageConstant.autoEndheadingIMU_yawDEG = autoRobot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);;
+        AUTOstorageConstant.autoPoseEnd =  poseEnd;
+        AUTOstorageConstant.autoEndX = poseEnd.position.x;
+        AUTOstorageConstant.autoEndY = poseEnd.position.y;
+        AUTOstorageConstant.autoEndHeadingDEG = Math.toDegrees(poseEnd.heading.toDouble());
+
+
+
+
+
         sleep(300000);
     }
 

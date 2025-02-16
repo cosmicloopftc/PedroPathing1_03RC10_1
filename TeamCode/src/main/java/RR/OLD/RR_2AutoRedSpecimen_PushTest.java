@@ -1,9 +1,8 @@
-package RR;
+package RR.OLD;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
@@ -17,16 +16,16 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import Hardware.HardwareNoDriveTrainRobot;
+import RR.MecanumDrive;
 
-@Config
-@Autonomous(name = "RR_2AutoRedSpecimen_PushTest v1.1", group = "Auto")
+//@Config
+//@Autonomous(name = "RR_2AutoRedSpecimen_PushTest v1.1", group = "Auto")
 public class RR_2AutoRedSpecimen_PushTest extends LinearOpMode {
 
 

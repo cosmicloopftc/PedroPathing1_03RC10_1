@@ -30,7 +30,7 @@ import pedroPathing.constants.LConstants;
  * @version 1.0, 3/13/2024
  */
 @Config
-@Autonomous (name = "Curved Back And Forth", group = "PIDF Testing")
+@Autonomous (name = "Pedro Curved Back And Forth", group = "PIDF Testing")
 public class CurvedBackAndForth extends OpMode {
     private Telemetry telemetryA;
 
@@ -77,11 +77,11 @@ public class CurvedBackAndForth extends OpMode {
         if (!follower.isBusy()) {
             if (forward) {
                 forward = false;
-                follower.setMaxPower(0.4);
+              //  follower.setMaxPower(0.4);
                 follower.followPath(backwards);
             } else {
                 forward = true;
-                follower.setMaxPower(0.4);
+             //   follower.setMaxPower(0.4);
                 follower.followPath(forwards);
             }
         }

@@ -81,10 +81,10 @@ public class HardwareOuttake {
 
 
     public void openClaw(){
-        claw.setPosition(0.70); // all set for new bot
+        claw.setPosition(0.0);  // by Eduardo 2/17/25 (0.70); // all set for new bot
     }
     public void closeClaw(){
-        claw.setPosition(1); // all set for new bot
+        claw.setPosition(0.30);  // by Eduardo 2/17/25 (1); // all set for new bot
     }
     public void extendIN(){
         outtakeExtension.setPosition(1);
@@ -95,7 +95,7 @@ public class HardwareOuttake {
     public void groundPosition(){
         leftSlideSetPositionPower(0,1);
         rightSlideSetPositionPower(0,1);
-        outtakeArmAxon.setPosition(0.34); //TODO: Find position for transfering (stays the same throughout process)
+        outtakeArmAxon.setPosition(0.33);  // by Eduardo 2/17/25 (0.34); //TODO: Find position for transfering (stays the same throughout process)
         extendIN();
         //openClaw();
     }
@@ -122,10 +122,10 @@ public class HardwareOuttake {
         //rightSlideSetPositionPower(970,0.6);
     }
     public void highBasket(){
-        outtakeArmAxon.setPosition(0.72);
+        outtakeArmAxon.setPosition(0.78);
         extendIN();
-        leftSlideSetPositionPower(2300,1);
-        rightSlideSetPositionPower(2300,1);
+        leftSlideSetPositionPower(2375,1);
+        rightSlideSetPositionPower(2375,1);
     }
     public void sampleDelivery(){
         outtakeArmAxon.setPosition(0.9);
