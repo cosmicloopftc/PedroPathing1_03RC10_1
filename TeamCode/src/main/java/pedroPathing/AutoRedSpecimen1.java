@@ -1,4 +1,4 @@
-package OLD;
+package pedroPathing;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOfrontIntakePickupLength;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1X;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1Y;
@@ -9,10 +9,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.localization.PoseUpdater;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.Path;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -93,126 +94,153 @@ public class AutoRedSpecimen1 extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
     // private Pose sample1Pose, sample2Pose, sample3Pose, sample4Pose, sample5Pose, sample6Pose, redNet, blueNet;
-    private PathChain preLoadSpecScore;
-    private PathChain afterScore1, afterScore2, afterScore3;
-    private PathChain sample1path1, sample1path2, sample1path3;
-    private PathChain sample2path1, sample2path2, sample2path3;
-    private PathChain sample3path1, sample3path2, sample3path3;
-
+    private PathChain preLoadSpecScore, bringSample1Home, bringSample2Home,bringSample3Home;
+    private PathChain sample3HomeToSpecimenPickup;
+    private PathChain scoreSpecimen1, scoreSpecimen2, scoreSpecimen3, scoreSpecimen4;
+    private PathChain returnHomeAfterScoringSpecimen1, returnHomeAfterScoringSpecimen2,
+            returnHomeAfterScoringSpecimen3, returnHomeAfterScoringSpecimen4;
 
 
     HardwareNoDriveTrainRobot autoRobot = new HardwareNoDriveTrainRobot();    //TODO: will this interfere with follower(hardwareMap)? in .init
 
     //private Pose startPose = new Pose(23.6 * 5 + 16, 39.75, Math.toRadians(90));  //(AUTOstartRedNetX, AUTOstartRedNetY, Math.toRadians(90));
-    private Pose specScorePose = new Pose(105, 77.5, Math.toRadians(0));
-    private Pose afterScorePose1 = new Pose(117, 77.5, Math.toRadians(0));
+    private Pose startPose = new Pose(7.5, 54, Math.toRadians(0));
+    private Pose preloadScorePose = new Pose(33.5, 64, Math.toRadians(0));
+    private Pose ScorePose1 = new Pose(33.5, 68, Math.toRadians(0));
     //    private Pose pickup3Pose = new Pose(AUTOredSample3X + AUTOfrontIntakePickupLength, AUTOredSample3Y, Math.toRadians(180));
-    private Pose afterScorePose2 = new Pose(117, 107.5, Math.toRadians(0));
-    private Pose afterScorePose3 = new Pose(88, 107.5, Math.toRadians(0));
-    private Pose sample1Pose = new Pose(88, 116.5, Math.toRadians(0));
-    private Pose sample2Pose = new Pose(88, 126.5, Math.toRadians(0));
-    private Pose sample3Pose = new Pose(88, 131.5, Math.toRadians(0));
-    private Pose observationSample1 = new Pose(143, 116.5, Math.toRadians(0));
-    private Pose observationSample2 = new Pose(143, 126.5, Math.toRadians(0));
-    private Pose observationSample3 = new Pose(143, 131.5, Math.toRadians(0));
-    private Pose preSpecPickup = new Pose(114, 114, Math.toRadians(180));
+    private Pose ScorePose2 = new Pose(33.5, 72, Math.toRadians(0));
+    private Pose ScorePose3 = new Pose(33.5, 76, Math.toRadians(0));
+    private Pose ScorePose4 = new Pose(33.5, 80, Math.toRadians(0));
 
+    private Pose sample1HomePose = new Pose(18, 25, Math.toRadians(0));
+    private Pose sample2HomePose = new Pose(18, 16, Math.toRadians(0));
+    private Pose sample3HomePose = new Pose(18, 7.5, Math.toRadians(0));
 
-//    //private Pose redScorePose = new Pose(23.6 * 5 + 6, 14, Math.toRadians(135));      //(AUTORedNetX, AUTORedNetY, Math.toRadians(135));;
-
-
-    private Pose startPose = new Pose(137, 77.5, Math.toRadians(0));
-
-    //   private Pose preScorePose = new Pose(118, 17, Math.toRadians(135));
-    private Pose redScorePose = new Pose(121, 14, Math.toRadians(135));
-
-    //private Pose startPose = new Pose(144, 0, Math.toRadians(90));
-    //private Pose redScorePose = new Pose(104, 0, Math.toRadians(90));
-    //private Pose startPose = new Pose(144, 0, Math.toRadians(180));
-    //private Pose redScorePose = new Pose(104, 0, Math.toRadians(180));
-
+    private Pose specimenPickupPose = new Pose(7.5, 31, Math.toRadians(0));
 
 
     public void buildPaths() {
-        //preLoadScore = new Path(new BezierLine(new Point(startPose), new Point(redScorePose)));
-        //preLoadScore.setLinearHeadingInterpolation(startPose.getHeading(), redScorePose.getHeading());
-
-        //pathChain for preLoadSpecScore position
         preLoadSpecScore = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(specScorePose)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), specScorePose.getHeading())
+                .addPath(new BezierLine(new Point(startPose), new Point(preloadScorePose)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), preloadScorePose.getHeading())
                 .build();
-        afterScore1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specScorePose), new Point(afterScorePose1)))
-                .setLinearHeadingInterpolation(specScorePose.getHeading(), afterScorePose1.getHeading())
+        bringSample1Home = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(preloadScorePose),
+                        new Point(19,55),
+                        new Point(7,32),
+                        new Point(126,27),
+                        new Point(sample1HomePose)
+                        ))
+                .setLinearHeadingInterpolation(preloadScorePose.getHeading(), sample1HomePose.getHeading())
                 .build();
-        afterScore2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(afterScorePose1), new Point(afterScorePose2)))
-                .setLinearHeadingInterpolation(afterScorePose1.getHeading(), afterScorePose2.getHeading())
+        bringSample2Home = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(sample1HomePose),
+                        new Point(107,15),
+                        new Point(sample2HomePose)
+                ))
+                .setLinearHeadingInterpolation(sample1HomePose.getHeading(), sample2HomePose.getHeading())
                 .build();
-        afterScore3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(afterScorePose2), new Point(afterScorePose3)))
-                .setLinearHeadingInterpolation(afterScorePose2.getHeading(), afterScorePose3.getHeading())
-                .build();
-
-//        afterScore1 = follower.pathBuilder()
-//                .addPath(new BezierCurve(new Point(specScorePose), new Point(afterScorePose1),
-//                        new Point(afterScorePose2), new Point(afterScorePose3)))
-//                .setLinearHeadingInterpolation(specScorePose.getHeading(), afterScorePose3.getHeading())
-//                .build();
-
-        sample1path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(afterScorePose3), new Point(sample1Pose)))
-                .setLinearHeadingInterpolation(afterScorePose3.getHeading(), sample1Pose.getHeading())
-                .build();
-        sample1path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sample1Pose), new Point(observationSample1)))
-                .setLinearHeadingInterpolation(sample1Pose.getHeading(), observationSample1.getHeading())
-                .build();
-        sample1path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(observationSample1), new Point(sample1Pose)))
-                .setLinearHeadingInterpolation(observationSample1.getHeading(), sample1Pose.getHeading())
-                .build();
-        sample2path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sample1Pose), new Point(sample2Pose)))
-                .setLinearHeadingInterpolation(sample1Pose.getHeading(), sample2Pose.getHeading())
-                .build();
-        sample2path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sample2Pose), new Point(observationSample2)))
-                .setLinearHeadingInterpolation(sample2Pose.getHeading(), observationSample2.getHeading())
-                .build();
-        sample2path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(observationSample2), new Point(sample2Pose)))
-                .setLinearHeadingInterpolation(observationSample2.getHeading(), sample2Pose.getHeading())
-                .build();
-        sample3path1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sample2Pose), new Point(sample3Pose)))
-                .setLinearHeadingInterpolation(sample2Pose.getHeading(), sample3Pose.getHeading())
-                .build();
-        sample3path2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sample3Pose), new Point(observationSample3)))
-                .setLinearHeadingInterpolation(sample3Pose.getHeading(), observationSample3.getHeading())
-                .build();
-        sample3path3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(observationSample3), new Point(preSpecPickup)))
-                .setLinearHeadingInterpolation(observationSample3.getHeading(), preSpecPickup.getHeading())
+        bringSample3Home = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(sample2HomePose),
+                        new Point(107,15),
+                        new Point(sample3HomePose)
+                ))
+                .setLinearHeadingInterpolation(sample2HomePose.getHeading(), sample3HomePose.getHeading())
                 .build();
 
+        sample3HomeToSpecimenPickup = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(sample3HomePose),
+                        new Point(19,31),
+                        new Point(19,31),
+                        new Point(specimenPickupPose)
+                ))
+                .setLinearHeadingInterpolation(sample3HomePose.getHeading(), specimenPickupPose.getHeading())
+                .build();
 
+        scoreSpecimen1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(specimenPickupPose),
+                        new Point(26,32),
+                        new Point(15,52),
+                        new Point(12,68),
+                        new Point(22,68),
+                        new Point(ScorePose1)
+                ))
+                .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose1.getHeading())
+                .build();
+        returnHomeAfterScoringSpecimen1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(ScorePose1),
+                        new Point(22,68),
+                        new Point(12,68),
+                        new Point(15,52),
+                        new Point(26,32),
+                        new Point(specimenPickupPose)
+                ))
+                .setLinearHeadingInterpolation(ScorePose1.getHeading(), specimenPickupPose.getHeading())
+                .build();
 
-//        creating pathChain
-//        pickupSample3 = follower.pathBuilder()
-//                .addPath(new BezierLine(new Point(redScorePose), new Point(pickup3Pose)))
-//                .setLinearHeadingInterpolation(redScorePose.getHeading(), pickup3Pose.getHeading())            //one Heading only
-//                .build();
-//        preScoreSample3 = follower.pathBuilder()
-//                .addPath(new BezierLine(new Point(pickup3Pose), new Point(moveForward)))
-//                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), moveForward.getHeading())            //one Heading only
-//                .build();
-//        scoreSample3 = follower.pathBuilder()
-//                .addPath(new BezierLine(new Point(moveForward), new Point(redScorePose)))
-//                .setLinearHeadingInterpolation(moveForward.getHeading(), redScorePose.getHeading())
-//                .build();
+        scoreSpecimen2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(specimenPickupPose),
+                        new Point(26,32),
+                        new Point(15,52),
+                        new Point(12,72),
+                        new Point(22,72),
+                        new Point(ScorePose2)
+                ))
+                .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose2.getHeading())
+                .build();
+        returnHomeAfterScoringSpecimen2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(ScorePose2),
+                        new Point(22,72),
+                        new Point(12,72),
+                        new Point(15,52),
+                        new Point(26,32),
+                        new Point(specimenPickupPose)
+                ))
+                .setLinearHeadingInterpolation(ScorePose2.getHeading(), specimenPickupPose.getHeading())
+                .build();
+
+        scoreSpecimen3 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(specimenPickupPose),
+                        new Point(26,32),
+                        new Point(15,52),
+                        new Point(12,76),
+                        new Point(22,76),
+                        new Point(ScorePose3)
+                ))
+                .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose3.getHeading())
+                .build();
+        returnHomeAfterScoringSpecimen3 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(ScorePose3),
+                        new Point(22,76),
+                        new Point(12,76),
+                        new Point(15,52),
+                        new Point(26,32),
+                        new Point(specimenPickupPose)
+                ))
+                .setLinearHeadingInterpolation(ScorePose3.getHeading(), specimenPickupPose.getHeading())
+                .build();
+
+        scoreSpecimen4 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(specimenPickupPose),
+                        new Point(26,32),
+                        new Point(15,52),
+                        new Point(12,80),
+                        new Point(22,80),
+                        new Point(ScorePose4)
+                ))
+                .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose4.getHeading())
+                .build();
+        returnHomeAfterScoringSpecimen4 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(ScorePose4),
+                        new Point(22,80),
+                        new Point(12,80),
+                        new Point(15,52),
+                        new Point(26,32),
+                        new Point(specimenPickupPose)
+                ))
+                .setLinearHeadingInterpolation(ScorePose4.getHeading(), specimenPickupPose.getHeading())
+                .build();
+
     }
 
 
@@ -245,97 +273,98 @@ public class AutoRedSpecimen1 extends OpMode {
                     autoDebug(500, "Auto:case 1; 5 sec ", "score specimen");
                     //            autoRobot.Outtake.highChamberFinish();
                     autoDebug(500, "Auto:case 1; ", "lower slide to wall pickup");
-                    follower.followPath(afterScore1, true);
+                    follower.followPath(bringSample1Home, false);
 
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.5);
                     autoDebug(500, "Auto:case 1; ", "move back from Submersible");
                     setPathState(2);
 
                 }
                 break;
-            case 2:     //goto specimen 3 and pick it up
-//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    /* Score Preload */
-                    //TODO: rotate outtake and open claw/outtake to drop sample
-                    follower.followPath(afterScore2, true);
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    //then go to next path--go to Specimen 3 pickup position
-//                    follower.followPath(afterScore1,false);
-                    setPathState(3);
-                }
-
-                break;
-            case 3:     //goto basket and score
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    /* Grab Sample */
-
-                    //TODO: do something
-                    follower.followPath(afterScore3, true);
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample1path1, true);
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample1path2, true);
-                    setPathState(6);
-                }
-                break;
-            case 6:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample1path3, true);
-                    setPathState(7);
-                }
-                break;
-
-            case 7:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample2path1, true);
-                    setPathState(8);
-                }
-                break;
-            case 8:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample2path2, true);
-                    setPathState(9);
-                }
-                break;
-            case 9:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample2path3, true);
-                    setPathState(10);
-                }
-                break;
-
-            case 10:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample3path1, true);
-                    setPathState(11);
-                }
-                break;
-            case 11:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-                    follower.followPath(sample3path2, true);
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if (pathTimer.getElapsedTimeSeconds()>1) {
-//                    autoRobot.Outtake.wallIntake();
-//                    autoRobot.Outtake.openClaw();
-                    follower.followPath(sample3path3, true);
-                    setPathState(13);
-                }
-                break;
+//
+//            case 2:     //goto specimen 3 and pick it up
+////                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    /* Score Preload */
+//                    //TODO: rotate outtake and open claw/outtake to drop sample
+//                    follower.followPath(afterScore2, true);
+//
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+//                    //then go to next path--go to Specimen 3 pickup position
+////                    follower.followPath(afterScore1,false);
+//                    setPathState(3);
+//                }
+//
+//                break;
+//            case 3:     //goto basket and score
+//                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    /* Grab Sample */
+//
+//                    //TODO: do something
+//                    follower.followPath(afterScore3, true);
+//                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+//                    setPathState(4);
+//                }
+//                break;
+//            case 4:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample1path1, true);
+//                    setPathState(5);
+//                }
+//                break;
+//            case 5:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample1path2, true);
+//                    setPathState(6);
+//                }
+//                break;
+//            case 6:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample1path3, true);
+//                    setPathState(7);
+//                }
+//                break;
+//
+//            case 7:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample2path1, true);
+//                    setPathState(8);
+//                }
+//                break;
+//            case 8:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample2path2, true);
+//                    setPathState(9);
+//                }
+//                break;
+//            case 9:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample2path3, true);
+//                    setPathState(10);
+//                }
+//                break;
+//
+//            case 10:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample3path1, true);
+//                    setPathState(11);
+//                }
+//                break;
+//            case 11:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+//                    follower.followPath(sample3path2, true);
+//                    setPathState(12);
+//                }
+//                break;
+//            case 12:
+//                if (pathTimer.getElapsedTimeSeconds()>1) {
+////                    autoRobot.Outtake.wallIntake();
+////                    autoRobot.Outtake.openClaw();
+//                    follower.followPath(sample3path3, true);
+//                    setPathState(13);
+//                }
+//                break;
 
 
         }
