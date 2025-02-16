@@ -5,18 +5,18 @@ import com.pedropathing.localization.constants.*;
 
 public class LConstants {
     static {
-        ThreeWheelConstants.forwardTicksToInches = 0.00195;       //default  .001989436789;
-        ThreeWheelConstants.strafeTicksToInches = 0.00295;       //default  .001989436789;
-        ThreeWheelConstants.turnTicksToInches = 0.0018;       //TODO: old was TURN_TICKS_TO_RADIANS, so need to check.  default  .001989436789;
+        ThreeWheelConstants.forwardTicksToInches = 0.00197;    //default  .001989436789;
+        ThreeWheelConstants.strafeTicksToInches = 0.00197;     //new one to match forward given all 3 same Gobilda pods 2/16/2025;  0.00295;       //default  .001989436789;
+        ThreeWheelConstants.turnTicksToInches = 0.001827;        //TODO: old was TURN_TICKS_TO_RADIANS, so need to check.  default  .001989436789;
         ThreeWheelConstants.leftY = 5.25;       //default  1;
         ThreeWheelConstants.rightY =-5.25;        //default  -1;
-        ThreeWheelConstants.strafeX = -2;       //default  -2.5;
+        ThreeWheelConstants.strafeX = -1.25;       //TODO: need to adjust 2/16/2025   default  -2.5;
         ThreeWheelConstants.leftEncoder_HardwareMapName = "leftRear";       //default  "leftFront";
         ThreeWheelConstants.rightEncoder_HardwareMapName = "rightFront";       //default  "rightRear";
         ThreeWheelConstants.strafeEncoder_HardwareMapName = "rightRear";       //default  "rightFront";
         ThreeWheelConstants.leftEncoderDirection = Encoder.FORWARD;    //TODO     //default  REVERSE;
         ThreeWheelConstants.rightEncoderDirection = Encoder.FORWARD;    //TODO    //default  REVERSE;
-        ThreeWheelConstants.strafeEncoderDirection = Encoder.FORWARD;   //TODO    //default  FORWARD;
+        ThreeWheelConstants.strafeEncoderDirection = Encoder.REVERSE;   //TODO    //default  FORWARD;
 
 
 

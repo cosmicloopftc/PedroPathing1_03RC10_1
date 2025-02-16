@@ -35,10 +35,10 @@ import pedroPathing.constants.*;
  * on FTC Dashboard (192/168/43/1:8080/dash). You should use this to check the robot's localization.
  *
  * @author Anyi Lin - 10158 Scott's Bots
- * @version 1.0, 5/6/2024rtrj
+ * @version 1.0, 5/6/2024
  */
 @Config
-//@TeleOp(group = "Pedro Teleop Test", name = "Pedro Localization Test")
+@TeleOp(group = "Pedro Teleop Test", name = "Pedro Localization Test")
 public class LocalizationTest extends OpMode {
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
@@ -121,8 +121,8 @@ public class LocalizationTest extends OpMode {
 
         telemetryA.addData("x", poseUpdater.getPose().getX());
         telemetryA.addData("y", poseUpdater.getPose().getY());
-        telemetryA.addData("heading", poseUpdater.getPose().getHeading());
-        telemetryA.addData("total heading", poseUpdater.getTotalHeading());
+        telemetryA.addData("heading (degrees)", Math.toDegrees(poseUpdater.getPose().getHeading()));
+        telemetryA.addData("total heading (degrees)", Math.toDegrees(poseUpdater.getTotalHeading()));
         telemetryA.update();
 
         Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");

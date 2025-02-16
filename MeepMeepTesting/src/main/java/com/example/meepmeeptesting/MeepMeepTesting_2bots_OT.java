@@ -1,7 +1,11 @@
 package com.example.meepmeeptesting;
 
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
@@ -18,95 +22,60 @@ public class MeepMeepTesting_2bots_OT {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 14)
                 .build();
-        //Pose2d beginPose = new Pose2d(-7.5, -62.85, Math.toRadians(-90));     //auto start at LEFT of center mat
-        //Pose2d beginPose = new Pose2d(10, -62.85, Math.toRadians(-90));     //auto start at RIGHT of center mat
-        Pose2d beginPose = new Pose2d(38, -62.85, Math.toRadians(-90));     //start at wall starting
+        Pose2d beginPose = new Pose2d(7.5, -63, Math.toRadians(-90));     //start at wall starting
 
+        VelConstraint velSlow = new TranslationalVelConstraint(15);
+        VelConstraint velMedium = new TranslationalVelConstraint(60);
+        VelConstraint velFast = new TranslationalVelConstraint(90);
+        AccelConstraint accSlow = new ProfileAccelConstraint(-15,15);
+        AccelConstraint accMedium = new ProfileAccelConstraint(-60,60);
+        AccelConstraint accFast = new ProfileAccelConstraint(-90,90);
 
         myFirstBot.runAction(myFirstBot.getDrive().actionBuilder(beginPose)
                 //wall to Submerge-score preload
-
                 //move back and head to sample 3 area, get read to rotate push it home
-
                 //from wall to Submerge, score 2nd specimen
-                     //   .setReversed(true)
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
-                .lineToYConstantHeading(-33 )
-                //from Submerge to Wall
-                    //    .setReversed(false)
-                .lineToYConstantHeading(-40)
-                .splineToConstantHeading(new Vector2d(38,-60),Math.toRadians(270))
-                .lineToYConstantHeading(-62.85)
-                //from wall to Submerge, score 3nd specimen
-                    //    .setReversed(true)
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
-                .lineToYConstantHeading(-33 )
-                //from Submerge to Wall
-                  //      .setReversed(false)
-                .lineToYConstantHeading(-40)
-                .splineToConstantHeading(new Vector2d(38,-60),Math.toRadians(270))
-                .lineToYConstantHeading(-62.85)
-                //from wall to Submerge, score 4th specimen
-                     //   .setReversed(true)
-                .lineToYConstantHeading(-60 )
-                .splineToConstantHeading(new Vector2d(5,-40),Math.toRadians(90))
-         //               .splineToLinearHeading(new Pose2d(-5, -40, Math.toRadians(90)), Math.toRadians(90))
-                .lineToYConstantHeading(-33 )
+                .setReversed(true)
+                .lineToYConstantHeading(-37,velFast, accMedium)          //to submersible pole to preload score
+
+                .setReversed(true)
+                .lineToYConstantHeading(-40, velFast, accMedium)           //1st move back from submersible pole
+                .strafeTo(new Vector2d(31, -40), velFast, accMedium)
+                .splineToLinearHeading(new Pose2d(38,-20, Math.toRadians(-90)),         //goto at Sample4
+                        Math.toRadians(90), velFast, accMedium)
+                .splineToLinearHeading(new Pose2d(47,-14, Math.toRadians(-90)),         //goto at Sample4
+                        Math.toRadians(-90), velFast, accMedium)
+
+                .strafeTo(new Vector2d(44, -50), velFast, accMedium)  //pushSample4Home
+                .strafeTo(new Vector2d(53, -8), velFast, accMedium)  //toward Sample5
+                .strafeTo(new Vector2d(60, -48), velMedium, accMedium)   //pushSample5Home
+
+                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(-90),
+                        velFast, accMedium)  ////just before wall
+                .strafeToLinearHeading(new Vector2d(40, -63.5), Math.toRadians(-90),
+                        velFast, accMedium)  //to wall
+                .waitSeconds(0.5)
 
 
+                /** already Spec1; now score Spec1 */
+                .setReversed(true)
+                .lineToYConstantHeading(-60)             //move away from wall
+                .splineToConstantHeading(new Vector2d(3,-45),Math.toRadians(90))  //spline to submersible
+                .splineToConstantHeading(new Vector2d(3,-40),Math.toRadians(90))  //straighten out robot with another spline to submersible
+                .strafeToLinearHeading(new Vector2d(3,-35),
+                        Math.toRadians(-90), velFast, accFast)          //accelerate to submersible pole to score
+                //.lineToYConstantHeading(-35)                                      //accelerate to submersible pole to score
+                .waitSeconds(1)         //open claw at submersible
 
-                //.waitSeconds(0.5)
-                //.lineToYConstantHeading(-33)
-//                .lineToYConstantHeading(-40)
-//                .strafeToSplineHeading(new Vector2d(28, -43), Math.toRadians(60))
-
-
-
-
-//            .splineToSplineHeading(new Pose2d(57,-43, Math.toRadians(120)),0)
-//                .waitSeconds(2)                 //pick up sample 4
-//
-//            .turnTo(Math.toRadians(250))            //dropoff
-//                .waitSeconds(1)
-//
-//            .turnTo(Math.toRadians(90))             //pick up sample 5
-//                .waitSeconds(2)
-//
-//            .turnTo(Math.toRadians(250))            //dropoff
-//                .waitSeconds(1)
-//
-//            .turnTo(Math.toRadians(60))             //pick up sample 6
-//                .waitSeconds(2)
-//
-//            .turnTo(Math.toRadians(270))            //dropoff
-//                .waitSeconds(1)
-
-
-
-
-
-//                .lineToY(-35)
-//                .splineToSplineHeading(new Pose2d(25,-43, Math.toRadians(270)),0)
-//                .splineToConstantHeading(new Vector2d(35,-20), Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(43.2,-12),Math.toRadians(270))
-
-
-
-
-//                .splineToSplineHeading(new Pose2d(43.5,-50, Math.toRadians(270)),Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(46,-11),Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(55,-16),Math.toRadians(270))
-//                .splineToSplineHeading(new Pose2d(55,-50, Math.toRadians(270)),Math.toRadians(270))
-//
-//                .splineToConstantHeading(new Vector2d(58,-11),Math.toRadians(270))
-//                .splineToConstantHeading(new Vector2d(58,-16),Math.toRadians(270))
-                //.splineToSplineHeading(new Pose2d(58,-50, Math.toRadians(270)),Math.toRadians(270))
-                //.splineToConstantHeading(new Vector2d(53,-50),Math.toRadians(270))
-
-
-
+                /** Collect Spec2 and score Spec2 */
+                //.lineToYConstantHeading(-40)                                   //1st move back from submersible pole
+                .strafeToLinearHeading(new Vector2d(3,-40),
+                        Math.toRadians(-90), velMedium, accMedium)  //1st move back from submersible pole
+                .splineToLinearHeading(new Pose2d(3,-45, Math.toRadians(-90)),         //goto at Sample4
+                        Math.toRadians(-90), velFast, accMedium)
+                //.splineTo(new Vector2d(3, -45), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(40,-60),Math.toRadians(-90))  //spline to more to near wall
+                .strafeTo(new Vector2d(40, -63.5), velFast, accMedium)  // to wall
 
                 .build());
 

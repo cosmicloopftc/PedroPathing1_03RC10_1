@@ -29,7 +29,7 @@ import pedroPathing.constants.LConstants;
  * @version 1.0, 5/6/2024
  */
 @Config
-//@Autonomous(name = "Pedro Lateral Localizer Tuner", group = "Pedro .Localization")
+@Autonomous(name = "Pedro Lateral Localizer Tuner", group = "Pedro .Localization")
 public class LateralTuner extends OpMode {
     private PoseUpdater poseUpdater;
     private DashboardPoseTracker dashboardPoseTracker;
