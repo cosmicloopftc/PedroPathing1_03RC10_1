@@ -1,4 +1,4 @@
-package OLD;
+package pedroPathing;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOfrontIntakePickupLength;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1X;
 //import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1Y;
@@ -12,7 +12,6 @@ import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
