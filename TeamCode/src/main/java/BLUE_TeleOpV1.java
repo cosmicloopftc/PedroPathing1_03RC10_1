@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
+import java.util.Timer;
 
 import Hardware.HardwareDrivetrain;
 import Hardware.HardwareNoDriveTrainRobot;
@@ -104,7 +105,8 @@ public class BLUE_TeleOpV1 extends OpMode {
 
 
     private ElapsedTime runtime = new ElapsedTime();
-    private ElapsedTime clawTime = new ElapsedTime();
+    private ElapsedTime sweepTime = new ElapsedTime();
+    boolean sweptIn = true;
     double botHeading;
     String drivingOrientation = "robotOriented";   //TODO: as default for Eduardo, but will also reset in init as well.
     double lastTime;
@@ -176,6 +178,13 @@ public class BLUE_TeleOpV1 extends OpMode {
             .addStep(1, 0, 0, 500) // Show red for 500ms
             .addStep(0, 0, 0, 500)
             .build();
+
+    private ElapsedTime pathTimer;
+    private int pathState;
+    public void setPathState(int pState){
+        pathState = pState;
+        pathTimer.reset();
+    }
 
     //__________________________________________________________________________________________________
     @Override
@@ -299,10 +308,10 @@ public class BLUE_TeleOpV1 extends OpMode {
             case START:
                 telemetryA.addLine("Start");
                 telemetryA.addData("Outtake Arm Position: ",robot.Outtake.getOuttakeArmPosition());
-
                 if(gamepad2.a || outtakeOption.equals("start")) {
                     robot.Outtake.readyPosition();
                     robot.Intake.intakeTRANSFER();
+                    robot.Intake.sweeperIN();
                     outtakeOption = "";
                 }
 //                if(gamepad2.dpad_down){
@@ -338,6 +347,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 }
                 break;
             case INTAKE:
+                telemetryAllColorInfo();
 //                if (sampleColor.equals("NONE")){
 //                    robot.LED.ledStick.setColor(1, Color.WHITE);
 //                    robot.LED.ledStick.setBrightness(1,1);
@@ -579,30 +589,38 @@ public class BLUE_TeleOpV1 extends OpMode {
             robot.Outtake.leftSlideSetPositionPower(1400, 1);
             robot.Outtake.rightSlideSetPositionPower(1400, 1);
         }
-        if (sampleColor.equals("YELLOW")){
-            robot.LED.ledStick.setColor(Color.YELLOW);
-            robot.LED.ledStick.setBrightness(1);
-        }else if (sampleColor.equals("BLUE")){
-            robot.LED.ledStick.setColor(Color.BLUE);
-            robot.LED.ledStick.setBrightness(1);
-        }else if (sampleColor.equals("RED")){
-            robot.LED.ledStick.setColor(Color.RED);
-            robot.LED.ledStick.setBrightness(1);
-        }else{
-            robot.LED.ledStick.setColor(5, Color.WHITE);
-            robot.LED.ledStick.setBrightness(0,0);
-            robot.LED.ledStick.setBrightness(1,0);
-            robot.LED.ledStick.setBrightness(2,0);
-            robot.LED.ledStick.setBrightness(3,0);
-            robot.LED.ledStick.setBrightness(4,0);
-            robot.LED.ledStick.setBrightness(5,1);
-            robot.LED.ledStick.setBrightness(6,0);
-            robot.LED.ledStick.setBrightness(7,0);
-            robot.LED.ledStick.setBrightness(8,0);
-            robot.LED.ledStick.setBrightness(9,0);
-            robot.LED.ledStick.setBrightness(10,0);
-        }
 
+//        if (sampleColor.equals("YELLOW")){
+//            robot.LED.ledStick.setColor(Color.YELLOW);
+//            robot.LED.ledStick.setBrightness(1);
+//        }else if (sampleColor.equals("BLUE")){
+//            robot.LED.ledStick.setColor(Color.BLUE);
+//            robot.LED.ledStick.setBrightness(1);
+//        }else if (sampleColor.equals("RED")){
+//            robot.LED.ledStick.setColor(Color.RED);
+//            robot.LED.ledStick.setBrightness(1);
+//        }else{
+//            robot.LED.ledStick.setColor(5, Color.WHITE);
+//            robot.LED.ledStick.setBrightness(0,0);
+//            robot.LED.ledStick.setBrightness(1,0);
+//            robot.LED.ledStick.setBrightness(2,0);
+//            robot.LED.ledStick.setBrightness(3,0);
+//            robot.LED.ledStick.setBrightness(4,0);
+//            robot.LED.ledStick.setBrightness(5,1);
+//            robot.LED.ledStick.setBrightness(6,0);
+//            robot.LED.ledStick.setBrightness(7,0);
+//            robot.LED.ledStick.setBrightness(8,0);
+//            robot.LED.ledStick.setBrightness(9,0);
+//            robot.LED.ledStick.setBrightness(10,0);
+//        }
+
+
+        if (gamepad1.a){
+            robot.Intake.sweeperOUT();
+        }
+        if (!gamepad1.a){
+            robot.Intake.sweeperIN();
+        }
 
 
 //Drivetrain Movement:
@@ -709,7 +727,7 @@ public class BLUE_TeleOpV1 extends OpMode {
             endGameRumble20secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
-        telemetryAllColorInfo();
+
         telemetryA.update();
 
 
@@ -737,39 +755,57 @@ public class BLUE_TeleOpV1 extends OpMode {
         NormalizedRGBA colors = robot.Sensor.colorIntake.getNormalizedColors();
         if (colors.red > 0.02 && colors.red > colors.green && colors.red > colors.blue){
             sampleColor = "RED";
+            robot.LED.ledStick.setColor(Color.RED);
+            robot.LED.ledStick.setBrightness(1);
         }
         else if (colors.blue > 0.02 && colors.blue > colors.green && colors.blue > colors.red){
             sampleColor = "BLUE";
+            robot.LED.ledStick.setColor(Color.BLUE);
+            robot.LED.ledStick.setBrightness(1);
         }
         else if (colors.green > 0.02 && colors.green > colors.red && colors.green > colors.blue){
             sampleColor = "YELLOW";
+            robot.LED.ledStick.setColor(Color.YELLOW);
+            robot.LED.ledStick.setBrightness(1);
         }
         else{
             sampleColor = "NONE";
+            robot.LED.ledStick.setColor(5, Color.WHITE);
+            robot.LED.ledStick.setBrightness(0,0);
+            robot.LED.ledStick.setBrightness(1,0);
+            robot.LED.ledStick.setBrightness(2,0);
+            robot.LED.ledStick.setBrightness(3,0);
+            robot.LED.ledStick.setBrightness(4,0);
+            robot.LED.ledStick.setBrightness(5,1);
+            robot.LED.ledStick.setBrightness(6,0);
+            robot.LED.ledStick.setBrightness(7,0);
+            robot.LED.ledStick.setBrightness(8,0);
+            robot.LED.ledStick.setBrightness(9,0);
+            robot.LED.ledStick.setBrightness(10,0);
         }
         /* Use telemetry to display feedback on Driver Station. Show red/green/blue normalized values
          *from sensor (0 to 1), and equivalent HSV (hue/saturation/value) values.
          * See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
          * for explanation of HSV color. */
         // Update the hsvValues array by passing it to Color.colorToHSV()
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        telemetryA.addData("Red", "%.3f", colors.red);
-        telemetryA.addData("Green", "%.3f", colors.green);
-        telemetryA.addData("Blue", "%.3f", colors.blue);
-        telemetryA.addLine("");
-        telemetryA.addData("Hue", "%.3f", hsvValues[0]);
-        telemetryA.addData("Saturation", "%.3f", hsvValues[1]);
-        telemetryA.addData("Value", "%.3f", hsvValues[2]);
-        telemetryA.addLine("");
-        telemetryA.addData("Alpha", "%.3f", colors.alpha);
-        telemetryA.addLine("");
+//        Color.colorToHSV(colors.toColor(), hsvValues);
+//        telemetryA.addData("Red", "%.3f", colors.red);
+//        telemetryA.addData("Green", "%.3f", colors.green);
+//        telemetryA.addData("Blue", "%.3f", colors.blue);
+//        telemetryA.addLine("");
+//        telemetryA.addData("Hue", "%.3f", hsvValues[0]);
+//        telemetryA.addData("Saturation", "%.3f", hsvValues[1]);
+//        telemetryA.addData("Value", "%.3f", hsvValues[2]);
+//        telemetryA.addLine("");
+//        telemetryA.addData("Alpha", "%.3f", colors.alpha);
+//        telemetryA.addLine("");
         telemetryA.addLine("Sample color: " + sampleColor);
         /* If this color sensor also has a distance sensor, display the measured distance.
          * Note that the reported distance is only useful at very close range, and is impacted by
          * ambient light and surface reflectivity. */
-        if (robot.Sensor.colorIntake instanceof DistanceSensor) {
-            telemetryA.addData("Distance (cm)", "%.3f", ((DistanceSensor) robot.Sensor.colorIntake).getDistance(DistanceUnit.CM));
-        }
+//        if (robot.Sensor.colorIntake instanceof DistanceSensor) {
+//            telemetryA.addData("Distance (cm)", "%.3f", ((DistanceSensor) robot.Sensor.colorIntake).getDistance(DistanceUnit.CM));
+//        }
     }
 
     public void gamePadColorControl(){
