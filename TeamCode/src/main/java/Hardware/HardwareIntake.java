@@ -18,6 +18,7 @@ public class HardwareIntake {
     public CRServo intakeLeftWheel = null;
     public CRServo intakeRightWheel = null;
     public Servo intakeServoAxon = null;
+    public Servo sweeper = null;
     public AnalogInput intakeServoAxonPosition = null;
     //Servo Test
 //    public Servo Servo_Test = null;
@@ -46,6 +47,8 @@ public class HardwareIntake {
         intakeLeftWheel = hardwareMap.get(CRServo.class, "intakeLeftWheel");
         intakeRightWheel = hardwareMap.get(CRServo.class, "intakeRightWheel");
         intakeServoAxon = hardwareMap.get(Servo.class,"intakeServoAxon");
+
+        sweeper = hardwareMap.get(Servo.class, "sweeper");
 
 //get our analog input from the hardwareMap
         intakeServoAxonPosition = hardwareMap.get(AnalogInput.class, "intakeServoAxonPosition");
@@ -125,6 +128,12 @@ public class HardwareIntake {
 // divide by 3.3 (the max voltage) to get a value between 0 and 1
 // multiply by 360 to convert it to 0 to 360 degrees
         return intakeServoAxonPosition.getVoltage() / 3.3;
+    }
+    public void sweeperIN(){
+        sweeper.setPosition(0.09);
+    }
+    public void sweeperOUT(){
+        sweeper.setPosition(0.5);
     }
 
 }
