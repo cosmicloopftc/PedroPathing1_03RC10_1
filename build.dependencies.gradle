@@ -16,7 +16,7 @@ dependencies {
     implementation 'org.firstinspires.ftc:Hardware:10.1.1'
     implementation 'org.firstinspires.ftc:FtcCommon:10.1.1'
     implementation 'org.firstinspires.ftc:Vision:10.1.1'
-    implementation 'com.pedropathing:pedro:1.0.4'
+    implementation 'com.pedropathing:pedro:1.0.8'       //update 2/16/2025; not changing any of the above to 10.2.0
 
     //noinspection GradleDependency
     implementation 'androidx.appcompat:appcompat:1.2.0'
