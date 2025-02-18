@@ -141,8 +141,8 @@ public class RR_2AutoRedSpecimen_PushTestParallelMove extends LinearOpMode {
                 .strafeTo(new Vector2d(35, -40), velFast, accMedium)
                 .strafeTo(new Vector2d(45, -7), velFast, accMedium)  // go to sample4
                 .strafeTo(new Vector2d(47, -50), velFast, accFast)  // push sample4 home
-                .strafeTo(new Vector2d(56, -8), velFast, accFast)  // go to sample5
-                .strafeTo(new Vector2d(60, -48), velFast, accMedium )  // push sample5 home
+                .strafeTo(new Vector2d(53, -8), velFast, accFast)  // go to sample5
+                .strafeTo(new Vector2d(60, -48), velFast, accMedium )  // start pushing sample5 home
 
                 .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(-90),
                         velFast, accMedium)  ////just before wall
