@@ -24,6 +24,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.roadrunner.ftc.LazyHardwareMapImu;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -40,6 +41,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+//import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import RR.messages.DriveCommandMessage;
 import RR.messages.MecanumCommandMessage;
 import RR.messages.MecanumLocalizerInputsMessage;
@@ -241,17 +243,20 @@ public final class MecanumDrive {
         //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);   //remove/update 1/6/2025 for back wheel with chain //done 1/4/2025
         leftBack.setDirection(DcMotorEx.Direction.REVERSE);         //update 1/6/2025 for back wheel with chain
 
-
-
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+//old before 2/18/2025 with addition of OTOS and pinpoint        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+//                PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+
+        lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         //localizer = new DriveLocalizer(pose);
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose);  //TODO: 1/4/2025, added pose 3rd parameter not listed on instructions
+
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
