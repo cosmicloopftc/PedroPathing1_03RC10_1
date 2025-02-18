@@ -40,42 +40,85 @@ public class MeepMeepTesting_2bots_OT {
 
                 .setReversed(true)
                 .lineToYConstantHeading(-40, velFast, accMedium)           //1st move back from submersible pole
-                .strafeTo(new Vector2d(31, -40), velFast, accMedium)
-                .splineToLinearHeading(new Pose2d(38,-20, Math.toRadians(-90)),         //goto at Sample4
-                        Math.toRadians(90), velFast, accMedium)
-                .splineToLinearHeading(new Pose2d(47,-14, Math.toRadians(-90)),         //goto at Sample4
+
+                .setReversed(true)
+                .strafeTo(new Vector2d(35, -40), velFast, accMedium)
+                .strafeTo(new Vector2d(45, -7), velFast, accMedium)     //goto at Sample4
+                .setReversed(true)
+                .strafeTo(new Vector2d(47, -40), velFast, accFast)    //pushSample4Home
+                .strafeTo(new Vector2d(54, -8), velFast, accFast)     //toward Sample5
+                .setReversed(true)
+                .strafeTo(new Vector2d(57, -48), velFast, accMedium)    //pushSample5Home
+                .strafeTo(new Vector2d(60, -8), velFast, accMedium)     //toward Sample6
+
+                .setReversed(true)
+//                .strafeToLinearHeading(new Vector2d(55, -10), Math.toRadians(-90),                    //start heading home with pushing sample6
+//                        velFast, accMedium)
+                .splineToLinearHeading(new Pose2d(60,-30, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
+                        Math.toRadians(-90), velFast, accMedium)
+                .splineToLinearHeading(new Pose2d(40,-63.5, Math.toRadians(-90)),       //pushSample6Home, by Spline to Wall
                         Math.toRadians(-90), velFast, accMedium)
 
-                .strafeTo(new Vector2d(44, -50), velFast, accMedium)  //pushSample4Home
-                .strafeTo(new Vector2d(53, -8), velFast, accMedium)  //toward Sample5
-                .strafeTo(new Vector2d(60, -48), velMedium, accMedium)   //pushSample5Home
 
-                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(-90),
-                        velFast, accMedium)  ////just before wall
-                .strafeToLinearHeading(new Vector2d(40, -63.5), Math.toRadians(-90),
-                        velFast, accMedium)  //to wall
+//                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(-90),
+//                        velFast, accMedium)  ////just before wall
+//                .strafeToLinearHeading(new Vector2d(40, -63.5), Math.toRadians(-90),
+//                        velFast, accMedium)  //to wall
                 .waitSeconds(0.5)
 
 
-                /** already Spec1; now score Spec1 */
+                /** Score Spec1 */
                 .setReversed(true)
-                .lineToYConstantHeading(-60)             //move away from wall
-                .splineToConstantHeading(new Vector2d(3,-45),Math.toRadians(90))  //spline to submersible
-                .splineToConstantHeading(new Vector2d(3,-40),Math.toRadians(90))  //straighten out robot with another spline to submersible
-                .strafeToLinearHeading(new Vector2d(3,-35),
-                        Math.toRadians(-90), velFast, accFast)          //accelerate to submersible pole to score
-                //.lineToYConstantHeading(-35)                                      //accelerate to submersible pole to score
+                .splineToConstantHeading(new Vector2d(3,-36),Math.toRadians(90))  //spline to submersible
+                .splineToConstantHeading(new Vector2d(3,-35.5),Math.toRadians(90))  //straighten out robot with another spline to submersible
+                .splineToConstantHeading(new Vector2d(3,-35),Math.toRadians(90))  //straighten out robot with another spline to submersible
                 .waitSeconds(1)         //open claw at submersible
 
-                /** Collect Spec2 and score Spec2 */
-                //.lineToYConstantHeading(-40)                                   //1st move back from submersible pole
+
+
+                /** Collect Spec2 */
                 .strafeToLinearHeading(new Vector2d(3,-40),
-                        Math.toRadians(-90), velMedium, accMedium)  //1st move back from submersible pole
-                .splineToLinearHeading(new Pose2d(3,-45, Math.toRadians(-90)),         //goto at Sample4
-                        Math.toRadians(-90), velFast, accMedium)
-                //.splineTo(new Vector2d(3, -45), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(40,-60),Math.toRadians(-90))  //spline to more to near wall
-                .strafeTo(new Vector2d(40, -63.5), velFast, accMedium)  // to wall
+                        Math.toRadians(-90), velFast, accMedium)                        //1st move back from submersible pole
+                .splineToConstantHeading(new Vector2d(40,-62.5),Math.toRadians(-90))  //spline to more to near wall
+                .splineToConstantHeading(new Vector2d(40,-63),Math.toRadians(-90))  //spline to more to near wall
+                .splineToConstantHeading(new Vector2d(40,-63.5),Math.toRadians(-90))  //spline to more to near wall
+
+                /** Score Spec2 */
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(-1,-36),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-1,-35.5),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-1,-35),Math.toRadians(90))
+
+                /** Collect Spec3 */
+                .strafeToLinearHeading(new Vector2d(-1,-40),
+                    Math.toRadians(-90), velFast, accMedium)  //1st move back from submersible pole
+                .splineToConstantHeading(new Vector2d(40,-62.5),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(40,-63),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(40,-65),Math.toRadians(-90))
+
+                /** Score Spec3 */
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(-5,-36),Math.toRadians(90))   // previous x was -7
+                .splineToConstantHeading(new Vector2d(-5,-35.5),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-5,-35),Math.toRadians(90))
+
+                /** Collect Spec4 */
+                .strafeToLinearHeading(new Vector2d(-5,-40),
+                    Math.toRadians(-90), velFast, accMedium)  //1st move back from submersible pole
+                .splineToConstantHeading(new Vector2d(40,-62.5),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(40,-63),Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(40,-64.5),Math.toRadians(-90))
+
+                /** Score Spec4 */
+                .setReversed(true)
+                .splineToConstantHeading(new Vector2d(-9,-36),Math.toRadians(90))   // previous x was -7
+                .splineToConstantHeading(new Vector2d(-9,-35.5),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-9,-35),Math.toRadians(90))
+
+
+                /** Park Home */
+                .strafeToLinearHeading(new Vector2d(40,-64.5),
+                        Math.toRadians(-90), velFast, accFast)  //1st move back from submersible pole
 
                 .build());
 

@@ -278,7 +278,7 @@ public class Pedro_AutoRedSpecimen1 extends OpMode {
                 if (!follower.isBusy()) {
                     //TODO: open claw here--?need to pause to open before moving
                     autoDebug(500, "Auto: case 1: ", "score preLoad");
-                    follower.followPath(bringSample1Home, false);
+                    follower.followPath(bringSample1Home, true);
                   //  follower.setMaxPower(0.8);
                     autoDebug(500, "Auto: case 1: ", "move sample 1 Home");
                     setPathState(2);
@@ -292,14 +292,14 @@ public class Pedro_AutoRedSpecimen1 extends OpMode {
                     //TODO: rotate arm into robot, lower slider, extend arm to wall pick position after ?1 second
                 }
                 if (!follower.isBusy()) {
-                    follower.followPath(bringSample2Home, false);
+                    follower.followPath(bringSample2Home, true);
                     autoDebug(500, "Auto: case 2: ", "move sample 2 Home");
                     setPathState(3);
                 }
                 break;
             case 3:     //THEN move sample 3 home
                 if (!follower.isBusy()) {
-                    follower.followPath(bringSample3Home, false);
+                    follower.followPath(bringSample3Home, true);
                     autoDebug(500, "Auto: case 3: ", "move sample 3 Home");
                     setPathState(4);
                 }
