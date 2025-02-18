@@ -46,8 +46,8 @@ import pedroPathing.constants.LConstants;
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/13/2024
  */
-@Config
-@Autonomous(name = "Pedro Forward Velocity Tuner", group = "Pedro Automatic Tuners")
+//@Config
+//@Autonomous(name = "Pedro Forward Velocity Tuner", group = "Pedro Automatic Tuners")
 public class ForwardVelocityTuner extends OpMode {
     private ArrayList<Double> velocities = new ArrayList<>();
 
