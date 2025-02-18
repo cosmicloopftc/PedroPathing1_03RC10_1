@@ -3,11 +3,14 @@ import android.graphics.Color;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
+import com.acmerobotics.roadrunner.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.DashboardPoseTracker;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,8 +31,10 @@ import java.util.Timer;
 
 import Hardware.HardwareDrivetrain;
 import Hardware.HardwareNoDriveTrainRobot;
+import RR.AUTOstorageConstant;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
+
 
 /**
  * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
@@ -64,7 +69,8 @@ import pedroPathing.constants.LConstants;
 
 
 @Config    //need this to allow appearance in FtcDashboard Configuration to make adjust of variables
-@TeleOp(group="Primary", name= "BLUE_TeleOpV1.2")
+@TeleOp(group="Primary", name= "BLUE_TeleOpV1.3")
+
 public class BLUE_TeleOpV1 extends OpMode {
     private Telemetry telemetryA;
     boolean endGameRumble45secondsWarningOnce = true;
@@ -74,10 +80,17 @@ public class BLUE_TeleOpV1 extends OpMode {
 
     Gamepad.RumbleEffect customRumbleEffect;
 
-    //based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
+    //PedroPathing driving:   based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
     // * @version 2.0, 11/28/2024
     private Follower follower;
-    private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
+    //private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
+    //converting RR Coordinate to PedroPathing Coordinate
+    private final Pose startPose = new Pose(
+            70.5 - AUTOstorageConstant.autoEndY,
+            AUTOstorageConstant.autoEndX + 70.5,
+            AUTOstorageConstant.autoEndHeadingDEG + 90);  //TODO: Later, reset this to transfer location from Auto
+
+
 
     private String sampleColor = "NONE";
     private boolean intakeExtend = false;
@@ -216,7 +229,7 @@ public class BLUE_TeleOpV1 extends OpMode {
         }
 
 
-//        follower.startTeleopDrive();
+        follower.startTeleopDrive();
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
 
@@ -224,6 +237,7 @@ public class BLUE_TeleOpV1 extends OpMode {
         telemetryA.addLine("");
         // Tell sensor desired gain value (normally you would do this during initialization, not during loop)
         robot.Sensor.colorIntake.setGain(colorGain);
+
         telemetryA.addData(">", "Hardware Initialization complete");
         telemetryA.update();
         runtime.reset();
@@ -274,7 +288,17 @@ public class BLUE_TeleOpV1 extends OpMode {
         robot.LED.ledStick.setBrightness(9,0);
         robot.LED.ledStick.setBrightness(10,0);
 
-
+        //PedroPathing coordiante
+        telemetryA.addData("X PedroPathing = ","%.1f", follower.getPose().getX());
+        telemetryA.addData("Y PedroPathing = ","%.1f", follower.getPose().getY());
+        telemetryA.addData("Heading PedroPathing (Deg) = ","%.1f", Math.toDegrees(follower.getPose().getHeading()));
+        telemetryA.addData("Bot Heading--imu Yaw (deg) = ", "%.1f", botHeading);
+        //telemetryA.addData("X from RR ", follower.getPose().getX());
+        //telemetryA.addData("Y from RR ", follower.getPose().getY());
+        //telemetryA.addData("Bot Heading from RR (degrees) ", "%.1f", Math.toDegrees(follower.getPose().getHeading()));
+        //telemetryA.addLine("");
+        //telemetryA.addData("Bot Heading--imu Yaw (degrees)", "%.1f", botHeading);
+        //
 
         telemetryA.update();
     }
@@ -301,7 +325,7 @@ public class BLUE_TeleOpV1 extends OpMode {
 
         //This starts teleop drive control by 1. breakFollowing() and set teleopDrive = true;
         //If regular manual control by JAVA for FTC method, then comment this out.
-        follower.startTeleopDrive();
+//        follower.startTeleopDrive();
     }
 
     @Override
@@ -680,12 +704,7 @@ public class BLUE_TeleOpV1 extends OpMode {
 
 
 
-        //telemetryA.addData("X ", follower.getPose().getX());
-        //telemetryA.addData("Y ", follower.getPose().getY());
-        //telemetryA.addData("Bot Heading--PedroPathing (degrees)", "%.1f", Math.toDegrees(follower.getPose().getHeading()));
-        //telemetryA.addLine("");
-        //telemetryA.addData("Bot Heading--imu Yaw (degrees)", "%.1f", botHeading);
-        //telemetryA.addLine("");
+        /**************  TELEMETRY MAY SLOW DOWN LOOP if many I2C calls  ************************/
         telemetryA.addData("Runtime (seconds) = ", "%.1f", getRuntime());
         //telemetryA.addData("Robot Driving Orientation = ", drivingOrientation);
         telemetryA.addData("State = ", state);
@@ -704,12 +723,12 @@ public class BLUE_TeleOpV1 extends OpMode {
         telemetryA.addLine(" ");
         telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
         telemetryA.addData("Intake Axon Servo set position:", robot.Intake.getIntakeServoAxonPosition());
-
+        telemetryA.addLine(" ");
 
 //        Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
-//        telemetry.update();
+
 
         if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
             rumble();
@@ -746,6 +765,7 @@ public class BLUE_TeleOpV1 extends OpMode {
 
         loopTimeTotal = loopTimeTotal + loopTime.milliseconds();
         loopTimeCount = loopTimeCount + 1;
+
         telemetryA.addData("Average loop Time (ms) = ", "%.3f", loopTimeTotal/loopTimeCount);
 
         telemetryA.update();

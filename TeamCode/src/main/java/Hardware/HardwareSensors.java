@@ -61,7 +61,7 @@ public class HardwareSensors {
         // use NormalizedColorSensor over ColorSensor, because NormalizedColorSensor consistently
         // gives values between 0 and 1, while values you get from ColorSensor are dependent on specific sensor you're using.
         colorIntake = hardwareMap.get(NormalizedColorSensor.class, "colorIntake");
-        distanceTest = hardwareMap.get(DistanceSensor.class, "distanceTest");
+        //distanceTest = hardwareMap.get(DistanceSensor.class, "distanceTest");
 
         try {
             runSample(); // actually execute the sample

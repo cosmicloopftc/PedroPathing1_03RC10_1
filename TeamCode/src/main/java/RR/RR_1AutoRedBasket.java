@@ -27,8 +27,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import Hardware.HardwareNoDriveTrainRobot;
 
-@Config
-@Autonomous(name = "RR_1AutoRedBasket v1.1", group = "Auto")
+//@Config
+//@Autonomous(name = "RR_1AutoRedBasket v1.1", group = "Auto")
 public class RR_1AutoRedBasket extends LinearOpMode {
 
     //TODO: setup initial position for all subsystems

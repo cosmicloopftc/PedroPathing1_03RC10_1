@@ -24,6 +24,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.roadrunner.ftc.LazyHardwareMapImu;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
@@ -40,6 +41,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+//import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import RR.messages.DriveCommandMessage;
 import RR.messages.MecanumCommandMessage;
 import RR.messages.MecanumLocalizerInputsMessage;
@@ -49,6 +51,15 @@ import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+/**2/18/2025: update to pinpoint localizer:
+ *      line 259:  comment out ThreeDeadWheelLocalizer and
+ *                  use this: localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
+ *
+ */
+
+
+
 
 @Config
 public final class MecanumDrive {
@@ -62,7 +73,7 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;         //<--update 1/25/2025   BACKWARD;       //done 1/4/2025
 
         // drive model parameters
-        public double inPerTick = 0.001964962776;   //<--1/25/2025,new strafe odom    0.001973754401;   //00196520672 //done 1/5/2025 166.5/84357=0.001973754401
+        public double inPerTick = 0.001964962776;   //2/18/2025  pinpoint calculated to be 0.001962627156     <--1/25/2025,new strafe odom    0.001973754401;   //00196520672 //done 1/5/2025 166.5/84357=0.001973754401
         public double lateralInPerTick = 0.0013537580254020833;     //<--1/25/2025,new strafe odom    0.0009460105374178588;
         // public double lateralInPerTick = 0.0009460105374178588;  //TODO: uncertain if ok since strafe encoder is different than from other 2 encoder; done 1/5/2025 based on KV, KS, and above inPerTick
         //0.000946010537417859
@@ -74,22 +85,23 @@ public final class MecanumDrive {
         public double kA = 0.000051;       //<--1/25/2025,new strafe odom      0.0001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxProfileAccel = 50;     //50;
+        public double maxWheelVel = 45;     //50;
+        public double minProfileAccel = -50;
+
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 6.0;          //8.0, 7.0;
-        public double lateralGain = 3.0;        //3.0;
-        public double headingGain = 5.0;        //4.0; // shared with turn
+        public double axialGain = 7.0;      //6.0;          //8.0, 7.0;
+        public double lateralGain = 4.0;        //3.0;        //3.0;
+        public double headingGain = 4.0;        //5.0;        //4.0; // shared with turn
 
-        public double axialVelGain = 0.0;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double axialVelGain = 1.8;    //0.0;
+        public double lateralVelGain = 0.1;
+        public double headingVelGain = 0.1;     //0.0; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -241,17 +253,21 @@ public final class MecanumDrive {
         //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);   //remove/update 1/6/2025 for back wheel with chain //done 1/4/2025
         leftBack.setDirection(DcMotorEx.Direction.REVERSE);         //update 1/6/2025 for back wheel with chain
 
-
-
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+//old before 2/18/2025 with addition of OTOS and pinpoint        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
+//                PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+
+        lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         //localizer = new DriveLocalizer(pose);
-        localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose);  //TODO: 1/4/2025, added pose 3rd parameter not listed on instructions
+        //localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose);  //TODO: 1/4/2025, added pose 3rd parameter not listed on instructions
+        localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);          //TODO: done 2/18/2025  used for Pinpoint
+
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
