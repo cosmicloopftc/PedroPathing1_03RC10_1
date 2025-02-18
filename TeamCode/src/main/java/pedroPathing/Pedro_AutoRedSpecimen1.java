@@ -1,18 +1,16 @@
 package pedroPathing;
-//import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOfrontIntakePickupLength;
-//import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1X;
-//import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample1Y;
-//import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample2X;
-//import static org.firstinspires.ftc.teamcode.RR.AUTOstorageConstant.AUTOredSample2Y;
+
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.util.DashboardPoseTracker;
 import com.pedropathing.util.Drawing;
+
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -41,6 +39,7 @@ import com.pedropathing.util.Timer;
 import com.pedropathing.util.Constants;
 
 import RR.AUTOstorageConstant;
+
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
 
@@ -79,6 +78,8 @@ import pedroPathing.constants.LConstants;
  *               Add debug code
  *
  *2/16/2025     Pedro_RedBasket_Feb16_2025_MoreCurvePath_19second
+ *2/19/2025     .setPathEndTimeoutConstraint(0)   and   Point.CaARTESIAN to BezierCurve
+ *
  */
 
 
@@ -135,112 +136,125 @@ public class Pedro_AutoRedSpecimen1 extends OpMode {
         preLoadSpecScore = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(preloadScorePose)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), preloadScorePose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         bringSample1Home = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(preloadScorePose),
-                        new Point(19,55),
-                        new Point(7,32),
-                        new Point(126,27),
+                        new Point(19,55, Point.CARTESIAN),
+                        new Point(7,32, Point.CARTESIAN),
+                        new Point(126,27, Point.CARTESIAN),
                         new Point(sample1HomePose)
                         ))
                 .setLinearHeadingInterpolation(preloadScorePose.getHeading(), sample1HomePose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         bringSample2Home = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(sample1HomePose),
-                        new Point(107,15),
+                        new Point(107,15, Point.CARTESIAN),
                         new Point(sample2HomePose)
                 ))
                 .setLinearHeadingInterpolation(sample1HomePose.getHeading(), sample2HomePose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         bringSample3Home = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(sample2HomePose),
-                        new Point(107,6),
+                        new Point(107,6, Point.CARTESIAN),
                         new Point(sample3HomePose)
                 ))
                 .setLinearHeadingInterpolation(sample2HomePose.getHeading(), sample3HomePose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         sample3HomeToSpecimenPickup = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(sample3HomePose),
-                        new Point(19,31),
-                        new Point(19,31),
+                        new Point(19,31, Point.CARTESIAN),
+                        new Point(19,31, Point.CARTESIAN),
                         new Point(specimenPickupPose)
                 ))
                 .setLinearHeadingInterpolation(sample3HomePose.getHeading(), specimenPickupPose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         scoreSpecimen1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(specimenPickupPose),
-                        new Point(16,68),
-                        new Point(22,68),
+                        new Point(16,68, Point.CARTESIAN),
+                        new Point(22,68, Point.CARTESIAN),
                         new Point(ScorePose1)
                 ))
                 .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose1.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         returnHomeAfterScoringSpecimen1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(ScorePose1),
-                        new Point(23,54),
-                        new Point(12,68),
-                        new Point(30,37),
-                        new Point(20,31),
+                        new Point(23,54, Point.CARTESIAN),
+                        new Point(12,68, Point.CARTESIAN),
+                        new Point(30,37, Point.CARTESIAN),
+                        new Point(20,31, Point.CARTESIAN),
                         new Point(specimenPickupPose)
                 ))
                 .setLinearHeadingInterpolation(ScorePose1.getHeading(), specimenPickupPose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         scoreSpecimen2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(specimenPickupPose),
-                        new Point(16,72),
-                        new Point(22,72),
+                        new Point(16,72, Point.CARTESIAN),
+                        new Point(22,72, Point.CARTESIAN),
                         new Point(ScorePose2)
                 ))
                 .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose2.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         returnHomeAfterScoringSpecimen2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(ScorePose2),
-                        new Point(23,54),
-                        new Point(12,72),
-                        new Point(30,37),
-                        new Point(20,31),
+                        new Point(23,54, Point.CARTESIAN),
+                        new Point(12,72, Point.CARTESIAN),
+                        new Point(30,37, Point.CARTESIAN),
+                        new Point(20,31, Point.CARTESIAN),
                         new Point(specimenPickupPose)
                 ))
                 .setLinearHeadingInterpolation(ScorePose2.getHeading(), specimenPickupPose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         scoreSpecimen3 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(specimenPickupPose),
-                        new Point(16,76),
-                        new Point(22,76),
+                        new Point(16,76, Point.CARTESIAN),
+                        new Point(22,76, Point.CARTESIAN),
                         new Point(ScorePose3)
                 ))
                 .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose3.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         returnHomeAfterScoringSpecimen3 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(ScorePose3),
-                        new Point(23,54),
-                        new Point(12,76),
-                        new Point(30,37),
-                        new Point(20,31),
+                        new Point(23,54, Point.CARTESIAN),
+                        new Point(12,76, Point.CARTESIAN),
+                        new Point(30,37, Point.CARTESIAN),
+                        new Point(20,31, Point.CARTESIAN),
                         new Point(specimenPickupPose)
                 ))
                 .setLinearHeadingInterpolation(ScorePose3.getHeading(), specimenPickupPose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
         scoreSpecimen4 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(specimenPickupPose),
-                        new Point(16,80),
-                        new Point(22,80),
+                        new Point(16,80, Point.CARTESIAN),
+                        new Point(22,80, Point.CARTESIAN),
                         new Point(ScorePose4)
                 ))
                 .setLinearHeadingInterpolation(specimenPickupPose.getHeading(), ScorePose4.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
         returnHomeAfterScoringSpecimen4 = follower.pathBuilder()                //go straight back
                 .addPath(new BezierCurve(new Point(ScorePose4),
-                        new Point(15,51),
-                        new Point(17,48),
+                        new Point(15,51, Point.CARTESIAN),
+                        new Point(17,48, Point.CARTESIAN),
                         new Point(specimenPickupPose)
                 ))
                 .setLinearHeadingInterpolation(ScorePose4.getHeading(), specimenPickupPose.getHeading())
+                .setPathEndTimeoutConstraint(0)
                 .build();
 
     }
@@ -278,7 +292,7 @@ public class Pedro_AutoRedSpecimen1 extends OpMode {
                 if (!follower.isBusy()) {
                     //TODO: open claw here--?need to pause to open before moving
                     autoDebug(500, "Auto: case 1: ", "score preLoad");
-                    follower.followPath(bringSample1Home, false);
+                    follower.followPath(bringSample1Home, true);
                   //  follower.setMaxPower(0.8);
                     autoDebug(500, "Auto: case 1: ", "move sample 1 Home");
                     setPathState(2);
@@ -292,14 +306,14 @@ public class Pedro_AutoRedSpecimen1 extends OpMode {
                     //TODO: rotate arm into robot, lower slider, extend arm to wall pick position after ?1 second
                 }
                 if (!follower.isBusy()) {
-                    follower.followPath(bringSample2Home, false);
+                    follower.followPath(bringSample2Home, true);
                     autoDebug(500, "Auto: case 2: ", "move sample 2 Home");
                     setPathState(3);
                 }
                 break;
             case 3:     //THEN move sample 3 home
                 if (!follower.isBusy()) {
-                    follower.followPath(bringSample3Home, false);
+                    follower.followPath(bringSample3Home, true);
                     autoDebug(500, "Auto: case 3: ", "move sample 3 Home");
                     setPathState(4);
                 }
