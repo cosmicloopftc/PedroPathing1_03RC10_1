@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
-@TeleOp(name="SimplifiedOdo_Teleop 1.0", group = "Test")
+//@TeleOp(name="SimplifiedOdo_Teleop 1.0", group = "Test")
 public class SimplifiedOdoTeleOp extends LinearOpMode
 {
     final double SAFE_DRIVE_SPEED   = 0.8 ; // Adjust this to your robot and your driver.  Slower usually means more accuracy.  Max value = 1.0
