@@ -58,7 +58,7 @@ import com.qualcomm.robotcore.util.Range;
  * Don't forget to also buy this to make it easy to connect to your Control or Expansion Hub:
  * https://www.sparkfun.com/products/25596
  */
-@TeleOp(name = "Concept: LED Stick", group = "Concept")
+//@TeleOp(name = "Concept: LED Stick", group = "Concept")
 
 public class LEDTest extends OpMode {
     private boolean wasUp;
