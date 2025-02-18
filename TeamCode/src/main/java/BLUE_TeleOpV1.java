@@ -1,13 +1,21 @@
 import android.graphics.Color;
 
+import com.qualcomm.ftccommon.configuration.EditActivity;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerImpl;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
+import com.acmerobotics.roadrunner.Pose2d;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.localization.PoseUpdater;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.DashboardPoseTracker;
+
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,8 +36,11 @@ import java.util.Timer;
 
 import Hardware.HardwareDrivetrain;
 import Hardware.HardwareNoDriveTrainRobot;
+import RR.AUTOstorageConstant;
 import pedroPathing.constants.FConstants;
 import pedroPathing.constants.LConstants;
+
+import Diagnostic.Datalogger;
 
 /**
  * This is the TeleOpEnhancements OpMode. It is an example usage of the TeleOp enhancements that
@@ -58,14 +69,38 @@ import pedroPathing.constants.LConstants;
  12/27/2024: add Color sensor for color, hue, distance based on FIRST external example
  1/1/2025:   Update Diagnostic
  1/3/2025:   Update new PedroPath 1.0.3 teleOp movement
- TODO: add AUTOconstant of data transfer from end of AUTO
+ 2/19/2025:  add AUTOconstant of data transfer from end of AUTO to staring pose
+ 2/20/2025:  add Datalogger Class to Diagnostic folder and incorporate ConceptDataLogger BLUE_TeleOpV1 Class
+                For instructions, see the tutorial at the FTC Wiki:  https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Datalogging
+                Credit to @Windwoes (https://github.com/Windwoes).
+             To access the file: connect to Drive Hub and go to : /sdcard/FIRST/java/src/Datalogs, look for the file
+                Right-click on a log file, and choose "Download". During the download dialog,
+                navigate to your target folder on the laptop, and change the file extension from .txt to .csv.
+                This change allows the file to be automatically recognized and imported by spreadsheet programs.
+             To graph data: In the spreadsheet, select columns to graphs: Elapsed Time and other data columns.
+                select Insert Chart, basic 2-D line style graph option
+             TODO: writeDatalog()--need to check if this will slow down run loop--line 341 and line 814
  */
 
 
 
 @Config    //need this to allow appearance in FtcDashboard Configuration to make adjust of variables
-@TeleOp(group="Primary", name= "BLUE_TeleOpV1.2")
+@TeleOp(group="Primary", name= "BLUE_TeleOpV1.3")
+
 public class BLUE_TeleOpV1 extends OpMode {
+    /** For datalog 2/20/2025 */
+    VoltageSensor battery;
+    String datalogOpModeStatus;
+    double batteryStatus;
+    int readCount = 0;
+    Datalogger datalog;
+    String datalogFilename = "myDatalog_001";       // modify name for each run
+    ElapsedTime dataTimer;                          // timer object
+    int logInterval = 50;                           // target interval in milliseconds
+
+    //runtime to keep track of time each mode is already defined as usual below.
+    String allianceColor = "BLUE";
+    String nonAllianceColor = "RED";
     private Telemetry telemetryA;
     boolean endGameRumble45secondsWarningOnce = true;
     boolean endGameRumble31secondSTARTonce = true;
@@ -74,10 +109,17 @@ public class BLUE_TeleOpV1 extends OpMode {
 
     Gamepad.RumbleEffect customRumbleEffect;
 
-    //based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
+    //PedroPathing driving:   based on Robot-Centric Teleop  from @author Baron Henderson - 20077 The Indubitables
     // * @version 2.0, 11/28/2024
     private Follower follower;
-    private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
+    //private final Pose startPose = new Pose(0,0,0);  //TODO: Later, reset this to transfer location from Auto
+    //converting RR Coordinate to PedroPathing Coordinate
+    private final Pose startPose = new Pose(
+            70.5 - AUTOstorageConstant.autoEndY,
+            AUTOstorageConstant.autoEndX + 70.5,
+            AUTOstorageConstant.autoEndHeadingDEG + 90);  //TODO: Later, reset this to transfer location from Auto
+
+
 
     private String sampleColor = "NONE";
     private boolean intakeExtend = false;
@@ -89,7 +131,6 @@ public class BLUE_TeleOpV1 extends OpMode {
     HardwareNoDriveTrainRobot robot = new HardwareNoDriveTrainRobot();
     HardwareDrivetrain drivetrain = new HardwareDrivetrain();
 
-    VoltageSensor battery;
 
 
     enum State{
@@ -108,10 +149,10 @@ public class BLUE_TeleOpV1 extends OpMode {
     private ElapsedTime sweepTime = new ElapsedTime();
     private double loopTimeTotal, loopTimeCount;
     private ElapsedTime loopTime = new ElapsedTime();
-
+    private double loopTimeAverMilliSec;
 
     boolean sweptIn = true;
-    double botHeading;
+    double botHeadingImu;
     String drivingOrientation = "robotOriented";   //TODO: as default for Eduardo, but will also reset in init as well.
     double lastTime;
     double imuAngle;
@@ -203,7 +244,18 @@ public class BLUE_TeleOpV1 extends OpMode {
         robot.imu.resetYaw();      //reset the IMU/Gyro angle with each match.
         drivetrain.init(hardwareMap);   //for drivetrain only
 
+        /** For datalog 2/20/2025 */
+        datalogOpModeStatus = "INIT";
         battery = hardwareMap.voltageSensor.get("Control Hub");
+        datalog = new Datalogger(datalogFilename);      // Initialize the datalog
+        dataTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);// Instantiate datalog timer.
+        datalog.addField("Count");
+        datalog.addField("OpModeStatus");
+        datalog.addField("Elapsed Time (mS)");
+        datalog.addField("battery Voltage");
+        datalog.addField("IMU Heading Angle (Deg)");
+        datalog.addField("loop Time (mS)");
+        datalog.firstLine();                        // end first line (row)
 
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -216,7 +268,7 @@ public class BLUE_TeleOpV1 extends OpMode {
         }
 
 
-//        follower.startTeleopDrive();
+        follower.startTeleopDrive();
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
 
@@ -224,6 +276,7 @@ public class BLUE_TeleOpV1 extends OpMode {
         telemetryA.addLine("");
         // Tell sensor desired gain value (normally you would do this during initialization, not during loop)
         robot.Sensor.colorIntake.setGain(colorGain);
+
         telemetryA.addData(">", "Hardware Initialization complete");
         telemetryA.update();
         runtime.reset();
@@ -233,15 +286,15 @@ public class BLUE_TeleOpV1 extends OpMode {
 
     @Override
     public void init_loop() {
-        //telemetryA.addData("Present Heading by IMU in degree = ", "(%.1f)", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        loopTime.reset();
         bulkReadTELEOP();
-        botHeading = imuAngle;
+        botHeadingImu = imuAngle;
 
 //        robot.LED.LEDinitReady();
 //
 //        telemetryA.setMsTransmissionInterval(50);
 //        telemetryA.addData("Battery Voltage (V): ", "%.1f", battery.getVoltage());
-//        telemetryA.addData("Bot Heading--imu Yaw (degrees): ", "%.1f", botHeading);
+//        telemetryA.addData("Bot Heading--imu Yaw (degrees): ", "%.1f", botHeadingImu);
 //        telemetryA.addData("Robot Driving Orientation if not PedroPath = ", drivingOrientation);
 //        telemetryA.addLine("");
 //        telemetryA.addData("Outtake left slide position: ", robot.Outtake.outtakeRightSlide.getCurrentPosition());
@@ -274,16 +327,37 @@ public class BLUE_TeleOpV1 extends OpMode {
         robot.LED.ledStick.setBrightness(9,0);
         robot.LED.ledStick.setBrightness(10,0);
 
+        //PedroPathing coordiante
+        telemetryA.addData("X PedroPathing = ","%.1f", follower.getPose().getX());
+        telemetryA.addData("Y PedroPathing = ","%.1f", follower.getPose().getY());
+        telemetryA.addData("Heading PedroPathing (Deg) = ","%.1f", Math.toDegrees(follower.getPose().getHeading()));
+        telemetryA.addData("Bot Heading--imu Yaw (deg) = ", "%.1f", botHeadingImu);
+        telemetryA.addLine(" ");
+        //telemetryA.addData("X from RR ", follower.getPose().getX());
+        //telemetryA.addData("Y from RR ", follower.getPose().getY());
+        //telemetryA.addData("Bot Heading from RR (degrees) ", "%.1f", Math.toDegrees(follower.getPose().getHeading()));
+        //telemetryA.addLine("");
+        //telemetryA.addData("Bot Heading--imu Yaw (degrees)", "%.1f", botHeadingImu);
 
+        loopTimeTotal = loopTimeTotal + loopTime.milliseconds();
+        loopTimeCount = loopTimeCount + 1;
+        loopTimeAverMilliSec = loopTimeTotal/loopTimeCount;
+        telemetryA.addData("Average loop Time (ms) = ", "%.3f", loopTimeAverMilliSec);
 
         telemetryA.update();
+        writeDatalog();             //TODO: check on effect of loopTimeAverMilliSec with and without this datalogging
+
     }
 
     //-------------------------------------------------------------------------------------------------
     @Override
     public void start() {
         robot.start();
+        dataTimer.reset();  // Reset timer for datalogging interval.
+        datalogOpModeStatus = "RUNNING";
+
         runtime.reset();
+
         drivingOrientation = "robotOriented";
         state = State.START;
         robot.LED.ledStick.setColor(5, Color.WHITE);
@@ -301,13 +375,13 @@ public class BLUE_TeleOpV1 extends OpMode {
 
         //This starts teleop drive control by 1. breakFollowing() and set teleopDrive = true;
         //If regular manual control by JAVA for FTC method, then comment this out.
-        follower.startTeleopDrive();
+//        follower.startTeleopDrive();
     }
 
     @Override
     public void loop() {
         bulkReadTELEOP();
-        botHeading = imuAngle;
+        botHeadingImu = imuAngle;
         loopTime.reset();
 
         switch (state) {
@@ -374,7 +448,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 else if (gamepad1.left_trigger > 0.2 && robot.Intake.intakeServoAxon.getPosition() < 0.7){
                     robot.Intake.intakeIN();
                 }
-                else if (gamepad1.left_bumper || sampleColor.equals("RED")){
+                else if (gamepad1.left_bumper || sampleColor.equals(nonAllianceColor)){
 //                    if (sampleColor.equals("RED")){
 //                        robot.LED.ledStick.setColor(Color.RED);
 //                        robot.LED.ledStick.setBrightness(1);
@@ -393,7 +467,7 @@ public class BLUE_TeleOpV1 extends OpMode {
                 else if(gamepad1.dpad_left){
                     robot.Intake.intakeSlideMID();
                 }
-                else if(gamepad1.dpad_right || (!intakeExtend && (sampleColor.equals("BLUE") || sampleColor.equals("YELLOW")))){
+                else if(gamepad1.dpad_right || (!intakeExtend && (sampleColor.equals(allianceColor) || sampleColor.equals("YELLOW")))){
 //                    if (sampleColor.equals("BLUE")){
 //                        robot.LED.ledStick.setColor(Color.BLUE);
 //                        robot.LED.ledStick.setBrightness(1);
@@ -596,6 +670,23 @@ public class BLUE_TeleOpV1 extends OpMode {
             robot.Outtake.rightSlideSetPositionPower(1400, 1);
         }
 
+
+        //***MANUAL SLIDES
+        if (gamepad2.right_stick_y > 0.1 || gamepad2.left_stick_y > 0.1){
+            int currentLeftSlidePosition = robot.Outtake.outtakeLeftSlide.getCurrentPosition();
+            int currentRightSlidePosition = robot.Outtake.outtakeRightSlide.getCurrentPosition();
+            robot.Outtake.outtakeLeftSlide.setTargetPosition(currentLeftSlidePosition + 50);
+            robot.Outtake.outtakeRightSlide.setTargetPosition(currentRightSlidePosition + 50);
+        }
+        if (gamepad2.right_stick_y  < -0.1 || gamepad2.left_stick_y  < -0.1){
+            int currentLeftSlidePosition = robot.Outtake.outtakeLeftSlide.getCurrentPosition();
+            int currentRightSlidePosition = robot.Outtake.outtakeRightSlide.getCurrentPosition();
+            robot.Outtake.outtakeLeftSlide.setTargetPosition(currentLeftSlidePosition - 50);
+            robot.Outtake.outtakeRightSlide.setTargetPosition(currentRightSlidePosition - 50);
+        }
+
+
+
 //        if (sampleColor.equals("YELLOW")){
 //            robot.LED.ledStick.setColor(Color.YELLOW);
 //            robot.LED.ledStick.setBrightness(1);
@@ -660,7 +751,7 @@ public class BLUE_TeleOpV1 extends OpMode {
         powerShift = motorPowerDefault + powerChange;
 
 /**12/18/2024--THIS IS COMMENTED OUT WHEN USING PEDROPATHING TO DRIVE ROBOT
- drivetrain.drive(y, x, rx, powerShift, botHeading, drivingOrientation);
+ drivetrain.drive(y, x, rx, powerShift, botHeadingImu, drivingOrientation);
  */
 /** Comment out if using regular drivetrain to drive robot, otherwise use below.
  * Update Pedro to move the robot based on:
@@ -668,7 +759,7 @@ public class BLUE_TeleOpV1 extends OpMode {
  - Left/Right Movement: -gamepad1.left_stick_x
  - Turn Left/Right Movement: -gamepad1.right_stick_x
  - Robot-Centric Mode: true
- --original:  follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
+ --original for PedroPathing:  follower.setTeleOpMovementVectors(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, true);
  */
         //follower.setTeleOpMovementVectors(-y*powerShift, -x*powerShift, -rx*powerShift, true);
         //Below set the max power as set above
@@ -680,12 +771,7 @@ public class BLUE_TeleOpV1 extends OpMode {
 
 
 
-        //telemetryA.addData("X ", follower.getPose().getX());
-        //telemetryA.addData("Y ", follower.getPose().getY());
-        //telemetryA.addData("Bot Heading--PedroPathing (degrees)", "%.1f", Math.toDegrees(follower.getPose().getHeading()));
-        //telemetryA.addLine("");
-        //telemetryA.addData("Bot Heading--imu Yaw (degrees)", "%.1f", botHeading);
-        //telemetryA.addLine("");
+        /**************  TELEMETRY MAY SLOW DOWN LOOP if many I2C calls  ************************/
         telemetryA.addData("Runtime (seconds) = ", "%.1f", getRuntime());
         //telemetryA.addData("Robot Driving Orientation = ", drivingOrientation);
         telemetryA.addData("State = ", state);
@@ -704,12 +790,12 @@ public class BLUE_TeleOpV1 extends OpMode {
         telemetryA.addLine(" ");
         telemetryA.addData("Intake Axon Servo Position actual reading:",robot.Intake.getIntakeServoAxonPosition());
         telemetryA.addData("Intake Axon Servo set position:", robot.Intake.getIntakeServoAxonPosition());
-
+        telemetryA.addLine(" ");
 
 //        Drawing.drawPoseHistory(dashboardPoseTracker, "#4CAF50");
 //        Drawing.drawRobot(poseUpdater.getPose(), "#4CAF50");
 //        Drawing.sendPacket();
-//        telemetry.update();
+
 
         if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
             rumble();
@@ -746,10 +832,11 @@ public class BLUE_TeleOpV1 extends OpMode {
 
         loopTimeTotal = loopTimeTotal + loopTime.milliseconds();
         loopTimeCount = loopTimeCount + 1;
-        telemetryA.addData("Average loop Time (ms) = ", "%.3f", loopTimeTotal/loopTimeCount);
+        loopTimeAverMilliSec = loopTimeTotal/loopTimeCount;
+        telemetryA.addData("Average loop Time (ms) = ", "%.3f", loopTimeAverMilliSec);
 
+        writeDatalog();         //TODO: if having Datalogging take too much loop lime (test with init loop above),then remove
         telemetryA.update();
-
 
     }
 
@@ -758,13 +845,35 @@ public class BLUE_TeleOpV1 extends OpMode {
     public void stop() {
         robot.stop();
         drivetrain.setMotorPower(0, 0, 0, 0);
+        datalog.closeDataLogger();
     }
 
 
     public void bulkReadTELEOP() {
         imuAngle = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);       //0. direction is reverse
+        batteryStatus = battery.getVoltage();
         //newRightEncoder = robot.RBack_Motor.getCurrentPosition();       //1.
     }
+    public void writeDatalog() {
+        if (dataTimer.time() > logInterval) {
+            readCount++;
+            // Populate the fields to be logged.  Must appear in the same order
+            // as the column headings, to ensure data is logged to the intended
+            // field name.
+            datalog.addField(readCount);
+            datalog.addField(datalogOpModeStatus);
+            datalog.addField(getRuntime());
+            datalog.addField(batteryStatus);
+            datalog.addField(imuAngle);
+            datalog.addField(loopTimeAverMilliSec);
+            datalog.newLine();                // end the current set of readings
+            dataTimer.reset();      // start the interval timer again
+
+        }   // end if(timer)
+    }
+
+
+
 
     public void telemetryAllColorInfo(){
 //        telemetryA.addData("Gain", colorGain);
