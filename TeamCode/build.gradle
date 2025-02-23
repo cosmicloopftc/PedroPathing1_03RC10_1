@@ -25,6 +25,10 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation project(':TeamCode')
+    implementation project(':TeamCode')
+    implementation project(':TeamCode')
+    implementation project(':TeamCode')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'

@@ -100,13 +100,14 @@ public class BLUE_TeleOpV1 extends OpMode {
     int logInterval = 50;                           // target interval in milliseconds
 
     //runtime to keep track of time each mode is already defined as usual below.
-    String allianceColor = "BLUE";
-    String nonAllianceColor = "RED";
+    String allianceColor;               //Value is assigned in init()
+    String nonAllianceColor;            //Value is assigned in init()
+
     private Telemetry telemetryA;
-    boolean endGameRumble45secondsWarningOnce = true;
-    boolean endGameRumble31secondSTARTonce = true;
-    boolean endGameRumble20secondsLeftOnce = true;
-    boolean endGameRumble6secondsLeftOnce = true;
+    //boolean endGameRumble45secondsWarningOnce = true;
+    //boolean endGameRumble31secondSTARTonce = true;
+    boolean endGameRumble16secondsLeftOnce = true;
+    boolean endGameRumble8secondsLeftOnce = true;
 
     Gamepad.RumbleEffect customRumbleEffect;
 
@@ -231,10 +232,16 @@ public class BLUE_TeleOpV1 extends OpMode {
         pathState = pState;
         pathTimer.reset();
     }
+    double currentSpeed, targetSpeed = 0.0;
 
     //__________________________________________________________________________________________________
     @Override
     public void init() {
+        String allianceColor = "BLUE";
+        String nonAllianceColor = "RED";
+
+
+
         poseUpdater = new PoseUpdater(hardwareMap);
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
         Constants.setConstants(FConstants.class, LConstants.class);
@@ -757,6 +764,12 @@ public class BLUE_TeleOpV1 extends OpMode {
         }
         powerShift = motorPowerDefault + powerChange;
 
+
+        targetSpeed = powerShift;
+        powerShift = gradualPowerChange(currentSpeed,targetSpeed);
+
+
+
 /**12/18/2024--THIS IS COMMENTED OUT WHEN USING PEDROPATHING TO DRIVE ROBOT
  drivetrain.drive(y, x, rx, powerShift, botHeadingImu, drivingOrientation);
  */
@@ -770,10 +783,16 @@ public class BLUE_TeleOpV1 extends OpMode {
  */
         //follower.setTeleOpMovementVectors(-y*powerShift, -x*powerShift, -rx*powerShift, true);
         //Below set the max power as set above
-        follower.setTeleOpMovementVectors(
-                Range.clip(y,-powerShift, +powerShift),
-                Range.clip(x,-powerShift, +powerShift),
-                Range.clip(rx,-powerShift, +powerShift), true);
+        //version 1. default, presently
+//        follower.setTeleOpMovementVectors(
+//                Range.clip(y,-powerShift, +powerShift),
+//                Range.clip(x,-powerShift, +powerShift),
+//                Range.clip(rx,-powerShift, +powerShift), true);
+
+        //version 2:
+        follower.setTeleOpMovementVectors(y*powerShift, x*powerShift, rx*powerShift, true);
+
+
         follower.update();
 
 
@@ -804,36 +823,37 @@ public class BLUE_TeleOpV1 extends OpMode {
 //        Drawing.sendPacket();
 
 
-        if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
+//        if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
+//            rumble();
+//            telemetryA.addLine("45 SECONDS LEFT");
+//            telemetryA.addLine("");
+//            endGameRumble45secondsWarningOnce = false;
+//            gamepad1.runLedEffect(flashingWhite6Sec);
+//        }
+//        if ((runtime.seconds()  > 89) && endGameRumble31secondSTARTonce) {
+//            rumble();
+//            telemetryA.addLine("30 SECONDS LEFT");
+//            telemetryA.addLine("");
+//            rumble();
+//            endGameRumble31secondSTARTonce = false;
+//            gamepad1.runLedEffect(flashingBlue6Sec);
+//        }
+
+        //one rumble for 16 seconds left
+        if ((runtime.seconds() > 104 ) && endGameRumble16secondsLeftOnce) {
             rumble();
-            telemetryA.addLine("45 SECONDS LEFT");
+            telemetryA.addLine("16 SECONDS LEFT");
             telemetryA.addLine("");
-            endGameRumble45secondsWarningOnce = false;
-            gamepad1.runLedEffect(flashingWhite6Sec);
-        }
-        if ((runtime.seconds()  > 89) && endGameRumble31secondSTARTonce) {
-            rumble();
-            telemetryA.addLine("30 SECONDS LEFT");
-            telemetryA.addLine("");
-            rumble();
-            endGameRumble31secondSTARTonce = false;
-            gamepad1.runLedEffect(flashingBlue6Sec);
-        }
-        //one rumble for 20 seconds left
-        if ((runtime.seconds() > 100 ) && endGameRumble20secondsLeftOnce) {
-            rumble();
-            telemetryA.addLine("20 SECONDS LEFT");
-            telemetryA.addLine("");
-            endGameRumble20secondsLeftOnce = false;
+            endGameRumble16secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
 
-        //one rumble for 6 seconds left for hanging
-        if ((runtime.seconds() > 114 ) && endGameRumble6secondsLeftOnce) {
+        //3 rumble for 8 seconds left for hanging
+        if ((runtime.seconds() > 112 ) && endGameRumble8secondsLeftOnce) {
             rumble6sec();
-            telemetryA.addLine("6 SECONDS LEFT---HANGING NOW");
+            telemetryA.addLine("8 SECONDS LEFT---HANGING NOW");
             telemetryA.addLine("");
-            endGameRumble20secondsLeftOnce = false;
+            endGameRumble16secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
 
@@ -1006,12 +1026,45 @@ public class BLUE_TeleOpV1 extends OpMode {
 
                 .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
                 .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
                 .build();
         gamepad1.runRumbleEffect(customRumbleEffect);
         gamepad2.runRumbleEffect(customRumbleEffect);
     }
 
-
+    //based on George FTC Kickoff example
+    public double gradualPowerChange(double current, double target) {
+        double difference, nextChange;
+        difference = Math.abs(current - target);
+        //if very close, match them
+        if (difference < 0.05) {
+            return (target);
+            //if getting close within 0.3, shift by 0.05 power
+        } else if (difference < 0.2) {
+            nextChange = 0.05;               //TODO: adjust to see what is best. below 0.3 difference,change by 0.05
+        } else {
+            nextChange = 0.2;            //TODO: if large difference, increase faster at 0.1 power
+        }
+        //move slower if decreasing
+        if (current > target) {
+            nextChange = -nextChange;
+        }
+        return(current + nextChange);
+    }
 
 
 }
