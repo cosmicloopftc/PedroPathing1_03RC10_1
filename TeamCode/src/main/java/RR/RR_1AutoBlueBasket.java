@@ -3,8 +3,6 @@ package RR;
  *  ED: updated 2/21/2025 morning
  * */
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -41,7 +39,7 @@ import Hardware.HardwareNoDriveTrainRobot;
 @Config
 @Autonomous(name = "RR_1AutoRedBasket v1.2", group = "Auto")
 
-public class RR_1AutoRedBasket extends LinearOpMode {
+public class RR_1AutoBlueBasket extends LinearOpMode {
 
     //TODO: setup initial position for all subsystems
     //    public static double autoEnd_SliderMotorPosition,
@@ -685,11 +683,12 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 double green = colors.green;
                 if (red > 0.02 && red > green && red > blue){
                     sampleColor = "RED";
+                    autoRobot.Intake.intakeLeftWheel.setPower(1);
+                    autoRobot.Intake.intakeRightWheel.setPower(-1);
                 }
                 else if (blue > 0.02 && blue > green && blue > red){
                     sampleColor = "BLUE";
-                    autoRobot.Intake.intakeLeftWheel.setPower(1);
-                    autoRobot.Intake.intakeRightWheel.setPower(-1);
+
                 }
                 else if (green > 0.02 && green > red && green > blue){
                     sampleColor = "YELLOW";

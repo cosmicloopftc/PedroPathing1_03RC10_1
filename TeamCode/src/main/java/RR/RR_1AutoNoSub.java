@@ -3,8 +3,6 @@ package RR;
  *  ED: updated 2/21/2025 morning
  * */
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -28,7 +26,6 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -39,9 +36,9 @@ import java.util.List;
 import Hardware.HardwareNoDriveTrainRobot;
 
 @Config
-@Autonomous(name = "RR_1AutoRedBasket v1.2", group = "Auto")
+@Autonomous(name = "RR_1AutoNoSub v1", group = "Auto")
 
-public class RR_1AutoRedBasket extends LinearOpMode {
+public class RR_1AutoNoSub extends LinearOpMode {
 
     //TODO: setup initial position for all subsystems
     //    public static double autoEnd_SliderMotorPosition,
@@ -87,8 +84,6 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         AccelConstraint accSlow = new ProfileAccelConstraint(-15, 15);
         AccelConstraint accFast = new ProfileAccelConstraint(-45, 45);
 
-
-
         double readyPosition = 0.43;
         double grabPosition = 0.33;
         double intakeAxonPosition = 0.65;
@@ -129,14 +124,17 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                 .waitSeconds(0.5)
                 .turnTo(Math.toRadians(45));
 
+        TrajectoryActionBuilder turnToPreload = turnToBasket10.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-47, -50), Math.toRadians(350));
+
+        TrajectoryActionBuilder turnToBasket = turnToBasket10.endTrajectory().fresh()
+                .strafeToSplineHeading(new Vector2d(-57, -54), Math.toRadians(45));
+
         TrajectoryActionBuilder submersible = turnToBasket3.endTrajectory().fresh()
                 .setTangent(45)
-                .splineToSplineHeading(new Pose2d(-24, 0, 0), Math.toRadians(35));
+                .splineToSplineHeading(new Pose2d(-22.5, 0, 0), Math.toRadians(35));
 
-        TrajectoryActionBuilder turnToBasket2 = submersible.endTrajectory().fresh()
-                .setTangent(45)
-                .strafeToConstantHeading(new Vector2d(-25, 0))
-                .strafeToSplineHeading(new Vector2d(-59, -52.5), Math.toRadians(45));
+
 
 
         //*****LOOP wait for start, INIT LOOP***********************************************************
@@ -273,86 +271,36 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         autoOuttakeSliderAction(1, 1),
 
                         //Start of V2
-                        new ParallelAction(
-                                submersible.build(),
-                                new SequentialAction(
-                                        AutoIntakeSweeperAction(sweeperOUT, 3),
-                                        AutoIntakeSweeperAction(sweeperIn, 0)
-                                        )
-                        )
-                )
-        );
-        telemetry.setMsTransmissionInterval(10); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.pipelineSwitch(1);
-        limelight.start();
-        LLResult result = limelight.getLatestResult();
-        int turnAmount = 0;
-        if(result != null) {
-            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-            List<Double> left = new ArrayList<Double>();
-            List<Double> right = new ArrayList<Double>();
-            List<Double> center = new ArrayList<Double>();
-            for (LLResultTypes.ColorResult cr : colorResults) {
-                telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
-                if (cr.getTargetXDegrees() < -5) {
-                    left.add(cr.getTargetXDegrees());
-                } else if (cr.getTargetXDegrees() < 5) {
-                    center.add(cr.getTargetXDegrees());
-                } else {
-                    right.add(cr.getTargetXDegrees());
-                }
-            }
-            telemetry.update();
-            limelight.stop();
-            if (left.size() > right.size() && center.size() < left.size()) {
-                turnAmount = 345;
-            } else if (right.size() > left.size() && center.size() < right.size()) {
-                turnAmount = 15;
-            } else if (center.size() > left.size() && center.size() > right.size()) {
-                turnAmount = 0;
-            }
-        } else {
-            telemetry.addData("Null", "Null");
-        }
-        telemetry.update();
-        TrajectoryActionBuilder submerisbleTurn = submersible.endTrajectory().fresh()
-//                .lineToX(-26)
-                .turnTo(Math.toRadians(turnAmount));
-        Actions.runBlocking(
-                new SequentialAction(
-                        new ParallelAction(
-                            submerisbleTurn.build(),
-                            new SequentialAction(
-                                    autoIntakeSliderAction(80, .6, 0),
-                                    autoIntakeServoAxonAction(0.97),
-                                    autoIntakeSpiner(-1, 0.5),
-                                    autoIntakeSliderAction(300, .35, 0.5)
-                            )
-                        ),
-                        AutoColorSensor(),
+                        autoIntakeServoAxonAction(0.80),
+                        turnToPreload.build(),
+
+                        autoIntakeServoAxonAction(0.97),
+                        autoIntakeSliderAction(310, sliderPower, 0),
+                        autoIntakeSliderAction(0, sliderPower, 0),
+
                         autoIntakeServoAxonAction(intakeAxonPosition),
-                        //Move to basket
-                        autoIntakeSliderAction(1, 0.4, 0),
+                        autoIntakeSpiner(-1, 0.5),
+                        autoOuttakeArmAxonAction(grabPosition, 0.1),
+                        autoClawAction(0.3, 0.25),
                         new ParallelAction(
-                                autoIntakeSpiner(0, 0),
-                                turnToBasket2.build(),
-                                new SequentialAction(
-                                        autoIntakeSpiner(0, 0.5),
-                                        autoOuttakeArmAxonAction(grabPosition, 0.1),
-                                        autoClawAction(0.3, 0.25),
-                                        autoOuttakeSliderHighBasketAction(),
-                                        autoOuttakeArmAxonAction(0.75, 0),
-                                        autoouttakeExtensionAction(0.8, 0.25)
-                                )
+                                autoOuttakeSliderHighBasketAction(),
+                                turnToBasket.build(),
+                                autoOuttakeArmAxonAction(0.77, 0)
+
                         ),
-
-                        //Final
+                        autoouttakeExtensionAction(0.8, 1.25),
                         autoClawAction(0, 0.15),
-                        autoouttakeExtensionAction(1, 0),
-                        autoOuttakeArmAxonAction(readyPosition, 0),
-                        autoOuttakeSliderAction(0, 1)
-                )
 
+                        autoOuttakeArmAxonAction(readyPosition, 0),
+                        autoouttakeExtensionAction(1, 0),
+                        autoOuttakeSliderAction(1, 1),
+
+                        submersible.build(),
+                        autoClawAction(0, 0.15),
+                        autoouttakeExtensionAction(0.8, 0.),
+                        autoOuttakeArmAxonAction(0.37, 0)
+
+                )
         );
 
 //}
@@ -661,47 +609,6 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
     public Action AutoIntakeSweeperAction(double position, double pauseTimeSec) {
         return new AutoIntakeSweeperAction(position, pauseTimeSec);
-    }
-
-    public class AutoColorSensor implements Action {
-        private boolean initialized = false;
-        double desirePosition;
-        ElapsedTime timer;
-        double pauseTimeSec;
-        private String sampleColor = "NONE";
-        HardwareNoDriveTrainRobot robot = new HardwareNoDriveTrainRobot();
-
-        public AutoColorSensor() {
-
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
-                timer = new ElapsedTime();
-                NormalizedRGBA colors = robot.Sensor.colorIntake.getNormalizedColors();
-                double blue = colors.blue;
-                double red = colors.red;
-                double green = colors.green;
-                if (red > 0.02 && red > green && red > blue){
-                    sampleColor = "RED";
-                }
-                else if (blue > 0.02 && blue > green && blue > red){
-                    sampleColor = "BLUE";
-                    autoRobot.Intake.intakeLeftWheel.setPower(1);
-                    autoRobot.Intake.intakeRightWheel.setPower(-1);
-                }
-                else if (green > 0.02 && green > red && green > blue){
-                    sampleColor = "YELLOW";
-                }
-                initialized = true;
-            }
-            return false;
-        }
-    }
-
-    public Action AutoColorSensor() {
-        return new AutoColorSensor();
     }
 
     //power:  positive = intake split OUT sample
