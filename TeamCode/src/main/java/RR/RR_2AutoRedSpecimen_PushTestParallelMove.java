@@ -98,7 +98,7 @@ public class RR_2AutoRedSpecimen_PushTestParallelMove extends LinearOpMode {
         double start_OuttakeArmAxonPos =  0.28;         //position inside robot at start
 
         double scoring_OuttakeArmAxon_ScoringPos = 0.9;       //rotate outtake arm to scoring position
-        int scoring_OutakeSlider_ScoringPos = 1260;              //raise outtake  slider to scoring position
+        int scoring_OutakeSlider_ScoringPos = 1330;              //raise outtake  slider to scoring position
         double scoring_OuttakeExtension_ScoringPos =  1;   //extend outtake out to scoring position
         double clawOpen_Pos = 0.0;  // change from Eduardo 2/17  0.7;       //open claw after score
         double clawOpen_pauseTimeSecond = 0.2;
@@ -112,7 +112,7 @@ public class RR_2AutoRedSpecimen_PushTestParallelMove extends LinearOpMode {
         TrajectoryActionBuilder preloadScore;
         preloadScore = drive.actionBuilder(beginPose)
                 .setReversed(true)
-                .lineToYConstantHeading(-35,velFast, accMedium);             //start and move to submersible pole to score
+                .lineToYConstantHeading(-35,velMedium, accMedium);             //start and move to submersible pole to score
 
         /** COMBINE MOVES OF PUSHING SPECIMEN 4 AND 5 AND 6 HOME */
         TrajectoryActionBuilder combine_preloadMove_BackPush2SpecToHome_CollectSpec1 = preloadScore.endTrajectory().fresh()
@@ -136,17 +136,17 @@ public class RR_2AutoRedSpecimen_PushTestParallelMove extends LinearOpMode {
                 .strafeTo(new Vector2d(54, -8), velFast, accFast)       //toward Sample5
                 .strafeTo(new Vector2d(55, -50), velFast, accMedium)    //pushSample5Home
 
-                .setReversed(true)
-                .strafeTo(new Vector2d(62, -8), velFast, accMedium)     //toward Sample6
+//                .setReversed(true)
+//                .strafeTo(new Vector2d(62, -8), velFast, accMedium)     //toward Sample6
 
                 /** push sample 6 home and goto Wall */
                 .setReversed(false)
-                .splineToLinearHeading(new Pose2d(62,-34, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
-                        Math.toRadians(-90), velFast, accMedium)
-                .splineToLinearHeading(new Pose2d(40,-57, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
-                        Math.toRadians(-90), velFast, accMedium)
-                .splineToLinearHeading(new Pose2d(40,-57.5, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
-                        Math.toRadians(-90), velFast, accMedium)
+//                .splineToLinearHeading(new Pose2d(62,-34, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
+//                        Math.toRadians(-90), velFast, accMedium)
+//                .splineToLinearHeading(new Pose2d(40,-57, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
+//                        Math.toRadians(-90), velFast, accMedium)
+//                .splineToLinearHeading(new Pose2d(40,-57.5, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
+//                        Math.toRadians(-90), velFast, accMedium)
                 .splineToLinearHeading(new Pose2d(40,-64.5, Math.toRadians(-90)),       //pushSample6Home, by Spline to Wall
                         Math.toRadians(-90), velFast, accMedium);
                 // starting pose Y = -63, so need to go back more to wall, so -63.5?  TODO: need to reset Y as "wall squaring method"

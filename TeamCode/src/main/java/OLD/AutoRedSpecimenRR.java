@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import RR.MecanumDrive;
 
-@Config
+//@Config
 //@Autonomous(name = "RR Auto Red Specimen v1.1", group = "Auto")
 
 public final class AutoRedSpecimenRR extends LinearOpMode {

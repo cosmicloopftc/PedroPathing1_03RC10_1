@@ -52,14 +52,14 @@ public class MeepMeepTesting_2bots_OT {
                 .strafeTo(new Vector2d(54, -8), velFast, accFast)     //toward Sample5
                 .strafeTo(new Vector2d(57, -50), velFast, accMedium)  //pushSample5Home
 
-                .setReversed(true)
-                .strafeTo(new Vector2d(62, -8), velFast, accMedium)   //toward Sample6
+//                .setReversed(true)
+//                .strafeTo(new Vector2d(62, -8), velFast, accMedium)   //toward Sample6
 
                 /** push sample 6 home and goto Wall */
                         .setReversed(false)
-                .splineToLinearHeading(new Pose2d(62,-35, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
-                        Math.toRadians(-90), velFast, accMedium)
-                .splineToLinearHeading(new Pose2d(40,-58, Math.toRadians(-90)), Math.toRadians(-90), velFast, accMedium)       //pushSample6Home, midway by Spline
+//                .splineToLinearHeading(new Pose2d(62,-35, Math.toRadians(-90)),         //pushSample6Home, midway by Spline
+//                        Math.toRadians(-90), velFast, accMedium)
+//                .splineToLinearHeading(new Pose2d(40,-58, Math.toRadians(-90)), Math.toRadians(-90), velFast, accMedium)       //pushSample6Home, midway by Spline
 
                 .splineToLinearHeading(new Pose2d(40,-63.5, Math.toRadians(-90)),       //pushSample6Home, by Spline to Wall
                         Math.toRadians(-90), velFast, accMedium)
