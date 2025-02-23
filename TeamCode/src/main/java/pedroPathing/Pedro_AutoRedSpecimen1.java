@@ -84,8 +84,9 @@ import pedroPathing.constants.LConstants;
 
 
 
-@Config
-@Autonomous(name = "Pedro Auto Red Specimen v1.1", group = "Auto")
+//@Config
+//@Autonomous(name = "Pedro Auto Red Specimen v1.1", group = "Auto")
+
 public class Pedro_AutoRedSpecimen1 extends OpMode {
     String AllianceBasketOrSpecimen = "1RedSpecimen";
     private double loopTimeTotal, loopTimeCount;

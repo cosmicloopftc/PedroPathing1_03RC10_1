@@ -1,6 +1,11 @@
 package RR;
+
 /** Dominic:  updated 2/20/2025
  *  ED: updated 2/21/2025 morning
+ *  2/22/2025Sat.  Dominic: Auto BLUE with Submersible LimeLight and light sensor to spit out wrong sample pickup
+ *                  separate class for the other color case and for Alliance without Auto
+ *                  TODO: NEED TO ADJUST BASKET SLIDER POSITION due to slider restrung
+ *
  * */
 
 import androidx.annotation.NonNull;
@@ -21,18 +26,25 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Hardware.HardwareNoDriveTrainRobot;
 
 @Config
-@Autonomous(name = "RR_1AutoRedBasket v1.2", group = "Auto")
+@Autonomous(name = "RR_1B_AUTO_BLUE   Basket_Submer v1.1", group = "Auto")
 
-public class RR_1AutoRedBasket extends LinearOpMode {
+public class RR_1B_AutoBlueBasket extends LinearOpMode {
 
     //TODO: setup initial position for all subsystems
     //    public static double autoEnd_SliderMotorPosition,
@@ -47,10 +59,16 @@ public class RR_1AutoRedBasket extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         double sliderPower = 1;
 
+        Limelight3A limelight;
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        telemetry.setMsTransmissionInterval(11); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.pipelineSwitch(1);
+//        limelight.start(); // This tells Limelight to start looking!
+
         AutoOuttakeSliderAction autoOuttakeSliderAction = null;
         autoRobot.init(hardwareMap);   //for all hardware except drivetrain.  note hardwareMap is default and part of FTC Robot Controller HardwareMap class
 
-        String AllianceBasketOrSpecimen = "1RedBasket";
+        String AllianceBasketOrSpecimen = "1B_AUTO_BLUEBasket_Submersible";
         Pose2d beginPose = new Pose2d(-32, -62, Math.toRadians(0));     //TODO: would overide this for each case
 
         int debugLevel = 499;
@@ -69,8 +87,10 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         //adjust these settings as needed for use in the trajectory codes
         VelConstraint velSlow = new TranslationalVelConstraint(15);
         VelConstraint velFast = new TranslationalVelConstraint(45);
-        AccelConstraint accSlow = new ProfileAccelConstraint(-15,15);
-        AccelConstraint accFast = new ProfileAccelConstraint(-45,45);
+        AccelConstraint accSlow = new ProfileAccelConstraint(-15, 15);
+        AccelConstraint accFast = new ProfileAccelConstraint(-45, 45);
+
+
 
         double readyPosition = 0.43;
         double grabPosition = 0.33;
@@ -114,13 +134,12 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
         TrajectoryActionBuilder submersible = turnToBasket3.endTrajectory().fresh()
                 .setTangent(45)
-                .splineToSplineHeading(new Pose2d(-22.5, 0, 0), Math.toRadians(35));
+                .splineToSplineHeading(new Pose2d(-24, 0, 0), Math.toRadians(35));
 
         TrajectoryActionBuilder turnToBasket2 = submersible.endTrajectory().fresh()
                 .setTangent(45)
                 .strafeToConstantHeading(new Vector2d(-25, 0))
                 .strafeToSplineHeading(new Vector2d(-59, -52.5), Math.toRadians(45));
-
 
 
         //*****LOOP wait for start, INIT LOOP***********************************************************
@@ -131,11 +150,21 @@ public class RR_1AutoRedBasket extends LinearOpMode {
             autoRobot.Outtake.closeClaw();
             autoRobot.Intake.intakeINSIDEBOT();
 
-            telemetry.addLine("Initialized");
-            telemetry.addData("Alliance Color/Mode: ", AllianceBasketOrSpecimen);
+            telemetryA.addLine("Initialized");
+            telemetryA.addData("Alliance Color/Mode: ", AllianceBasketOrSpecimen);
             telemetryA.addData("Starting X = ", beginPose.position.x);
             telemetryA.addData("Starting Y = ", beginPose.position.y);
             telemetryA.addData("Starting Heading (Degrees) = ", Math.toDegrees(beginPose.heading.toDouble()));
+
+//            LLResult result = limelight.getLatestResult();
+//            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
+//            for (LLResultTypes.ColorResult cr : colorResults) {
+//                if (cr.getTargetXDegrees() > 10) {
+//                    telemetryA.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
+//                }
+//            }
+//            telemetryA.update();
+
         }
 
         waitForStart();
@@ -147,9 +176,8 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
         //*********STARTING MAIN PROGRAM****************************************************************
         //      opmodeTimer.resetTimer();
-
+        //{
         Actions.runBlocking(
-//                        preScore.build(),
                 new SequentialAction(
                         //Raise Outtake slider and Move Robot to basket
                         autoOuttakeSliderHighBasketAction(),
@@ -251,20 +279,67 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         new ParallelAction(
                                 submersible.build(),
                                 new SequentialAction(
-                                        AutoIntakeSweeperAction(sweeperOUT, 0),
-                                        autoIntakeSpiner(-1, 2.5),
-                                        AutoIntakeSweeperAction(sweeperIn, 0),
-                                        autoIntakeServoAxonAction(0.97)
+                                        AutoIntakeSweeperAction(sweeperOUT, 3),
+                                        AutoIntakeSweeperAction(sweeperIn, 0)
+                                )
+                        )
+                )
+        );
+        telemetry.setMsTransmissionInterval(10); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.pipelineSwitch(1);
+        limelight.start();
+        LLResult result = limelight.getLatestResult();
+        int turnAmount = 0;
+        if(result != null) {
+            List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
+            List<Double> left = new ArrayList<Double>();
+            List<Double> right = new ArrayList<Double>();
+            List<Double> center = new ArrayList<Double>();
+            for (LLResultTypes.ColorResult cr : colorResults) {
+                telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
+                if (cr.getTargetXDegrees() < -5) {
+                    left.add(cr.getTargetXDegrees());
+                } else if (cr.getTargetXDegrees() < 5) {
+                    center.add(cr.getTargetXDegrees());
+                } else {
+                    right.add(cr.getTargetXDegrees());
+                }
+            }
+            telemetry.update();
+            limelight.stop();
+            if (left.size() > right.size() && center.size() < left.size()) {
+                turnAmount = 345;
+            } else if (right.size() > left.size() && center.size() < right.size()) {
+                turnAmount = 15;
+            } else if (center.size() > left.size() && center.size() > right.size()) {
+                turnAmount = 0;
+            }
+        } else {
+            telemetry.addData("Null", "Null");
+        }
+        telemetry.update();
+        TrajectoryActionBuilder submerisbleTurn = submersible.endTrajectory().fresh()
+//                .lineToX(-26)
+                .turnTo(Math.toRadians(turnAmount));
+        Actions.runBlocking(
+                new SequentialAction(
+                        new ParallelAction(
+                                submerisbleTurn.build(),
+                                new SequentialAction(
+                                        autoIntakeSliderAction(80, .6, 0),
+                                        autoIntakeServoAxonAction(0.97),
+                                        autoIntakeSpiner(-1, 0.5),
+                                        autoIntakeSliderAction(300, .35, 0.5)
                                 )
                         ),
-                        autoIntakeSliderAction(300, .6, 0.1),
-
+                        AutoColorSensor(),
+                        autoIntakeServoAxonAction(intakeAxonPosition),
                         //Move to basket
-                        autoIntakeSliderAction(1, sliderPower, 0),
+                        autoIntakeSliderAction(1, 0.4, 0),
                         new ParallelAction(
+                                autoIntakeSpiner(0, 0),
                                 turnToBasket2.build(),
                                 new SequentialAction(
-                                        autoIntakeServoAxonAction(intakeAxonPosition),
                                         autoIntakeSpiner(0, 0.5),
                                         autoOuttakeArmAxonAction(grabPosition, 0.1),
                                         autoClawAction(0.3, 0.25),
@@ -279,10 +354,11 @@ public class RR_1AutoRedBasket extends LinearOpMode {
                         autoouttakeExtensionAction(1, 0),
                         autoOuttakeArmAxonAction(readyPosition, 0),
                         autoOuttakeSliderAction(0, 1)
-
                 )
+
         );
 
+//}
 
         drive.updatePoseEstimate();
         Pose2d poseEnd = drive.localizer.getPose();
@@ -291,8 +367,9 @@ public class RR_1AutoRedBasket extends LinearOpMode {
         telemetryA.addData("heading (deg)", Math.toDegrees(poseEnd.heading.toDouble()));
 //        RRAutoCoreTelemetryDuringteleOp();          //show robot drawing on FTC Dashboard //TODO: add in the AUTOcore method to transfer data to teleOp
         telemetryA.update();
-        //telemetry.update();
-        sleep(300000);
+
+        limelight.stop();
+
     }
 
 
@@ -588,6 +665,48 @@ public class RR_1AutoRedBasket extends LinearOpMode {
 
     public Action AutoIntakeSweeperAction(double position, double pauseTimeSec) {
         return new AutoIntakeSweeperAction(position, pauseTimeSec);
+    }
+
+    public class AutoColorSensor implements Action {
+        private boolean initialized = false;
+        double desirePosition;
+        ElapsedTime timer;
+        double pauseTimeSec;
+        private String sampleColor = "NONE";
+        HardwareNoDriveTrainRobot robot = new HardwareNoDriveTrainRobot();
+
+        public AutoColorSensor() {
+
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer = new ElapsedTime();
+                NormalizedRGBA colors = robot.Sensor.colorIntake.getNormalizedColors();
+                double blue = colors.blue;
+                double red = colors.red;
+                double green = colors.green;
+                if (red > 0.02 && red > green && red > blue){
+                    sampleColor = "RED";
+                    autoRobot.Intake.intakeLeftWheel.setPower(1);
+                    autoRobot.Intake.intakeRightWheel.setPower(-1);
+                }
+                else if (blue > 0.02 && blue > green && blue > red){
+                    sampleColor = "BLUE";
+
+                }
+                else if (green > 0.02 && green > red && green > blue){
+                    sampleColor = "YELLOW";
+                }
+                initialized = true;
+            }
+            return false;
+        }
+    }
+
+    public Action AutoColorSensor() {
+        return new AutoColorSensor();
     }
 
     //power:  positive = intake split OUT sample
