@@ -100,13 +100,14 @@ public class BLUE_TeleOpV1 extends OpMode {
     int logInterval = 50;                           // target interval in milliseconds
 
     //runtime to keep track of time each mode is already defined as usual below.
-    String allianceColor = "BLUE";
-    String nonAllianceColor = "RED";
+    String allianceColor;               //Value is assigned in init()
+    String nonAllianceColor;            //Value is assigned in init()
+
     private Telemetry telemetryA;
-    boolean endGameRumble45secondsWarningOnce = true;
-    boolean endGameRumble31secondSTARTonce = true;
-    boolean endGameRumble20secondsLeftOnce = true;
-    boolean endGameRumble6secondsLeftOnce = true;
+    //boolean endGameRumble45secondsWarningOnce = true;
+    //boolean endGameRumble31secondSTARTonce = true;
+    boolean endGameRumble16secondsLeftOnce = true;
+    boolean endGameRumble8secondsLeftOnce = true;
 
     Gamepad.RumbleEffect customRumbleEffect;
 
@@ -235,6 +236,11 @@ public class BLUE_TeleOpV1 extends OpMode {
     //__________________________________________________________________________________________________
     @Override
     public void init() {
+        String allianceColor = "BLUE";
+        String nonAllianceColor = "RED";
+
+
+
         poseUpdater = new PoseUpdater(hardwareMap);
         dashboardPoseTracker = new DashboardPoseTracker(poseUpdater);
         Constants.setConstants(FConstants.class, LConstants.class);
@@ -804,36 +810,37 @@ public class BLUE_TeleOpV1 extends OpMode {
 //        Drawing.sendPacket();
 
 
-        if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
+//        if ((runtime.seconds() > 75) && endGameRumble45secondsWarningOnce) {
+//            rumble();
+//            telemetryA.addLine("45 SECONDS LEFT");
+//            telemetryA.addLine("");
+//            endGameRumble45secondsWarningOnce = false;
+//            gamepad1.runLedEffect(flashingWhite6Sec);
+//        }
+//        if ((runtime.seconds()  > 89) && endGameRumble31secondSTARTonce) {
+//            rumble();
+//            telemetryA.addLine("30 SECONDS LEFT");
+//            telemetryA.addLine("");
+//            rumble();
+//            endGameRumble31secondSTARTonce = false;
+//            gamepad1.runLedEffect(flashingBlue6Sec);
+//        }
+
+        //one rumble for 16 seconds left
+        if ((runtime.seconds() > 104 ) && endGameRumble16secondsLeftOnce) {
             rumble();
-            telemetryA.addLine("45 SECONDS LEFT");
+            telemetryA.addLine("16 SECONDS LEFT");
             telemetryA.addLine("");
-            endGameRumble45secondsWarningOnce = false;
-            gamepad1.runLedEffect(flashingWhite6Sec);
-        }
-        if ((runtime.seconds()  > 89) && endGameRumble31secondSTARTonce) {
-            rumble();
-            telemetryA.addLine("30 SECONDS LEFT");
-            telemetryA.addLine("");
-            rumble();
-            endGameRumble31secondSTARTonce = false;
-            gamepad1.runLedEffect(flashingBlue6Sec);
-        }
-        //one rumble for 20 seconds left
-        if ((runtime.seconds() > 100 ) && endGameRumble20secondsLeftOnce) {
-            rumble();
-            telemetryA.addLine("20 SECONDS LEFT");
-            telemetryA.addLine("");
-            endGameRumble20secondsLeftOnce = false;
+            endGameRumble16secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
 
-        //one rumble for 6 seconds left for hanging
-        if ((runtime.seconds() > 114 ) && endGameRumble6secondsLeftOnce) {
+        //3 rumble for 8 seconds left for hanging
+        if ((runtime.seconds() > 112 ) && endGameRumble8secondsLeftOnce) {
             rumble6sec();
-            telemetryA.addLine("6 SECONDS LEFT---HANGING NOW");
+            telemetryA.addLine("8 SECONDS LEFT---HANGING NOW");
             telemetryA.addLine("");
-            endGameRumble20secondsLeftOnce = false;
+            endGameRumble16secondsLeftOnce = false;
             gamepad1.runLedEffect(flashingRed6Sec);
         }
 
@@ -991,6 +998,21 @@ public class BLUE_TeleOpV1 extends OpMode {
     public void rumble6sec(){
         Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence.
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
+
+                .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
+                .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
                 .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec
                 .addStep(1.0, 0.0, 100)  //  Rumble left motor 100% for 250 mSec
                 .addStep(0.0, 1.0, 100)  //  Rumble right motor 100% for 500 mSec

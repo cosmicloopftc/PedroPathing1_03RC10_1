@@ -62,8 +62,8 @@ import pedroPathing.constants.LConstants;
 
 
 
-@Config    //need this to allow appearance in FtcDashboard Configuration to make adjust of variables
-@TeleOp(group="Primary", name= "RED_TeleOpV1.2")
+//@Config    //need this to allow appearance in FtcDashboard Configuration to make adjust of variables
+//@TeleOp(group="Primary", name= "RED_TeleOpV1.2")
 public class RED_TeleOpV1 extends OpMode {
     private Telemetry telemetryA;
     boolean endGameRumble45secondsWarningOnce = true;
