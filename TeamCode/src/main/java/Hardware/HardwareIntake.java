@@ -121,7 +121,7 @@ public class HardwareIntake {
         intakeServoAxon.setPosition(0.52); //Position when grabbing specimen off wall
     }
     public void intakeTRANSFER(){
-        intakeServoAxon.setPosition(0.64); //Position where sample gets grabbed out of intake
+        intakeServoAxon.setPosition(0.635); //Position where sample gets grabbed out of intake
     }
     public double getIntakeServoAxonPosition(){
         // get the voltage of our analog line
